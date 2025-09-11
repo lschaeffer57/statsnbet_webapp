@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 
 import { cn } from '@/lib/utils';
 
-export const Input = ({ className, type, ...props }: ComponentProps<'input'>) => {
+const Input = ({ className, type, ...props }: ComponentProps<'input'>) => {
   return (
     <input
       type={type}
@@ -17,3 +17,5 @@ export const Input = ({ className, type, ...props }: ComponentProps<'input'>) =>
     />
   );
 }
+
+export { Input };
