@@ -4,7 +4,8 @@ import { TelegramIcon } from '@/assets/icons';
 import PerformanceParameters from '@/components/PerformanceParameters';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
+
+import { Input } from '../../../components/ui/Input';
 
 export const SignUp = () => {
   const [isOpen, setIsOpen] = useState(false);

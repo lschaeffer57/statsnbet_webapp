@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+
+import { Input } from  '../../../components/ui/Input';
 
 export const Login = () => {
   return (
