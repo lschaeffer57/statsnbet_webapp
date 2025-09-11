@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/Button.tsx';
-import { Input } from '@/components/ui/Input.tsx';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export const Login = () => {
   return (

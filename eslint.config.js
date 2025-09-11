@@ -72,16 +72,16 @@ export default tseslint.config(
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
-      // 'import/extensions': [
-      //   'error',
-      //   'ignorePackages',
-      //   {
-      //     js: 'never',
-      //     jsx: 'never',
-      //     ts: 'never',
-      //     tsx: 'never',
-      //   },
-      // ],
+      'import/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          js: 'never',
+          jsx: 'never',
+          ts: 'never',
+          tsx: 'never',
+        },
+      ],
     },
   },
   prettierConfig,
