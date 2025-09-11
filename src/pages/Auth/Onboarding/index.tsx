@@ -1,8 +1,17 @@
+import { useNavigate } from 'react-router';
+
 import { Button } from '@/components/ui/Button';
+import { RoutesEnum } from '@/enums/router';
 
 export const Onboarding = () => {
-  return (
-    <div className="mt-[112px] flex flex-col items-center gap-11">
+  const navigate = useNavigate();
+
+  const handleAccessPlatform = () => {
+    navigate(RoutesEnum.SIGN_UP)
+  }
+
+    return (
+      <div className="mt-[112px] flex flex-col items-center gap-11">
       <div className="max-w-[520px] space-y-4">
         <h1 className="font-instrument text-center text-[44px] leading-[50px] font-semibold tracking-tight">
           Bienvenue chez Statsnbet
@@ -14,7 +23,7 @@ export const Onboarding = () => {
           </p>
         </div>
       </div>
-      <Button>Accéder à la plateforme</Button>
+      <Button onClick={handleAccessPlatform}>Accéder à la plateforme</Button>
       <img
         src="/images/video.png"
         className="h-auto w-full max-w-[818px]"
