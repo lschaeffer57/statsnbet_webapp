@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button.tsx';
 import { RoutesEnum } from '@/enums/router';
 
 export const Onboarding = () => {
