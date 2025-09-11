@@ -20,7 +20,7 @@ interface PerformanceParametersProps {
   showConfiguration?: boolean;
 }
 
-const PerformanceParameters = ({
+export const PerformanceParameters = ({
   isOpen,
   setIsOpen,
   showConfiguration = true,
@@ -91,5 +91,3 @@ const PerformanceParameters = ({
     </Card>
   );
 };
-
-export default PerformanceParameters;
