@@ -6,7 +6,6 @@ import svgr from 'vite-plugin-svgr';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tailwindcss(), react(), svgr()],
-  base: process.env.VITE_BASE_PATH ?? '/statsnbet_webapp',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
