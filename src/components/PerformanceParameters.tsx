@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ChevronDownIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
@@ -26,15 +27,17 @@ export const PerformanceParameters = ({
   showConfiguration = true,
 }: PerformanceParametersProps) => {
   const [configuration, setConfiguration] = useState('conf1');
+  const { t } = useTranslation('auth');
+
   return (
     <Card className="shadow-glass-lg items-start gap-4">
       {!showConfiguration ? (
         <h2 className="text-foreground text-base font-medium">
-          Critères de performances
+          {t('signup.performanceParameters.title')}
         </h2>
       ) : (
         <span className="text-foreground/50 text-sm font-normal">
-          Critères de performances
+          {t('signup.performanceParameters.title')}
         </span>
       )}
       <div className="flex w-full justify-between">
@@ -45,7 +48,7 @@ export const PerformanceParameters = ({
           className="shadow-none"
           onClick={() => setIsOpen(!isOpen)}
         >
-          Ouvrir les paramètres
+          {t('signup.performanceParameters.openSettings')}
         </Button>
         <div
           className={cn(
@@ -55,18 +58,32 @@ export const PerformanceParameters = ({
         >
           <Select value={configuration} onValueChange={setConfiguration}>
             <SelectTrigger size="sm">
-              <SelectValue placeholder="Select" />
+              <SelectValue
+                placeholder={t(
+                  'signup.performanceParameters.selectPlaceholder',
+                )}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="conf1">Configuration 1</SelectItem>
-              <SelectItem value="conf2">Configuration 2</SelectItem>
-              <SelectItem value="conf3">Configuration 3</SelectItem>
-              <SelectItem value="conf4">Configuration 4</SelectItem>
-              <SelectItem value="conf-init">Configuration initiate</SelectItem>
+              <SelectItem value="conf1">
+                {t('signup.performanceParameters.configurations.conf1')}
+              </SelectItem>
+              <SelectItem value="conf2">
+                {t('signup.performanceParameters.configurations.conf2')}
+              </SelectItem>
+              <SelectItem value="conf3">
+                {t('signup.performanceParameters.configurations.conf3')}
+              </SelectItem>
+              <SelectItem value="conf4">
+                {t('signup.performanceParameters.configurations.conf4')}
+              </SelectItem>
+              <SelectItem value="conf-init">
+                {t('signup.performanceParameters.configurations.confInit')}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm">
-            Réinitialiser
+            {t('signup.performanceParameters.reset')}
           </Button>
         </div>
       </div>
@@ -76,15 +93,19 @@ export const PerformanceParameters = ({
       {isOpen && (
         <Tabs defaultValue="criteria" className="w-full">
           <TabsList className="w-full">
-            <TabsTrigger value="criteria">Critères de performance</TabsTrigger>
-            <TabsTrigger value="type">Type de paris</TabsTrigger>
+            <TabsTrigger value="criteria">
+              {t('signup.performanceParameters.tabs.criteria')}
+            </TabsTrigger>
+            <TabsTrigger value="type">
+              {t('signup.performanceParameters.tabs.betType')}
+            </TabsTrigger>
           </TabsList>
           <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
           <TabsContent className="text-foreground" value="criteria">
-            Critères de performance
+            {t('signup.performanceParameters.tabs.criteria')}
           </TabsContent>
           <TabsContent className="text-foreground" value="type">
-            Type de paris
+            {t('signup.performanceParameters.tabs.betType')}
           </TabsContent>
         </Tabs>
       )}
