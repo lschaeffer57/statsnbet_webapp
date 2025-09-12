@@ -4,16 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDownIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
 
-import { Button } from './ui/Button';
-import { Card } from './ui/Card';
+import { Button } from '../ui/Button';
+import { Card } from '../ui/Card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/Select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/Tabs';
+} from '../ui/Select';
+
+import PerformanceTabs from './PerformanceTabs';
 
 interface PerformanceParametersProps {
   isOpen: boolean;
@@ -90,25 +91,7 @@ export const PerformanceParameters = ({
 
       <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
 
-      {isOpen && (
-        <Tabs defaultValue="criteria" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="criteria">
-              {t('signup.performanceParameters.tabs.criteria')}
-            </TabsTrigger>
-            <TabsTrigger value="type">
-              {t('signup.performanceParameters.tabs.betType')}
-            </TabsTrigger>
-          </TabsList>
-          <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
-          <TabsContent className="text-foreground" value="criteria">
-            {t('signup.performanceParameters.tabs.criteria')}
-          </TabsContent>
-          <TabsContent className="text-foreground" value="type">
-            {t('signup.performanceParameters.tabs.betType')}
-          </TabsContent>
-        </Tabs>
-      )}
+      {isOpen && <PerformanceTabs />}
     </Card>
   );
 };
