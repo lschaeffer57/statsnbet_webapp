@@ -1,5 +1,4 @@
 {
-  "packageManager": "pnpm@7.5.1",
   "name": "statsnbet",
   "private": true,
   "version": "0.0.0",
