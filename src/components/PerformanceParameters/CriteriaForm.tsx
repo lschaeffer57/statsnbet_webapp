@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import { Input } from '../Input.tsx';
 
 import CriteriaItem from './CriteriaItem';
 

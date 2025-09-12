@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/Input.tsx';
 import { RoutesEnum } from '@/enums/router';
 
 export const Login = () => {
