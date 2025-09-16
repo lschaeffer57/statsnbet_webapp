@@ -3,7 +3,9 @@ export enum RoutesEnum {
   LOGIN = '/login',
   SIGN_UP = '/sign-up',
   FORGOT_PASSWORD = '/forgot-password',
-  DASHBOARD = '/dashboard',
+  DASHBOARD = '/control',
   TRAINING = '/training',
+  SETTINGS = '/settings',
+  PUBLIC_DASHBOARD = '/dashboard',
   ERROR = '/not-found',
 }

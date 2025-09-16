@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
@@ -57,11 +59,11 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {iconLeft && <span className="mr-1.5">{iconLeft}</span>}
+      {iconLeft && <span>{iconLeft}</span>}
       {children}
       {iconRight && <span className="ml-2">{iconRight}</span>}
     </Comp>
   );
 }
 
-export { Button };
+export { Button, buttonVariants };

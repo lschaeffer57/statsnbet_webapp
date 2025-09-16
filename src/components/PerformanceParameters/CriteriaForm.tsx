@@ -22,22 +22,22 @@ const CriteriaForm = () => {
 
   const validationSchema = z.object({
     evMin: z.string().refine(validatePercentage, {
-      message: t('signup.validation.percentageRange'),
+      message: t('signup.performanceParameters.validation.percentageRange'),
     }),
     trj: z.string().refine(validatePercentage, {
-      message: t('signup.validation.percentageRange'),
+      message: t('signup.performanceParameters.validation.percentageRange'),
     }),
     minCost: z.string().refine(validatePositiveNumber, {
-      message: t('signup.validation.positiveNumber'),
+      message: t('signup.performanceParameters.validation.positiveNumber'),
     }),
     maxCost: z.string().refine(validatePositiveNumber, {
-      message: t('signup.validation.positiveNumber'),
+      message: t('signup.performanceParameters.validation.positiveNumber'),
     }),
     minLiquidity: z.string().refine(validatePositiveNumber, {
-      message: t('signup.validation.positiveNumber'),
+      message: t('signup.performanceParameters.validation.positiveNumber'),
     }),
     bankroll: z.string().refine(validatePositiveNumber, {
-      message: t('signup.validation.positiveNumber'),
+      message: t('signup.performanceParameters.validation.positiveNumber'),
     }),
     time: z.object({
       start: z.string(),
@@ -96,7 +96,7 @@ const CriteriaForm = () => {
         <form onSubmit={handleSubmit} className="space-y-3">
           <CriteriaItem
             name="evMin"
-            title={t('signup.criteria.evMin')}
+            title={t('signup.performanceParameters.criteria.evMin')}
             placeholder="10.0%"
             value={values.evMin}
             onChange={handleChange}
@@ -108,7 +108,7 @@ const CriteriaForm = () => {
           />
           <CriteriaItem
             name="trj"
-            title={t('signup.criteria.trj')}
+            title={t('signup.performanceParameters.criteria.trj')}
             placeholder="10.0%"
             value={values.trj}
             onChange={handleChange}
@@ -120,7 +120,7 @@ const CriteriaForm = () => {
           />
           <CriteriaItem
             name="minCost"
-            title={t('signup.criteria.minCost')}
+            title={t('signup.performanceParameters.criteria.minCost')}
             placeholder="10.0"
             value={values.minCost}
             onChange={handleChange}
@@ -131,7 +131,7 @@ const CriteriaForm = () => {
           />
           <CriteriaItem
             name="maxCost"
-            title={t('signup.criteria.maxCost')}
+            title={t('signup.performanceParameters.criteria.maxCost')}
             placeholder="0"
             value={values.maxCost}
             onChange={handleChange}
@@ -141,7 +141,7 @@ const CriteriaForm = () => {
           />
           <CriteriaItem
             name="minLiquidity"
-            title={t('signup.criteria.minLiquidity')}
+            title={t('signup.performanceParameters.criteria.minLiquidity')}
             placeholder="0"
             value={values.minLiquidity}
             onChange={handleChange}
@@ -151,7 +151,7 @@ const CriteriaForm = () => {
           />
           <CriteriaItem
             name="bankroll"
-            title={t('signup.criteria.bankroll')}
+            title={t('signup.performanceParameters.criteria.bankroll')}
             placeholder="0"
             value={values.bankroll}
             onChange={handleChange}
@@ -161,7 +161,7 @@ const CriteriaForm = () => {
           />
           <div className="flex w-full items-center justify-between">
             <span className="text-foreground/50 text-sm font-normal">
-              {t('signup.criteria.betTime')}
+              {t('signup.performanceParameters.criteria.betTime')}
             </span>
             <div className="flex items-center gap-2">
               <Input
@@ -172,7 +172,7 @@ const CriteriaForm = () => {
                 onChange={handleChange}
               />
               <span className="text-foreground/50 block text-xs font-normal">
-                {t('signup.criteria.betTimeFrom')}
+                {t('signup.performanceParameters.criteria.betTimeFrom')}
               </span>
               <Input
                 type="time"
@@ -185,7 +185,7 @@ const CriteriaForm = () => {
           </div>
           <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
           <Button type="submit" className="h-8 w-full" disabled={isSubmitting}>
-            {t('signup.criteria.saveButton')}
+            {t('signup.performanceParameters.criteria.saveButton')}
           </Button>
         </form>
       )}

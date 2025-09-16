@@ -1,0 +1,12 @@
+{
+  "filters": {
+    "configuration": "Configuration",
+    "liquidity": "Liquidity",
+    "payout": "Payout",
+    "ev": "EV",
+    "sport": "Sport",
+    "market": "Market",
+    "bookmaker": "Bookmakers",
+    "period": "Period"
+  }
+}

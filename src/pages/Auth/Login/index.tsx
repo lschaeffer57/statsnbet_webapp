@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -34,12 +35,12 @@ export const Login = () => {
             </div>
             <p className="text-muted-foreground text-sm">
               {t('login.forgotPassword')}{' '}
-              <a
-                href={RoutesEnum.FORGOT_PASSWORD}
+              <Link
+                to={RoutesEnum.FORGOT_PASSWORD}
                 className="text-foreground text-sm font-medium"
               >
                 {t('login.resetPasswordLink')}
-              </a>
+              </Link>
             </p>
             <div className="bg-border h-[1px] w-full" />
           </div>

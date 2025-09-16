@@ -24,3 +24,12 @@ export { default as publicDashboardUrl } from './public-dashboard.svg';
 
 export { default as TrainingIcon } from './training.svg?react';
 export { default as trainingUrl } from './training.svg';
+
+export { default as RefreshIcon } from './refresh.svg?react';
+export { default as refreshUrl } from './refresh.svg';
+
+export { default as FilterLinesIcon } from './filter-lines.svg?react';
+export { default as filterLinesUrl } from './filter-lines.svg';
+
+export { default as XCircleIcon } from './x-circle.svg?react';
+export { default as xCircleUrl } from './x-circle.svg';

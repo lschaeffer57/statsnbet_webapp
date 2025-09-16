@@ -46,8 +46,22 @@ export default function AppRoutes() {
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route element={<AuthLayout />}>
-          <Route path={RoutesEnum.LOGIN} element={<LoginPage />} />
-          <Route path={RoutesEnum.SIGN_UP} element={<SignUpPage />} />
+          <Route
+            path={RoutesEnum.LOGIN}
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <LoginPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={RoutesEnum.SIGN_UP}
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <SignUpPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path={RoutesEnum.ONBOARDING} element={<OnboardingPage />} />
         </Route>
 

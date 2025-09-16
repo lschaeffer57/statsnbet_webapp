@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router';
+
 import {
   AccountIcon,
   DashboardIcon,
@@ -5,6 +8,7 @@ import {
   PublicDashboardIcon,
   TrainingIcon,
 } from '@/assets/icons';
+import { RoutesEnum } from '@/enums/router';
 
 import { Button } from './ui/Button';
 import { Separator } from './ui/Separator';
@@ -20,37 +24,38 @@ import {
   SidebarFooter,
 } from './ui/Sidebar';
 
-const items = [
-  {
-    title: 'Tableau de bord',
-    url: '#',
-    icon: DashboardIcon,
-  },
-  {
-    title: 'Espace de formation',
-    url: '#',
-    icon: TrainingIcon,
-  },
-  {
-    title: 'Dashboard publique',
-    url: '#',
-    icon: PublicDashboardIcon,
-  },
-  {
-    title: 'Paramètres du compte',
-    url: '#',
-    icon: AccountIcon,
-  },
-];
-
 const AppSidebar = () => {
+  const { t } = useTranslation('common');
+  const location = useLocation();
+  const items = [
+    {
+      title: t('sidebar.dashboard'),
+      url: RoutesEnum.DASHBOARD,
+      icon: DashboardIcon,
+    },
+    {
+      title: t('sidebar.training'),
+      url: RoutesEnum.TRAINING,
+      icon: TrainingIcon,
+    },
+    {
+      title: t('sidebar.publicDashboard'),
+      url: RoutesEnum.PUBLIC_DASHBOARD,
+      icon: PublicDashboardIcon,
+    },
+    {
+      title: t('sidebar.accountSettings'),
+      url: RoutesEnum.SETTINGS,
+      icon: AccountIcon,
+    },
+  ];
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="flex flex-row items-center justify-between pt-8">
-          <a href="/">
+          <Link to={RoutesEnum.DASHBOARD}>
             <img src="/images/logo.png" alt="logo" className="w-[128px]" />
-          </a>
+          </Link>
           <Button variant="secondary" size="icon">
             <NotificationIcon className="size-[14px]" />
           </Button>
@@ -63,11 +68,14 @@ const AppSidebar = () => {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="group">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.url === location.pathname}
+                  >
+                    <Link to={item.url} className="group">
                       <item.icon className="group-hover:text-foreground text-muted-foreground group-data-[active=true]:text-foreground" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

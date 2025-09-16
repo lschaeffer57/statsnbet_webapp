@@ -11,8 +11,8 @@
     inset 0 0 24px rgba(255, 255, 255, 0.1),
     inset 0 0 5px rgba(255, 255, 255, 0.2);
   --shadow-glass:
-    inset 0 0 21px rgba(255, 255, 255, 0.2),
-    inset 0 0 8px rgba(255, 255, 255, 0.3);
+    inset 0 0 21px rgba(255, 255, 255, 0.02),
+    inset 0 0 8px rgba(255, 255, 255, 0.03);
 }
 
 @theme inline {
