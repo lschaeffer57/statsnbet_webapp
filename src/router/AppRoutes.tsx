@@ -2,39 +2,40 @@ import { lazy, Suspense, useState } from 'react';
 import { Route, Routes } from 'react-router';
 
 import { RoutesEnum } from '@/enums/router';
-import AuthLayout from '@/pages/auth/components/AuthLayout';
+import AuthLayout from '@/pages/Auth/components/AuthLayout';
 import DashboardLayout from '@/pages/dashboard/components/DashboardLayout';
 
 import ProtectedRoute from './ProtectedRoute';
 
+
 const LoginPage = lazy(() =>
-  import('../pages/auth/Login').then(({ Login }) => ({ default: Login })),
+  import('@/pages/Auth/Login').then(({ Login }) => ({ default: Login })),
 );
 
 const SignUpPage = lazy(() =>
-  import('../pages/auth/SignUp').then(({ SignUp }) => ({ default: SignUp })),
+  import('@/pages/Auth/SignUp').then(({ SignUp }) => ({ default: SignUp })),
 );
 
 const OnboardingPage = lazy(() =>
-  import('../pages/auth/Onboarding').then(({ Onboarding }) => ({
+  import('@/pages/Auth/Onboarding').then(({ Onboarding }) => ({
     default: Onboarding,
   })),
 );
 
 const DashboardPage = lazy(() =>
-  import('../pages/dashboard/Dashboard').then(({ Dashboard }) => ({
+  import('@/pages/dashboard/Dashboard').then(({ Dashboard }) => ({
     default: Dashboard,
   })),
 );
 
 const TrainingPage = lazy(() =>
-  import('../pages/dashboard/Training').then(({ Training }) => ({
+  import('@/pages/dashboard/Training').then(({ Training }) => ({
     default: Training,
   })),
 );
 
 const NotFoundPage = lazy(() =>
-  import('../pages/NotFound').then(({ NotFound }) => ({
+  import('@/pages/NotFound').then(({ NotFound }) => ({
     default: NotFound,
   })),
 );
