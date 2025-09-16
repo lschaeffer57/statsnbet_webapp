@@ -2,7 +2,7 @@ import { MinusIcon, PlusIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/Button';
-import { Input } from '../Input.tsx';
+import { Input } from '../ui/Input';
 
 interface CriteriaItemProps {
   name: string;

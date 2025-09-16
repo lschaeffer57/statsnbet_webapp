@@ -11,8 +11,8 @@
     inset 0 0 24px rgba(255, 255, 255, 0.1),
     inset 0 0 5px rgba(255, 255, 255, 0.2);
   --shadow-glass:
-    inset 0 0 21px rgba(255, 255, 255, 0.2),
-    inset 0 0 8px rgba(255, 255, 255, 0.3);
+    inset 0 0 21px rgba(255, 255, 255, 0.02),
+    inset 0 0 8px rgba(255, 255, 255, 0.03);
 }
 
 @theme inline {
@@ -57,7 +57,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #030416;
+  --background: #01020c;
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.06);
   --card-foreground: oklch(0.145 0 0);
@@ -82,7 +82,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: transparent;
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);

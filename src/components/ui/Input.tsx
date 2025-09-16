@@ -16,6 +16,6 @@ const Input = ({ className, type, ...props }: ComponentProps<'input'>) => {
       {...props}
     />
   );
-}
+};
 
 export { Input };

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -11,6 +12,23 @@ export const Onboarding = () => {
   const handleAccessPlatform = () => {
     navigate(RoutesEnum.SIGN_UP);
   };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/api/test');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Users fetched:', data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <div className="mt-[112px] flex flex-col items-center gap-11">

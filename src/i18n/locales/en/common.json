@@ -1,0 +1,8 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "training": "Training Space",
+    "publicDashboard": "Public Dashboard",
+    "accountSettings": "Account Settings"
+  }
+}

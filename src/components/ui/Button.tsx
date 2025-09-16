@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
@@ -17,14 +19,14 @@ const buttonVariants = cva(
         secondary:
           'bg-muted border text-foreground rounded-[10px] text-sm border-card-border shadow-glass font-normal opacity-73 hover:bg-card',
         ghost:
-          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+          'hover:shadow-glass text-muted-foreground hover:text-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-11 px-[18px] py-2.5 has-[>svg]:px-4.5',
         sm: 'h-8 rounded-md gap-1.5 py-1.5 px-2.5 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
-        icon: 'size-9',
+        icon: 'p-1.5',
       },
     },
     defaultVariants: {
@@ -57,11 +59,11 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {iconLeft && <span className="mr-1.5">{iconLeft}</span>}
+      {iconLeft && <span>{iconLeft}</span>}
       {children}
       {iconRight && <span className="ml-2">{iconRight}</span>}
     </Comp>
   );
 }
 
-export { Button };
+export { Button, buttonVariants };

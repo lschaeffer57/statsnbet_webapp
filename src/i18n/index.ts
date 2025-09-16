@@ -7,6 +7,6 @@ i18n.use(initReactI18next).init({
   resources,
   lng: 'fr',
   fallbackLng: 'en',
-  ns: ['common', 'auth'],
+  ns: ['common', 'auth', 'dashboard'],
   defaultNS: 'common',
 });
