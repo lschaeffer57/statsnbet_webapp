@@ -53,7 +53,7 @@ const ProfitChart = () => {
 
   return (
     <div className="h-[400px] w-full p-6">
-      <div className="mb-4">
+      <div className="mb-6 space-y-3">
         <h3 className="text-foreground/50 text-sm">
           Bénéfice total (€) (par nombre de paris)
         </h3>

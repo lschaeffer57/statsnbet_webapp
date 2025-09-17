@@ -1,7 +1,7 @@
 export const FILTER_LABELS = {
   configuration: 'filters.configuration',
   liquidity: 'filters.liquidity',
-  payout: 'filters.payout',
+  payout_rate: 'filters.payout',
   ev: 'filters.ev',
   sport: 'filters.sport',
   market: 'filters.market',

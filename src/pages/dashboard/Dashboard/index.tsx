@@ -1,10 +1,13 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import { betsApi } from '@/api/betsApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import { Button } from '@/components/ui/Button';
 import type { DashboardFiltersI } from '@/types/dashboard';
 
 import ActiveFilters from '../components/ActiveFilters';
+import BetsTable from '../components/BetsTable';
 import DashboardFilters from '../components/DashboardFilters';
 import ProfitChart from '../components/ProfitChart';
 
@@ -14,7 +17,7 @@ export const Dashboard = () => {
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
     liquidity: false,
-    payout: false,
+    payout_rate: false,
     ev: false,
     sport: '',
     market: '',
@@ -24,7 +27,28 @@ export const Dashboard = () => {
       end: undefined,
     },
   });
-  console.log(filters);
+
+  const {
+    data,
+    error,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    ...betsApi.getBetsInfiniteQueryOptions({
+      configuration: filters.configuration,
+      liquidity: filters.liquidity,
+      payout_rate: filters.payout_rate,
+      ev: filters.ev,
+      sport: filters.sport,
+      market: filters.market,
+      bookmaker: filters.bookmaker,
+      periodStart: filters.period.start,
+      periodEnd: filters.period.end,
+    }),
+  });
+  console.log(data);
 
   return (
     <div className="relative z-20">
@@ -56,6 +80,16 @@ export const Dashboard = () => {
       <ActiveFilters filters={filters} setFilters={setFilters} />
 
       <ProfitChart />
+      <BetsTable
+        data={data}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+      />
+      {error && (
+        <span className="text-sm text-red-500">Error: {error.message}</span>
+      )}
     </div>
   );
 };

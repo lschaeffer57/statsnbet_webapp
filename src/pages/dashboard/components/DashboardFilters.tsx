@@ -64,7 +64,7 @@ const DashboardFilters = ({ filters, setFilters }: DashboardFiltersProps) => {
         size="sm"
         className="!shadow-glass from-input !bg-gradient-to-b to-transparent opacity-100"
         onClick={() =>
-          setFilters((prev) => ({ ...prev, payout: !prev.payout }))
+          setFilters((prev) => ({ ...prev, payout_rate: !prev.payout_rate }))
         }
       >
         {t('filters.payout')}
