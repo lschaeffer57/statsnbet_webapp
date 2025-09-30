@@ -1,0 +1,61 @@
+{
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "training": "Espace de formation",
+    "publicDashboard": "Dashboard publique",
+    "accountSettings": "Paramètres du compte"
+  },
+  "refresh": "Rafraîchir",
+  "telegram": {
+    "lastConnection": "Dernière connection:",
+    "reconnect": "Se reconnecter",
+    "title": "Connecter votre compte telegram",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi."
+  },
+  "notFound": {
+    "badge": "404 • Page introuvable",
+    "title": "Oups ! Vous êtes perdu",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "ctaDashboard": "Retour au tableau de bord",
+    "ctaLogin": "Aller à la connexion",
+    "ctaPublic": "Dashboard publique"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "clerk": {
+    "email_address": {
+      "form_param_format_invalid": "Format d'email invalide",
+      "form_identifier_exists": "Cette adresse email est déjà enregistrée",
+      "verification_link_expired": "Le lien de vérification a expiré"
+    },
+    "password": {
+      "form_password_pwned": "Le mot de passe a été compromis",
+      "form_password_too_common": "Le mot de passe est trop commun",
+      "form_password_length_too_short": "Le mot de passe doit contenir au moins 8 caractères",
+      "form_password_incorrect": "Mot de passe incorrect",
+      "form_password_validation_failed": "Le mot de passe ne respecte pas les exigences"
+    },
+    "username": {
+      "form_username_invalid_character": "Le nom d'utilisateur contient des caractères invalides",
+      "form_identifier_exists": "Ce nom d'utilisateur est déjà pris. Veuillez en essayer un autre",
+      "form_username_invalid_length": "Le nom d'utilisateur doit contenir entre 3 et 20 caractères"
+    },
+    "verificationCode": {
+      "form_code_incorrect": "Code de vérification invalide",
+      "verification_expired": "Le code de vérification a expiré",
+      "verification_failed": "La vérification a échoué",
+      "form_verification_code_required": "Le code de vérification est requis"
+    },
+    "general": {
+      "too_many_requests": "Trop de demandes. Veuillez réessayer plus tard",
+      "rate_limit_exceeded": "Limite de débit dépassée",
+      "form_identifier_not_found": "Utilisateur non trouvé",
+      "clerk_network_error": "Erreur réseau. Veuillez vérifier votre connexion",
+      "clerk_unknown_error": "Une erreur inattendue s'est produite",
+      "session_exists": "Vous êtes déjà connecté",
+      "form_identifier_exists": "L'utilisateur existe déjà"
+    }
+  }
+}

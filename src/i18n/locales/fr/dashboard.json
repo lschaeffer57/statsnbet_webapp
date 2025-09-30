@@ -1,0 +1,63 @@
+{
+  "title": "Tableau de bord",
+  "stats": {
+    "averageRoi": "ROI moyen",
+    "averageReturn": "Rendement moyen",
+    "updatedBankroll": "Bankroll actualisée",
+    "numberOfBets": "Nombre de paris"
+  },
+  "table": {
+    "headers": {
+      "match": "Match",
+      "bet": "Pari",
+      "odds": "Côte",
+      "stake": "Mise",
+      "result": "Résultat",
+      "date": "Date",
+      "fairOdd": "Fair odd",
+      "ev": "EV",
+      "liquidity": "Liquidité",
+      "payoutRate": "Payout Rate",
+      "configuration": "Configuration",
+      "bookmakers": "Bookmakers"
+    },
+    "result": {
+      "inProgress": "En cours"
+    },
+    "allDataDisplayed": "Toutes les données sont affichées"
+  },
+  "filters": {
+    "configuration": "Configuration",
+    "liquidity": "Liquidité",
+    "payout": "Payout",
+    "ev": "EV",
+    "sport": "Sport",
+    "market": "Marché",
+    "bookmaker": "Bookmakers",
+    "period": "Période"
+  },
+  "public": {
+    "title": "Dashboard publique",
+    "cta": {
+      "title": "Vous souhaitez accéder aux paris ?",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+      "button": "Réserver un appel"
+    }
+  },
+  "chart": {
+    "simulation": "Simulation de gains sur 6 mois",
+    "totalProfit": "Bénéfice total (€) (par nombre de paris)",
+    "baseBankroll": "Bankroll de base...",
+    "tooltip": {
+      "totalGain": "Gain total",
+      "totalLoss": "Perte total",
+      "betCount": "NB de pari"
+    },
+    "legend": {
+      "numberOfBets": "Nombre de paris",
+      "dates": "Dates",
+      "totalProfit": "Bénéfice total",
+      "theoreticalGain": "Gain théorique"
+    }
+  }
+}

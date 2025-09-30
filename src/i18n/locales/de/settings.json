@@ -1,0 +1,23 @@
+{
+  "title": "Kontoeinstellungen",
+  "profile": {
+    "title": "Profil",
+    "changePassword": "Passwort ändern",
+    "uploadImage": "Profilbild hochladen",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "updatePassword": "Passwort aktualisieren",
+    "uploadImageButton": "Bild auswählen",
+    "removeImage": "Bild entfernen"
+  },
+  "telegram": {
+    "lastConnection": "Letzte Verbindung:",
+    "reconnect": "Neu verbinden"
+  },
+  "subscription": {
+    "current": "Aktuelles Abonnement",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum"
+  }
+}

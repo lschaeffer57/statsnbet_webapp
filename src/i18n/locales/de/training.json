@@ -1,0 +1,26 @@
+{
+  "title": "Schulungsbereich",
+  "playVideo": "Video abspielen",
+  "videoDescription": "Klicken Sie auf die Wiedergabetaste, um das Schulungsvideo zu starten",
+  "clickToWatch": "Klicken Sie, um Video-Erklärung anzuzeigen",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet.",
+  "modules": {
+    "beginner": {
+      "title": "Anfängermodule",
+      "description": "Grundlagen des Sportwettens lernen"
+    },
+    "intermediate": {
+      "title": "Fortgeschrittene Module",
+      "description": "Erweiterte Strategien und Techniken"
+    },
+    "advanced": {
+      "title": "Expertenmodule",
+      "description": "Professionelle Wettstrategien"
+    }
+  },
+  "progress": {
+    "completed": "Abgeschlossen",
+    "inProgress": "In Bearbeitung",
+    "notStarted": "Nicht begonnen"
+  }
+}

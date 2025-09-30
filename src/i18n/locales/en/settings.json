@@ -1,0 +1,19 @@
+{
+  "title": "Account Settings",
+  "profile": {
+    "title": "Profile",
+    "changePassword": "Change Password",
+    "uploadImage": "Upload Profile Image",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updatePassword": "Update Password",
+    "uploadImageButton": "Choose Image",
+    "removeImage": "Remove Image"
+  },
+  "subscription": {
+    "current": "Current subscription",
+    "startDate": "Start date",
+    "endDate": "End date"
+  }
+}

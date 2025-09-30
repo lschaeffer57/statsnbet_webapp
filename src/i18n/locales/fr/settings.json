@@ -1,0 +1,19 @@
+{
+  "title": "Paramètres du compte",
+  "profile": {
+    "title": "Profil",
+    "changePassword": "Changer le mot de passe",
+    "uploadImage": "Télécharger l'image de profil",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "uploadImageButton": "Choisir une image",
+    "removeImage": "Supprimer l'image"
+  },
+  "subscription": {
+    "current": "Abonnement en cours",
+    "startDate": "Date de début",
+    "endDate": "Date de fin"
+  }
+}

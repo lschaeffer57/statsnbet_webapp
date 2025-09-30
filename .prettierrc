@@ -1,0 +1,27 @@
+{
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "printWidth": 80,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "jsxSingleQuote": false,
+  "quoteProps": "as-needed",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "auto",
+  "proseWrap": "preserve",
+  "tailwindConfig": "./tailwind.config.ts",
+  "tailwindAttributes": ["wrapperClassName", "wrapClassName", "rootClassName"],
+  "tailwindFunctions": ["classNames", "classnames", "twMerge", "cn"],
+  "overrides": [
+    {
+      "files": "*.{json,yaml,yml}",
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ],
+  "plugins": ["prettier-plugin-tailwindcss"]
+}

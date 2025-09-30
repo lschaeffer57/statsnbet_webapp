@@ -1,0 +1,63 @@
+{
+  "title": "Dashboard",
+  "stats": {
+    "averageRoi": "Durchschnittlicher ROI",
+    "averageReturn": "Durchschnittliche Rendite",
+    "updatedBankroll": "Aktualisierte Bankroll",
+    "numberOfBets": "Anzahl der Wetten"
+  },
+  "table": {
+    "headers": {
+      "match": "Spiel",
+      "bet": "Wette",
+      "odds": "Quote",
+      "stake": "Einsatz",
+      "result": "Ergebnis",
+      "date": "Datum",
+      "fairOdd": "Faire Quote",
+      "ev": "EV",
+      "liquidity": "Liquidität",
+      "payoutRate": "Auszahlungsrate",
+      "configuration": "Konfiguration",
+      "bookmakers": "Buchmacher"
+    },
+    "result": {
+      "inProgress": "In Bearbeitung"
+    },
+    "allDataDisplayed": "Alle Daten werden angezeigt"
+  },
+  "filters": {
+    "configuration": "Konfiguration",
+    "liquidity": "Liquidität",
+    "payout": "Auszahlung",
+    "ev": "EV",
+    "sport": "Sport",
+    "market": "Markt",
+    "bookmaker": "Buchmacher",
+    "period": "Zeitraum"
+  },
+  "public": {
+    "title": "Öffentliches Dashboard",
+    "cta": {
+      "title": "Möchten Sie Zugang zu Wetten?",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+      "button": "Termin vereinbaren"
+    }
+  },
+  "chart": {
+    "simulation": "6-Monats-Gewinnsimulation",
+    "totalProfit": "Gesamtgewinn (€) (nach Anzahl der Wetten)",
+    "baseBankroll": "Grundbankroll...",
+    "tooltip": {
+      "totalGain": "Gesamtgewinn",
+      "totalLoss": "Gesamtverlust",
+      "betCount": "Anzahl der Wetten"
+    },
+    "legend": {
+      "numberOfBets": "Anzahl der Wetten",
+      "dates": "Daten",
+      "totalProfit": "Gesamtgewinn",
+      "theoreticalGain": "Theoretischer Gewinn"
+    }
+  }
+}

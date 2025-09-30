@@ -1,0 +1,63 @@
+{
+  "title": "Dashboard",
+  "stats": {
+    "averageRoi": "Average ROI",
+    "averageReturn": "Average return",
+    "updatedBankroll": "Updated bankroll",
+    "numberOfBets": "Number of bets"
+  },
+  "table": {
+    "headers": {
+      "match": "Match",
+      "bet": "Bet",
+      "odds": "Odds",
+      "stake": "Stake",
+      "result": "Result",
+      "date": "Date",
+      "fairOdd": "Fair odd",
+      "ev": "EV",
+      "liquidity": "Liquidity",
+      "payoutRate": "Payout Rate",
+      "configuration": "Configuration",
+      "bookmakers": "Bookmakers"
+    },
+    "result": {
+      "inProgress": "In progress"
+    },
+    "allDataDisplayed": "All data is displayed"
+  },
+  "filters": {
+    "configuration": "Configuration",
+    "liquidity": "Liquidity",
+    "payout": "Payout",
+    "ev": "EV",
+    "sport": "Sport",
+    "market": "Market",
+    "bookmaker": "Bookmakers",
+    "period": "Period"
+  },
+  "public": {
+    "title": "Public Dashboard",
+    "cta": {
+      "title": "Want to access the bets?",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+      "button": "Book a call"
+    }
+  },
+  "chart": {
+    "simulation": "6-month profit simulation",
+    "totalProfit": "Total profit (€) (by number of bets)",
+    "baseBankroll": "Base bankroll...",
+    "tooltip": {
+      "totalGain": "Total gain",
+      "totalLoss": "Total loss",
+      "betCount": "Number of bets"
+    },
+    "legend": {
+      "numberOfBets": "Number of bets",
+      "dates": "Dates",
+      "totalProfit": "Total profit",
+      "theoreticalGain": "Theoretical gain"
+    }
+  }
+}

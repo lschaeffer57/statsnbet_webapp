@@ -1,0 +1,61 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "training": "Training Space",
+    "publicDashboard": "Public Dashboard",
+    "accountSettings": "Account Settings"
+  },
+  "refresh": "Refresh",
+  "notFound": {
+    "badge": "404 • Page not found",
+    "title": "Oops! You look lost",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "ctaDashboard": "Back to dashboard",
+    "ctaLogin": "Go to login",
+    "ctaPublic": "Public dashboard"
+  },
+  "telegram": {
+    "lastConnection": "Last connection:",
+    "reconnect": "Reconnect",
+    "title": "Connect your telegram account",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "clerk": {
+    "email_address": {
+      "form_param_format_invalid": "Invalid email format",
+      "form_identifier_exists": "Email is already registered",
+      "verification_link_expired": "Verification link has expired"
+    },
+    "password": {
+      "form_password_pwned": "Password has been compromised",
+      "form_password_too_common": "Password is too common",
+      "form_password_length_too_short": "Password must be at least 8 characters",
+      "form_password_incorrect": "Incorrect password",
+      "form_password_validation_failed": "Password does not meet requirements"
+    },
+    "username": {
+      "form_username_invalid_character": "Username contains invalid characters",
+      "form_identifier_exists": "That username is taken. Please try another",
+      "form_username_invalid_length": "Username must be between 3-20 characters"
+    },
+    "verificationCode": {
+      "form_code_incorrect": "Invalid verification code",
+      "verification_expired": "Verification code has expired",
+      "verification_failed": "Verification failed",
+      "form_verification_code_required": "Verification code is required"
+    },
+    "general": {
+      "too_many_requests": "Too many requests. Please try again later",
+      "rate_limit_exceeded": "Rate limit exceeded",
+      "form_identifier_not_found": "User not found",
+      "clerk_network_error": "Network error. Please check your connection",
+      "clerk_unknown_error": "An unexpected error occurred",
+      "session_exists": "You are already signed in",
+      "form_identifier_exists": "User already exists"
+    }
+  }
+}
