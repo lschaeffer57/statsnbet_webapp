@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Formik } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { z } from 'zod';
 
 import { userApi } from '@/api/userApi';
@@ -33,6 +34,9 @@ export const SignUp = () => {
   const { isLoaded, setActive, signUp } = useSignUp();
   const { t } = useTranslation('auth');
   const { processErrors } = useClerkErrors();
+
+  const [searchParams] = useSearchParams();
+  const invitationTicket = searchParams.get('__clerk_ticket');
 
   const validationSchema = z.object({
     name: z.string().min(1, t('signup.validation.nameRequired')),
@@ -76,6 +80,7 @@ export const SignUp = () => {
         username: values.name,
         emailAddress: values.email,
         password: values.password,
+        ...(invitationTicket && { ticket: invitationTicket }),
       });
 
       if (result.status === 'missing_requirements') {

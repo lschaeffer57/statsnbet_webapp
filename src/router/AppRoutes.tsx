@@ -65,8 +65,14 @@ const NotFoundPage = lazy(() =>
   })),
 );
 
+const InviteUserPage = lazy(() =>
+  import('../pages/InviteUser').then(({ InviteUser }) => ({
+    default: InviteUser,
+  })),
+);
+
 export default function AppRoutes() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
 
   if (!isLoaded || isSignedIn === undefined) {
     return (
@@ -87,7 +93,7 @@ export default function AppRoutes() {
       <Routes>
         <Route
           element={
-            <ProtectedRoute isAuthenticated={isSignedIn}>
+            <ProtectedRoute isAuthenticated={isSignedIn} user={user}>
               <AuthLayout />
             </ProtectedRoute>
           }
@@ -103,14 +109,17 @@ export default function AppRoutes() {
 
         <Route
           element={
-            <ProtectedRoute isAuthenticated={isSignedIn}>
+            <ProtectedRoute isAuthenticated={isSignedIn} user={user}>
               <DashboardLayout />
             </ProtectedRoute>
           }
         >
           <Route path={RoutesEnum.DASHBOARD} element={<DashboardPage />} />
           <Route path={RoutesEnum.TRAINING} element={<TrainingPage />} />
-          <Route path="/training/video/:videoId" element={<TrainingVideoPage />} />
+          <Route
+            path="/training/video/:videoId"
+            element={<TrainingVideoPage />}
+          />
           <Route path={RoutesEnum.SETTINGS} element={<SettingsPage />} />
         </Route>
 
@@ -118,6 +127,19 @@ export default function AppRoutes() {
           path={RoutesEnum.PUBLIC_DASHBOARD}
           element={<PublicDashboardPage />}
         />
+        <Route
+          element={
+            <ProtectedRoute
+              isAuthenticated={isSignedIn}
+              user={user}
+              requireAdmin
+            >
+              <AuthLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path={RoutesEnum.INVITE} element={<InviteUserPage />} />
+        </Route>
 
         <Route
           path="/"

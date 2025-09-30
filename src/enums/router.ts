@@ -8,4 +8,5 @@ export enum RoutesEnum {
   SETTINGS = '/settings',
   PUBLIC_DASHBOARD = '/dashboard',
   ERROR = '/not-found',
+  INVITE = '/invite',
 }

@@ -24,6 +24,16 @@
     "previous": "Précédent",
     "next": "Suivant"
   },
+  "invite": {
+    "title": "Inviter un nouvel utilisateur",
+    "description": "Ici vous pouvez envoyer une invitation pour s'inscrire à un nouvel utilisateur.",
+    "form": {
+      "emailPlaceholder": "Email",
+      "sendButton": "Envoyer l'invitation",
+      "successMessage": "Invitation envoyée avec succès",
+      "errorMessage": "Utilisateur non autorisé"
+    }
+  },
   "clerk": {
     "email_address": {
       "form_param_format_invalid": "Format d'email invalide",
@@ -55,7 +65,9 @@
       "clerk_network_error": "Erreur réseau. Veuillez vérifier votre connexion",
       "clerk_unknown_error": "Une erreur inattendue s'est produite",
       "session_exists": "Vous êtes déjà connecté",
-      "form_identifier_exists": "L'utilisateur existe déjà"
+      "form_identifier_exists": "L'utilisateur existe déjà",
+      "sign_up_mode_restricted": "Le mode d'inscription est restreint",
+      "user_locked": "Votre abonnement a expiré ou vous avez été bloqué. Veuillez contacter le support."
     }
   }
 }

@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { createClerkClient } from '@clerk/backend';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
@@ -29,6 +30,10 @@ const parseNumericValue = (value: string): number => {
   const normalizedValue = cleanedValue.replace(',', '.');
   return parseFloat(normalizedValue);
 };
+
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -105,6 +110,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         message: `User with clerkId ${clerkId} already exists`,
       });
     }
+
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 6);
+
+    await clerkClient.users.updateUser(clerkId, {
+      publicMetadata: {
+        expiresAt: expiresAt.toISOString(),
+        role: 'user',
+      },
+    });
 
     const userDocument: UserDocument = {
       clerk_id: clerkId,

@@ -24,6 +24,16 @@
     "previous": "Vorherige",
     "next": "Nächste"
   },
+  "invite": {
+    "title": "Neuen Benutzer einladen",
+    "description": "Hier können Sie eine Einladung zur Registrierung an einen neuen Benutzer senden.",
+    "form": {
+      "emailPlaceholder": "E-Mail",
+      "sendButton": "Einladung senden",
+      "successMessage": "Einladung erfolgreich gesendet",
+      "errorMessage": "Benutzer nicht autorisiert"
+    }
+  },
   "clerk": {
     "email_address": {
       "form_param_format_invalid": "Ungültiges E-Mail-Format",
@@ -55,7 +65,9 @@
       "clerk_network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung",
       "clerk_unknown_error": "Ein unerwarteter Fehler ist aufgetreten",
       "session_exists": "Sie sind bereits angemeldet",
-      "form_identifier_exists": "Benutzer existiert bereits"
+      "form_identifier_exists": "Benutzer existiert bereits",
+      "sign_up_mode_restricted": "Registrierungsmodus ist eingeschränkt",
+      "user_locked": "Ihre Abonnement ist abgelaufen oder Sie wurden gesperrt. Bitte kontaktieren Sie den Support."
     }
   }
 }

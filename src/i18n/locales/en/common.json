@@ -24,6 +24,16 @@
     "previous": "Previous",
     "next": "Next"
   },
+  "invite": {
+    "title": "Invite New User",
+    "description": "Here you can send an invitation to register to a new user.",
+    "form": {
+      "emailPlaceholder": "Email",
+      "sendButton": "Send Invitation",
+      "successMessage": "Invitation sent successfully",
+      "errorMessage": "User not authorized"
+    }
+  },
   "clerk": {
     "email_address": {
       "form_param_format_invalid": "Invalid email format",
@@ -55,7 +65,9 @@
       "clerk_network_error": "Network error. Please check your connection",
       "clerk_unknown_error": "An unexpected error occurred",
       "session_exists": "You are already signed in",
-      "form_identifier_exists": "User already exists"
+      "form_identifier_exists": "User already exists",
+      "sign_up_mode_restricted": "Sign up mode is restricted",
+      "user_locked": "Your subscription has expired or you have been blocked. Please contact support."
     }
   }
 }
