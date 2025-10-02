@@ -266,11 +266,6 @@ export const SignUp = () => {
                   </div>
                 </div>
                 <div className="bg-input h-[1px] w-full" />
-                <TelegramConnect
-                  onDelete={() => setTelegram(undefined)}
-                  onConnect={setTelegram}
-                  telegramData={telegram}
-                />
                 <div className="space-y-0.5">
                   <PerformanceParameters
                     showConfiguration={false}
@@ -284,6 +279,11 @@ export const SignUp = () => {
                       </span>
                     )}
                 </div>
+                <TelegramConnect
+                  onDelete={() => setTelegram(undefined)}
+                  onConnect={setTelegram}
+                  telegramData={telegram}
+                />
                 {clerkError.general && (
                   <span className="text-destructive block text-xs">
                     {clerkError.general}

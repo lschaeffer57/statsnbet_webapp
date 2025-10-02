@@ -16,6 +16,7 @@ import {
 } from '../ui/Select';
 
 import PerformanceTabs from './PerformanceTabs';
+import { PerformanceParametersVideoModal } from './PerformanceParametersVideoModal';
 
 interface PerformanceParametersProps {
   showConfiguration?: boolean;
@@ -34,6 +35,7 @@ export const PerformanceParameters = memo(
     isLoading,
   }: PerformanceParametersProps) => {
     const [configuration, setConfiguration] = useState('conf1');
+    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const { t } = useTranslation('auth');
 
     return (
@@ -45,12 +47,13 @@ export const PerformanceParameters = memo(
           {t('signup.performanceParameters.openSettings')}
         </span>
         <div className="flex w-full justify-end">
-          <div className={cn('flex gap-2', !showConfiguration && 'hidden')}>
+          <div className="flex gap-2">
             <Button
               size="icon"
               variant="secondary"
               type="button"
               className="mr-1"
+              onClick={() => setIsVideoModalOpen(true)}
             >
               <PlayIcon className="size-3" />
             </Button>
@@ -94,6 +97,11 @@ export const PerformanceParameters = memo(
           isLoading={isLoading}
           setPerformanceParameters={setPerformanceParameters}
           performanceParameters={performanceParameters}
+        />
+
+        <PerformanceParametersVideoModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
         />
       </Card>
     );
