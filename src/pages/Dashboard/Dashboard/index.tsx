@@ -57,6 +57,21 @@ export const Dashboard = () => {
     }),
   });
 
+  // const { data: filteredData } = useQuery({
+  //   ...betsApi.getFilteredDashboardQueryOptions(undefined, {
+  //     ...filters,
+  //     collection: '2097730097',
+  //   }),
+  // });
+  // console.log(filteredData);
+
+  // const { data: filteredHistoryData } = useQuery({
+  //   ...betsApi.getFilteredHistoryQueryOptions(userId, undefined, {
+  //     ...filters,
+  //   }),
+  // });
+  // console.log(filteredHistoryData);
+
   const {
     data: userData,
     isLoading: isUserDataLoading,

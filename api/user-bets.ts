@@ -4,6 +4,8 @@ import { MongoClient } from 'mongodb';
 import type { ChartData, DailyStats } from '../src/types';
 
 interface MongoFilter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _id?: { $ne: any };
   $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
   configuration?: string;
   liquidity?: {
@@ -67,7 +69,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const periodStart = getStringValue(req.query.periodStart);
     const periodEnd = getStringValue(req.query.periodEnd);
 
-    const filter: MongoFilter = {};
+    const filter: MongoFilter = {
+      _id: { $ne: '__summary__' },
+    };
 
     if (search) {
       filter.$or = [
