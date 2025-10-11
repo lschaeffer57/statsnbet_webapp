@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "training": "Training Space",
     "publicDashboard": "Public Dashboard",
-    "accountSettings": "Account Settings"
+    "accountSettings": "Account Settings",
+    "invite": "Invite User"
   },
   "refresh": "Refresh",
   "notFound": {

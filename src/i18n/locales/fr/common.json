@@ -3,7 +3,8 @@
     "dashboard": "Tableau de bord",
     "training": "Espace de formation",
     "publicDashboard": "Dashboard publique",
-    "accountSettings": "Paramètres du compte"
+    "accountSettings": "Paramètres du compte",
+    "invite": "Inviter un utilisateur"
   },
   "refresh": "Rafraîchir",
   "telegram": {

@@ -1,5 +1,5 @@
 import { useClerk, useUser } from '@clerk/clerk-react';
-import { LogOut as LogOutIcon } from 'lucide-react';
+import { LogOut as LogOutIcon, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router';
 
@@ -51,6 +51,10 @@ const AppSidebar = () => {
     }
   };
 
+  const isAdmin = user?.publicMetadata?.role === 'admin';
+
+  console.warn(user?.publicMetadata.role)
+
   const items = [
     {
       title: t('sidebar.dashboard'),
@@ -67,6 +71,11 @@ const AppSidebar = () => {
       url: RoutesEnum.PUBLIC_DASHBOARD,
       icon: PublicDashboardIcon,
     },
+    ...(isAdmin ? [{
+      title: t('sidebar.invite'),
+      url: RoutesEnum.INVITE,
+      icon: UserPlus,
+    }] : []),
   ];
   return (
     <Sidebar>

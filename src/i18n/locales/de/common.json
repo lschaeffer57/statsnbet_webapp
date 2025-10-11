@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "training": "Schulungsbereich",
     "publicDashboard": "Öffentliches Dashboard",
-    "accountSettings": "Kontoeinstellungen"
+    "accountSettings": "Kontoeinstellungen",
+    "invite": "Benutzer einladen"
   },
   "refresh": "Aktualisieren",
   "telegram": {
