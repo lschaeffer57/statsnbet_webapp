@@ -36,11 +36,14 @@
       "90days": "90 Tage",
       "120days": "120 Tage",
       "6months": "6 Monate",
-      "1year": "1 Jahr"
+      "1year": "1 Jahr",
+      "custom": "Benutzerdefiniert"
     },
     "form": {
       "emailPlaceholder": "E-Mail",
       "subscriptionPlaceholder": "Abonnementdauer auswählen",
+      "customDaysPlaceholder": "Anzahl der Tage",
+      "invalidCustomDays": "Bitte geben Sie eine gültige Anzahl von Tagen ein",
       "sendButton": "Einladung senden",
       "successMessage": "Einladung erfolgreich gesendet",
       "errorMessage": "Benutzer nicht autorisiert"

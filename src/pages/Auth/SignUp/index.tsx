@@ -31,6 +31,7 @@ export const SignUp = () => {
   const [performanceParameters, setPerformanceParameters] =
     useState<AuthFormValues>(DEFAULT_PERFORMANCE_PARAMETERS);
   const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
+  const [criteriaSaved, setCriteriaSaved] = useState(false);
   const { isLoaded, setActive, signUp } = useSignUp();
   const { t } = useTranslation('auth');
   const { processErrors } = useClerkErrors();
@@ -269,7 +270,10 @@ export const SignUp = () => {
                 <div className="space-y-0.5">
                   <PerformanceParameters
                     showConfiguration={false}
-                    setPerformanceParameters={setPerformanceParameters}
+                    setPerformanceParameters={(params) => {
+                      setPerformanceParameters(params);
+                      setCriteriaSaved(true);
+                    }}
                     performanceParameters={performanceParameters}
                   />
                   {!performanceParameters.bankroll.trim() &&
@@ -279,11 +283,13 @@ export const SignUp = () => {
                       </span>
                     )}
                 </div>
-                <TelegramConnect
-                  onDelete={() => setTelegram(undefined)}
-                  onConnect={setTelegram}
-                  telegramData={telegram}
-                />
+                {criteriaSaved && (
+                  <TelegramConnect
+                    onDelete={() => setTelegram(undefined)}
+                    onConnect={setTelegram}
+                    telegramData={telegram}
+                  />
+                )}
                 {clerkError.general && (
                   <span className="text-destructive block text-xs">
                     {clerkError.general}

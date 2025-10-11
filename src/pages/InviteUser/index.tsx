@@ -19,6 +19,8 @@ import { RoutesEnum } from '@/enums/router';
 export const InviteUser = () => {
   const [email, setEmail] = useState('');
   const [subscriptionDuration, setSubscriptionDuration] = useState<number | null>(null);
+  const [customDays, setCustomDays] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { getToken } = useAuth();
@@ -32,6 +34,7 @@ export const InviteUser = () => {
     { value: 120, label: t('invite.subscription.120days') },
     { value: 180, label: t('invite.subscription.6months') },
     { value: 365, label: t('invite.subscription.1year') },
+    { value: 'custom', label: t('invite.subscription.custom') },
   ];
 
   const inviteUserMutation = useMutation({
@@ -43,6 +46,8 @@ export const InviteUser = () => {
     onSuccess: () => {
       setEmail('');
       setSubscriptionDuration(null);
+      setCustomDays('');
+      setSelectedOption('');
       setSuccess(t('invite.form.successMessage'));
     },
     onError: (error) => {
@@ -58,12 +63,23 @@ export const InviteUser = () => {
       setError(t('invite.form.errorMessage'));
       return;
     }
-    if (subscriptionDuration === null) {
+
+    let finalDuration = subscriptionDuration;
+    if (selectedOption === 'custom') {
+      const customDaysNum = parseInt(customDays);
+      if (isNaN(customDaysNum) || customDaysNum <= 0) {
+        setError(t('invite.form.invalidCustomDays'));
+        return;
+      }
+      finalDuration = customDaysNum;
+    }
+
+    if (finalDuration === null) {
       setError(t('invite.form.subscriptionRequiredMessage'));
       return;
     }
 
-    inviteUserMutation.mutate({ email, subscriptionDuration, token });
+    inviteUserMutation.mutate({ email, subscriptionDuration: finalDuration, token });
   };
 
 
@@ -92,8 +108,16 @@ export const InviteUser = () => {
             </div>
             <div className="space-y-2">
               <Select
-                value={subscriptionDuration?.toString() || ''}
-                onValueChange={(value) => setSubscriptionDuration(parseInt(value))}
+                value={selectedOption}
+                onValueChange={(value) => {
+                  setSelectedOption(value);
+                  if (value !== 'custom') {
+                    setSubscriptionDuration(parseInt(value));
+                    setCustomDays('');
+                  } else {
+                    setSubscriptionDuration(null);
+                  }
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('invite.form.subscriptionPlaceholder')} />
@@ -106,6 +130,15 @@ export const InviteUser = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {selectedOption === 'custom' && (
+                <Input
+                  type="number"
+                  placeholder={t('invite.form.customDaysPlaceholder')}
+                  value={customDays}
+                  onChange={(e) => setCustomDays(e.target.value)}
+                  min="1"
+                />
+              )}
             </div>
             {error && <p className="text-destructive text-xs">{error}</p>}
             {success && <p className="text-xs text-green-500">{success}</p>}
@@ -113,7 +146,7 @@ export const InviteUser = () => {
           <Button
             size="sm"
             className="w-full"
-            disabled={!email || !subscriptionDuration || inviteUserMutation.isPending}
+            disabled={!email || (!subscriptionDuration && selectedOption !== 'custom') || (selectedOption === 'custom' && !customDays) || inviteUserMutation.isPending}
             type="submit"
           >
             {t('invite.form.sendButton')}

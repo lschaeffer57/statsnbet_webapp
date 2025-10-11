@@ -36,10 +36,13 @@
       "90days": "90 jours",
       "120days": "120 jours",
       "6months": "6 mois",
-      "1year": "1 an"
+      "1year": "1 an",
+      "custom": "Durée personnalisée"
     },
     "form": {
       "emailPlaceholder": "Email",
+      "customDaysPlaceholder": "Nombre de jours",
+      "invalidCustomDays": "Veuillez entrer un nombre valide de jours",
       "subscriptionPlaceholder": "Sélectionner la durée d'abonnement",
       "sendButton": "Envoyer l'invitation",
       "successMessage": "Invitation envoyée avec succès",

@@ -36,11 +36,14 @@
       "90days": "90 days",
       "120days": "120 days",
       "6months": "6 months",
-      "1year": "1 year"
+      "1year": "1 year",
+      "custom": "Custom"
     },
     "form": {
       "emailPlaceholder": "Email",
       "subscriptionPlaceholder": "Select subscription duration",
+      "customDaysPlaceholder": "Enter number of days",
+      "invalidCustomDays": "Please enter a valid number of days",
       "sendButton": "Send Invitation",
       "successMessage": "Invitation sent successfully",
       "errorMessage": "User not authorized"
