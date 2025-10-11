@@ -11,7 +11,6 @@ FROM nginx:alpine
 COPY --from=build /app/deploy/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Add this line to list out the files after copying
 RUN ls -lR /usr/share/nginx/html
 
 EXPOSE 80
