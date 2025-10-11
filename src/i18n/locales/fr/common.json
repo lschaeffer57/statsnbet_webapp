@@ -29,8 +29,18 @@
     "title": "Inviter un nouvel utilisateur",
     "description": "Ici vous pouvez envoyer une invitation pour s'inscrire à un nouvel utilisateur.",
     "backToDashboard": "Retour au tableau de bord",
+    "subscriptionRequiredMessage": "Vous devez avoir un abonnement actif pour inviter des utilisateurs.",
+    "subscription": {
+      "30days": "30 jours",
+      "60days": "60 jours",
+      "90days": "90 jours",
+      "120days": "120 jours",
+      "6months": "6 mois",
+      "1year": "1 an"
+    },
     "form": {
       "emailPlaceholder": "Email",
+      "subscriptionPlaceholder": "Sélectionner la durée d'abonnement",
       "sendButton": "Envoyer l'invitation",
       "successMessage": "Invitation envoyée avec succès",
       "errorMessage": "Utilisateur non autorisé"

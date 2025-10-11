@@ -28,9 +28,19 @@
   "invite": {
     "title": "Neuen Benutzer einladen",
     "description": "Hier können Sie eine Einladung zur Registrierung an einen neuen Benutzer senden.",
+    "subscriptionRequiredMessage": "Nur Administratoren können Benutzer einladen. Bitte aktualisieren Sie Ihr Abonnement.",
     "backToDashboard": "Zurück zum Dashboard",
+    "subscription": {
+      "30days": "30 Tage",
+      "60days": "60 Tage",
+      "90days": "90 Tage",
+      "120days": "120 Tage",
+      "6months": "6 Monate",
+      "1year": "1 Jahr"
+    },
     "form": {
       "emailPlaceholder": "E-Mail",
+      "subscriptionPlaceholder": "Abonnementdauer auswählen",
       "sendButton": "Einladung senden",
       "successMessage": "Einladung erfolgreich gesendet",
       "errorMessage": "Benutzer nicht autorisiert"

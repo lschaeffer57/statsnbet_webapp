@@ -29,8 +29,18 @@
     "title": "Invite New User",
     "description": "Here you can send an invitation to register to a new user.",
     "backToDashboard": "Back to Dashboard",
+    "subscriptionRequiredMessage": "You need a Pro subscription to invite new users.",
+    "subscription": {
+      "30days": "30 days",
+      "60days": "60 days",
+      "90days": "90 days",
+      "120days": "120 days",
+      "6months": "6 months",
+      "1year": "1 year"
+    },
     "form": {
       "emailPlaceholder": "Email",
+      "subscriptionPlaceholder": "Select subscription duration",
       "sendButton": "Send Invitation",
       "successMessage": "Invitation sent successfully",
       "errorMessage": "User not authorized"

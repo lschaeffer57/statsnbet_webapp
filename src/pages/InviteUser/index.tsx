@@ -7,15 +7,32 @@ import { useNavigate } from 'react-router';
 import { userApi } from '@/api/userApi';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 import { RoutesEnum } from '@/enums/router';
 
 export const InviteUser = () => {
   const [email, setEmail] = useState('');
+  const [subscriptionDuration, setSubscriptionDuration] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { getToken } = useAuth();
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+
+  const subscriptionOptions = [
+    { value: 30, label: t('invite.subscription.30days') },
+    { value: 60, label: t('invite.subscription.60days')},
+    { value: 90, label: t('invite.subscription.90days') },
+    { value: 120, label: t('invite.subscription.120days') },
+    { value: 180, label: t('invite.subscription.6months') },
+    { value: 365, label: t('invite.subscription.1year') },
+  ];
 
   const inviteUserMutation = useMutation({
     mutationFn: userApi.inviteUser,
@@ -25,6 +42,7 @@ export const InviteUser = () => {
     },
     onSuccess: () => {
       setEmail('');
+      setSubscriptionDuration(null);
       setSuccess(t('invite.form.successMessage'));
     },
     onError: (error) => {
@@ -40,8 +58,14 @@ export const InviteUser = () => {
       setError(t('invite.form.errorMessage'));
       return;
     }
-    inviteUserMutation.mutate({ email, token });
+    if (subscriptionDuration === null) {
+      setError(t('invite.form.subscriptionRequiredMessage'));
+      return;
+    }
+
+    inviteUserMutation.mutate({ email, subscriptionDuration, token });
   };
+
 
   return (
     <div className="mt-[140px] flex flex-col items-center">
@@ -57,20 +81,39 @@ export const InviteUser = () => {
           </div>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Input
-              type="email"
-              placeholder={t('invite.form.emailPlaceholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder={t('invite.form.emailPlaceholder')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Select
+                value={subscriptionDuration?.toString() || ''}
+                onValueChange={(value) => setSubscriptionDuration(parseInt(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('invite.form.subscriptionPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {subscriptionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value.toString()}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             {error && <p className="text-destructive text-xs">{error}</p>}
             {success && <p className="text-xs text-green-500">{success}</p>}
           </div>
           <Button
             size="sm"
             className="w-full"
-            disabled={!email || inviteUserMutation.isPending}
+            disabled={!email || !subscriptionDuration || inviteUserMutation.isPending}
             type="submit"
           >
             {t('invite.form.sendButton')}
