@@ -28,6 +28,7 @@
   "invite": {
     "title": "Inviter un nouvel utilisateur",
     "description": "Ici vous pouvez envoyer une invitation pour s'inscrire à un nouvel utilisateur.",
+    "backToDashboard": "Retour au tableau de bord",
     "form": {
       "emailPlaceholder": "Email",
       "sendButton": "Envoyer l'invitation",

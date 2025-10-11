@@ -2,10 +2,12 @@ import { useAuth } from '@clerk/clerk-react';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { userApi } from '@/api/userApi';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { RoutesEnum } from '@/enums/router';
 
 export const InviteUser = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +15,7 @@ export const InviteUser = () => {
   const [success, setSuccess] = useState('');
   const { getToken } = useAuth();
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
 
   const inviteUserMutation = useMutation({
     mutationFn: userApi.inviteUser,
@@ -73,6 +76,16 @@ export const InviteUser = () => {
             {t('invite.form.sendButton')}
           </Button>
         </form>
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(RoutesEnum.DASHBOARD)}
+            className="mt-4"
+          >
+            {t('invite.backToDashboard')}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@
   "invite": {
     "title": "Neuen Benutzer einladen",
     "description": "Hier können Sie eine Einladung zur Registrierung an einen neuen Benutzer senden.",
+    "backToDashboard": "Zurück zum Dashboard",
     "form": {
       "emailPlaceholder": "E-Mail",
       "sendButton": "Einladung senden",
