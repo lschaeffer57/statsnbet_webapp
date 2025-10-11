@@ -23,6 +23,7 @@ export default function ProtectedRoute({
     RoutesEnum.LOGIN,
     RoutesEnum.SIGN_UP,
     RoutesEnum.FORGOT_PASSWORD,
+    RoutesEnum.ONBOARDING
   ];
   const isAuthPage = authPages.includes(location.pathname as RoutesEnum);
 
