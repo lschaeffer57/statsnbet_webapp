@@ -71,8 +71,26 @@ const TelegramConnect = ({
   }
 
   return telegramData ? (
-    <Card className="shadow-glass-lg gap-8">
-      <div className="flex flex-row items-center gap-4">
+    <Card
+      className="shadow-glass-lg flex flex-row items-start gap-4 cursor-pointer"
+      onClick={() => {
+        const widget = widgetRef.current;
+        if (!widget) return;
+
+        const button = widget.querySelector('iframe');
+        if (button) {
+          button.contentWindow?.focus();
+          button.click?.();
+        } else {
+          const innerButton = widget.querySelector('script, div, a, button');
+          if (innerButton) {
+            (innerButton as HTMLElement).click?.();
+          }
+        }
+      }}
+    >
+
+    <div className="flex flex-row items-center gap-4">
         {imageError ? (
           <div className="size-11 rounded-full">
             <img
