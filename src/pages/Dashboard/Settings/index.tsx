@@ -14,7 +14,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
-import type { AuthFormValues } from '@/types';
+import type { AuthFormValues, TelegramUser } from '@/types';
 
 import { useSettingsMutation } from './hooks/useSettingsMutation';
 
@@ -25,6 +25,7 @@ export const SettingsPage = () => {
   const [performanceParameters, setPerformanceParameters] = useState(
     DEFAULT_PERFORMANCE_PARAMETERS,
   );
+  const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
 
   // Password change state
   const [passwordData, setPasswordData] = useState({
@@ -41,7 +42,7 @@ export const SettingsPage = () => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { updateUser, connectTelegram, deleteTelegram, error } =
+  const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
     useSettingsMutation(user?.id || '');
 
   const { data: userData, isLoading } = useQuery({
@@ -77,6 +78,7 @@ export const SettingsPage = () => {
         bookmaker:
           userData.bookmakers ?? DEFAULT_PERFORMANCE_PARAMETERS.bookmaker,
       });
+      setTelegram(userData.telegram);
     }
   }, [userData]);
 
@@ -332,12 +334,13 @@ export const SettingsPage = () => {
           </Card>
 
           <TelegramConnect
-            telegramData={userData?.telegram}
-            isLoading={isLoading || connectTelegram.isPending}
+            telegramData={telegram}
+            isLoading={isLoading || connectTelegram.isPending || isInvalidating}
             onDelete={() => {
               deleteTelegram.mutate(user.id);
             }}
             onConnect={(telegramUser) => {
+              setTelegram(telegramUser);
               connectTelegram.mutate({
                 telegramUser,
                 userId: user.id,

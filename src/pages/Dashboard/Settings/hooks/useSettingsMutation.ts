@@ -5,6 +5,7 @@ import { userApi } from '@/api/userApi';
 import type { AuthFormValues, UserDocument } from '@/types';
 
 export const useSettingsMutation = (clerkId: string) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const queryClient = useQueryClient();
 
@@ -31,11 +32,15 @@ export const useSettingsMutation = (clerkId: string) => {
       setError('');
     },
     onSuccess: () => {
+      setIsLoading(true);
       queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
     },
     onError: (error) => {
       console.error(error);
       setError(error.message);
+    },
+    onSettled: () => {
+      setIsLoading(false);
     },
   });
 
@@ -83,5 +88,6 @@ export const useSettingsMutation = (clerkId: string) => {
     deleteTelegram,
     error,
     setError,
+    isInvalidating: isLoading,
   };
 };
