@@ -13,8 +13,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { email, subscriptionDuration } = req.body;
+  const { email, userRole, subscriptionDuration } = req.body;
   if (!email) return res.status(400).json({ message: 'Email required' });
+  if (!userRole) return res.status(400).json({ message: 'User role required' });
   if (!subscriptionDuration) return res.status(400).json({ message: 'Subscription duration required' });
 
   try {
@@ -36,6 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       redirectUrl: `${process.env.BASE_URL}sign-up`,
       notify: true,
       publicMetadata: {
+        role: userRole,
         expiresAt: expiresAt.toISOString(),
       },
     });

@@ -40,13 +40,22 @@
       "custom": "Durée personnalisée"
     },
     "form": {
-      "emailPlaceholder": "Email",
-      "customDaysPlaceholder": "Nombre de jours",
-      "invalidCustomDays": "Veuillez entrer un nombre valide de jours",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Entrer l'adresse email",
+      "roleLabel": "Rôle",
+      "rolePlaceholder": "Sélectionner le rôle utilisateur",
+      "subscriptionLabel": "Durée d'abonnement",
       "subscriptionPlaceholder": "Sélectionner la durée d'abonnement",
+      "customDaysLabel": "Nombre de jours",
+      "customDaysPlaceholder": "Entrer le nombre de jours",
+      "invalidCustomDays": "Veuillez entrer un nombre valide de jours",
       "sendButton": "Envoyer l'invitation",
       "successMessage": "Invitation envoyée avec succès",
       "errorMessage": "Utilisateur non autorisé"
+    },
+    "role": {
+      "user": "Utilisateur",
+      "admin": "Administrateur"
     }
   },
   "clerk": {

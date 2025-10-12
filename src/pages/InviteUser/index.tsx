@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { userApi } from '@/api/userApi';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
 import {
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ import { RoutesEnum } from '@/enums/router';
 
 export const InviteUser = () => {
   const [email, setEmail] = useState('');
+  const [userRole, setUserRole] = useState('user');
   const [subscriptionDuration, setSubscriptionDuration] = useState<number | null>(null);
   const [customDays, setCustomDays] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
@@ -37,6 +39,11 @@ export const InviteUser = () => {
     { value: 'custom', label: t('invite.subscription.custom') },
   ];
 
+  const roleOptions = [
+    { value: 'user', label: t('invite.role.user') },
+    { value: 'admin', label: t('invite.role.admin') },
+  ];
+
   const inviteUserMutation = useMutation({
     mutationFn: userApi.inviteUser,
     onMutate: () => {
@@ -45,6 +52,7 @@ export const InviteUser = () => {
     },
     onSuccess: () => {
       setEmail('');
+      setUserRole('user');
       setSubscriptionDuration(null);
       setCustomDays('');
       setSelectedOption('');
@@ -79,7 +87,7 @@ export const InviteUser = () => {
       return;
     }
 
-    inviteUserMutation.mutate({ email, subscriptionDuration: finalDuration, token });
+    inviteUserMutation.mutate({ email, userRole, subscriptionDuration: finalDuration, token });
   };
 
 
@@ -99,7 +107,9 @@ export const InviteUser = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">{t('invite.form.emailLabel')}</Label>
               <Input
+                id="email"
                 type="email"
                 placeholder={t('invite.form.emailPlaceholder')}
                 value={email}
@@ -107,6 +117,25 @@ export const InviteUser = () => {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="role">{t('invite.form.roleLabel')}</Label>
+              <Select
+                value={userRole}
+                onValueChange={setUserRole}
+              >
+                <SelectTrigger id="role" className="w-full">
+                  <SelectValue placeholder={t('invite.form.rolePlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {roleOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="subscription">{t('invite.form.subscriptionLabel')}</Label>
               <Select
                 value={selectedOption}
                 onValueChange={(value) => {
@@ -119,7 +148,7 @@ export const InviteUser = () => {
                   }
                 }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="subscription" className="w-full">
                   <SelectValue placeholder={t('invite.form.subscriptionPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -131,13 +160,23 @@ export const InviteUser = () => {
                 </SelectContent>
               </Select>
               {selectedOption === 'custom' && (
-                <Input
-                  type="number"
-                  placeholder={t('invite.form.customDaysPlaceholder')}
-                  value={customDays}
-                  onChange={(e) => setCustomDays(e.target.value)}
-                  min="1"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="customDays">{t('invite.form.customDaysLabel')}</Label>
+                  <Input
+                    id="customDays"
+                    type="number"
+                    placeholder={t('invite.form.customDaysPlaceholder')}
+                    value={customDays}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || (parseInt(value) > 0 && !isNaN(parseInt(value)))) {
+                        setCustomDays(value);
+                      }
+                    }}
+                    min="1"
+                    className="[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  />
+                </div>
               )}
             </div>
             {error && <p className="text-destructive text-xs">{error}</p>}

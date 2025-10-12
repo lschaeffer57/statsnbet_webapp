@@ -40,13 +40,22 @@
       "custom": "Benutzerdefiniert"
     },
     "form": {
-      "emailPlaceholder": "E-Mail",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "roleLabel": "Rolle",
+      "rolePlaceholder": "Benutzerrolle auswählen",
+      "subscriptionLabel": "Abonnementdauer",
       "subscriptionPlaceholder": "Abonnementdauer auswählen",
-      "customDaysPlaceholder": "Anzahl der Tage",
+      "customDaysLabel": "Anzahl der Tage",
+      "customDaysPlaceholder": "Anzahl der Tage eingeben",
       "invalidCustomDays": "Bitte geben Sie eine gültige Anzahl von Tagen ein",
       "sendButton": "Einladung senden",
       "successMessage": "Einladung erfolgreich gesendet",
       "errorMessage": "Benutzer nicht autorisiert"
+    },
+    "role": {
+      "user": "Benutzer",
+      "admin": "Administrator"
     }
   },
   "clerk": {

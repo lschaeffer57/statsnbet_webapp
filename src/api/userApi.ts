@@ -45,14 +45,14 @@ export const userApi = {
       body: JSON.stringify({ clerkId, performanceParameters }),
     });
   },
-  inviteUser: ({ email, subscriptionDuration, token }: { email: string; subscriptionDuration: number; token: string }) => {
+  inviteUser: ({ email, userRole, subscriptionDuration, token }: { email: string; userRole: string; subscriptionDuration: number; token: string }) => {
     return jsonApiInstance('user-invite', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email, subscriptionDuration }),
+      body: JSON.stringify({ email, userRole, subscriptionDuration }),
     });
   },
 };

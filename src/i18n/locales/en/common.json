@@ -40,13 +40,22 @@
       "custom": "Custom"
     },
     "form": {
-      "emailPlaceholder": "Email",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter email address",
+      "roleLabel": "Role",
+      "rolePlaceholder": "Select user role",
+      "subscriptionLabel": "Subscription Duration",
       "subscriptionPlaceholder": "Select subscription duration",
+      "customDaysLabel": "Number of Days",
       "customDaysPlaceholder": "Enter number of days",
       "invalidCustomDays": "Please enter a valid number of days",
       "sendButton": "Send Invitation",
       "successMessage": "Invitation sent successfully",
       "errorMessage": "User not authorized"
+    },
+    "role": {
+      "user": "User",
+      "admin": "Admin"
     }
   },
   "clerk": {
