@@ -25,7 +25,7 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
   const { user } = useUser();
-  const userId = '8330228321';
+  const userId = '8106617828';
 
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
