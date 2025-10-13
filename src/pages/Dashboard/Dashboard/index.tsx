@@ -50,7 +50,13 @@ export const Dashboard = () => {
     },
   });
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data,
+    refetch,
+    isLoading: isBetsLoading,
+    isRefetching,
+    error,
+  } = useQuery({
     ...betsApi.getUserBetsQueryOptions(userId, {
       ...filters,
       search: search,
@@ -81,8 +87,11 @@ export const Dashboard = () => {
     enabled: !!user?.id,
   });
 
+  const isLoading = isBetsLoading || isUserDataLoading || isRefetching;
+
   const tableData = useMemo(() => {
-    if (!data) return { data: undefined, isLoading };
+    if (!data)
+      return { data: undefined, isLoading: isBetsLoading, isRefetching };
 
     const startIndex = (currentPage - 1) * 10;
     const endIndex = currentPage * 10;
@@ -98,9 +107,10 @@ export const Dashboard = () => {
           total: data.bets.length,
         },
       },
-      isLoading,
+      isLoading: isBetsLoading,
+      isRefetching,
     };
-  }, [data, currentPage, isLoading]);
+  }, [data, currentPage, isBetsLoading, isRefetching]);
 
   return (
     <div className="relative z-20">
@@ -114,6 +124,7 @@ export const Dashboard = () => {
             iconLeft={<RefreshIcon className="size-[14px]" />}
             variant="secondary"
             size="sm"
+            onClick={() => refetch()}
           >
             {tCommon('refresh')}
           </Button>
@@ -133,7 +144,7 @@ export const Dashboard = () => {
           />
           <StatCard
             title={t('stats.averageReturn')}
-            isLoading={isUserDataLoading || isLoading}
+            isLoading={isLoading}
             value={(() => {
               const bankrollAtStart =
                 (data?.bankrollAtStartOfMonth ?? 0) +
@@ -147,7 +158,7 @@ export const Dashboard = () => {
             })()}
           />
           <StatCard
-            isLoading={isUserDataLoading || isLoading}
+            isLoading={isLoading}
             title={t('stats.updatedBankroll')}
             value={(
               (data?.totalGain ?? 0) + (userData?.bankroll_reference ?? 0)
