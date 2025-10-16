@@ -28,7 +28,7 @@ export const userApi = {
     return queryOptions({
       queryKey: [userApi.baseKey, userId],
       queryFn: () =>
-        jsonApiInstance<UserDocument>(`get-user?clerkId=${userId}`),
+        jsonApiInstance<UserDocument[]>(`get-user?clerkId=${userId}`),
     });
   },
   deleteTelegram: (userId: string) => {
@@ -38,14 +38,28 @@ export const userApi = {
       body: JSON.stringify({ clerkId: userId }),
     });
   },
-  updateUser: (clerkId: string, performanceParameters: AuthFormValues) => {
+  updateUser: (
+    clerkId: string,
+    configNumber: number,
+    performanceParameters: AuthFormValues,
+  ) => {
     return jsonApiInstance('update-user', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clerkId, performanceParameters }),
+      body: JSON.stringify({ clerkId, configNumber, performanceParameters }),
     });
   },
-  inviteUser: ({ email, userRole, subscriptionDuration, token }: { email: string; userRole: string; subscriptionDuration: number; token: string }) => {
+  inviteUser: ({
+    email,
+    userRole,
+    subscriptionDuration,
+    token,
+  }: {
+    email: string;
+    userRole: string;
+    subscriptionDuration: number;
+    token: string;
+  }) => {
     return jsonApiInstance('user-invite', {
       method: 'POST',
       headers: {

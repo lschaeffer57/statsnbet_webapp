@@ -79,7 +79,7 @@ export const Dashboard = () => {
   // console.log(filteredHistoryData);
 
   const {
-    data: userData,
+    data: userDataList,
     isLoading: isUserDataLoading,
     error: userDataError,
   } = useQuery({
@@ -87,14 +87,17 @@ export const Dashboard = () => {
     enabled: !!user?.id,
   });
 
-  const isLoading = isBetsLoading || isUserDataLoading || isRefetching;
+  const userData = useMemo(
+    () => userDataList?.find((u) => u.active_config) || userDataList?.[0],
+    [userDataList],
+  );
 
   const tableData = useMemo(() => {
-    if (!data)
-      return { data: undefined, isLoading: isBetsLoading, isRefetching };
+    if (!data) return { data: undefined, isLoading };
+    const limit = 10;
 
-    const startIndex = (currentPage - 1) * 10;
-    const endIndex = currentPage * 10;
+    const startIndex = (currentPage - 1) * limit;
+    const endIndex = currentPage * limit;
     const paginatedData = data?.bets.slice(startIndex, endIndex);
 
     return {
@@ -103,7 +106,7 @@ export const Dashboard = () => {
         pagination: {
           totalPages: Math.ceil(data.bets.length / 10),
           page: currentPage,
-          limit: 10,
+          limit,
           total: data.bets.length,
         },
       },

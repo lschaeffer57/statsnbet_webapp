@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { Formik } from 'formik';
+import { Formik, type FormikProps } from 'formik';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { bookmakersApi } from '@/api/bookmakersApi';
+import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
 import { useFormValidation } from '@/lib/formValidation';
 import type { AuthFormValues } from '@/types';
 
@@ -17,16 +19,28 @@ const PerformanceTabs = ({
   setPerformanceParameters,
   performanceParameters,
   isLoading,
+  resetTrigger,
 }: {
   setPerformanceParameters: (data: AuthFormValues) => void;
   performanceParameters: AuthFormValues;
   isLoading?: boolean;
+  resetTrigger: number;
 }) => {
+  const formikRef = useRef<FormikProps<AuthFormValues>>(null);
+
   const { t } = useTranslation('auth');
 
   const { data: bookmakers } = useQuery(
     bookmakersApi.getBookmakersQueryOptions(),
   );
+
+  useEffect(() => {
+    if (formikRef.current && resetTrigger !== undefined) {
+      formikRef.current.resetForm({
+        values: DEFAULT_PERFORMANCE_PARAMETERS,
+      });
+    }
+  }, [resetTrigger]);
 
   const validatePercentage = (val: string) => {
     const num = parseFloat(val.replace('%', ''));
@@ -119,6 +133,7 @@ const PerformanceTabs = ({
       </TabsList>
       <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
       <Formik
+        innerRef={formikRef}
         initialValues={performanceParameters}
         enableReinitialize={true}
         validate={validateForm}
@@ -162,7 +177,7 @@ const PerformanceTabs = ({
                 type="button"
                 onClick={() => handleSubmit()}
                 className="mt-9 h-8 w-full"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
               >
                 {t('signup.performanceParameters.criteria.saveButton')}
               </Button>

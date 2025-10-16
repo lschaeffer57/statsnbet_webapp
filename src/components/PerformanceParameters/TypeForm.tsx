@@ -312,8 +312,9 @@ const TypeForm = ({
               <DropdownMenuCheckboxItem
                 className="w-full"
                 disabled={
-                  values.bookmaker.length >= 3 &&
-                  !values.bookmaker.includes(bookmaker.cloneName.toLowerCase())
+                  (values.bookmaker.length >= 3 &&
+                    !values.bookmaker.includes(bookmaker.cloneName)) ||
+                  !bookmaker.running
                 }
                 key={bookmaker.cloneName}
                 checked={values.bookmaker.includes(

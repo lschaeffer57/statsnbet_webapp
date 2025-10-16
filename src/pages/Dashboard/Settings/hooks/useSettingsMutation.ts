@@ -12,11 +12,13 @@ export const useSettingsMutation = (clerkId: string) => {
   const updateUser = useMutation({
     mutationFn: ({
       clerkId,
+      configNumber,
       performanceParameters,
     }: {
       clerkId: string;
+      configNumber: number;
       performanceParameters: AuthFormValues;
-    }) => userApi.updateUser(clerkId, performanceParameters),
+    }) => userApi.updateUser(clerkId, configNumber, performanceParameters),
     onSuccess: () => {
       setError('');
     },

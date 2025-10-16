@@ -77,6 +77,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid Telegram data' });
     }
 
+    const getBotActivateStatus = async (): Promise<{ ok: boolean }> => {
+      const res = await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChat?chat_id=${telegram?.id}`,
+      );
+      return res.json();
+    };
+
+    const botActivated = await getBotActivateStatus();
+    const isBotActivated = botActivated.ok;
+
     const evMin = parseNumericValue(performanceParameters.evMin);
     const trj = parseNumericValue(performanceParameters.trj);
     const minCost = parseNumericValue(performanceParameters.minCost);
@@ -111,44 +121,102 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const expiresAt = new Date();
-    expiresAt.setMonth(expiresAt.getMonth() + 6);
+    const clerkUser = await clerkClient.users.getUser(clerkId);
 
-    await clerkClient.users.updateUser(clerkId, {
-      publicMetadata: {
-        expiresAt: expiresAt.toISOString(),
-        role: 'user',
-      },
-    });
+    let expiresAtFromMetadata = clerkUser.publicMetadata?.expiresAt as
+      | string
+      | undefined;
 
-    const userDocument: UserDocument = {
-      clerk_id: clerkId,
-      email,
-      username: username,
-      ev_min_pct: evMin,
-      trj_pct: trj,
-      ...(telegram && { telegram }),
-      odds: {
-        min: minCost,
-        max: maxCost,
-      },
-      min_liquidity: minLiquidity,
-      send_window: {
-        start: performanceParameters.time.start,
-        end: performanceParameters.time.end,
-      },
-      bet_types: performanceParameters.betType,
-      sports: performanceParameters.sport,
-      markets: performanceParameters.market,
-      bookmakers: performanceParameters.bookmaker,
-      bankroll_reference: bankroll,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+    if (!expiresAtFromMetadata) {
+      const invitations = await clerkClient.invitations.getInvitationList();
+      const userInvitation = invitations.data.find(
+        (inv) => inv.emailAddress === email,
+      );
 
-    const result = await db.collection(collectionName).insertOne(userDocument);
+      if (userInvitation?.publicMetadata?.expiresAt) {
+        expiresAtFromMetadata = userInvitation.publicMetadata
+          .expiresAt as string;
 
-    if (!result.insertedId) {
+        await clerkClient.users.updateUser(clerkId, {
+          publicMetadata: userInvitation.publicMetadata,
+        });
+      }
+    }
+
+    if (!expiresAtFromMetadata) {
+      return res.status(400).json({
+        error:
+          'User has no active subscription. Please use a valid invitation link.',
+      });
+    }
+
+    const userDocuments: UserDocument[] = [];
+
+    for (let i = 1; i <= 5; i++) {
+      const active_config = i === 1;
+      const sports = active_config
+        ? performanceParameters.sport
+        : ['Football', 'Tennis', 'Basketball'];
+      const bet_types = active_config
+        ? performanceParameters.betType
+        : {
+            live: true,
+            prematch: true,
+          };
+      const send_window = {
+        start: active_config ? performanceParameters.time.start : '00:00',
+        end: active_config ? performanceParameters.time.end : '00:00',
+      };
+      const odds = {
+        min: active_config ? minCost : 1.3,
+        max: active_config ? maxCost : 4,
+      };
+      const markets = active_config
+        ? performanceParameters.market
+        : {
+            moneyline: true,
+            over_under: true,
+            handicap: true,
+            player_performance: true,
+          };
+      const bookmakers = active_config
+        ? performanceParameters.bookmaker
+        : ['1xBet', '4Kasino', 'Amunra'];
+
+      userDocuments.push({
+        clerk_id: clerkId,
+        email,
+        username: username,
+        ...(telegram && { telegram }),
+        bot_activated: isBotActivated,
+        active_config,
+        config_number: i,
+        ev_min_pct: active_config ? evMin : 1,
+        trj_pct: active_config ? trj : 99,
+        odds,
+        min_liquidity: active_config ? minLiquidity : 500,
+        send_window,
+        bet_types,
+        sports,
+        markets,
+        bookmakers,
+        bankroll_reference: active_config ? bankroll : 0,
+        created_at: new Date(),
+        updated_at: new Date(),
+        bankroll_current: null,
+        subscription: {
+          active: true,
+          begin: new Date(),
+          end: new Date(expiresAtFromMetadata),
+        },
+      });
+    }
+
+    const result = await db
+      .collection(collectionName)
+      .insertMany(userDocuments);
+
+    if (!result.insertedCount || result.insertedCount === 0) {
       return res.status(500).json({ error: 'Failed to create user' });
     }
 
@@ -156,12 +224,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       message: 'User created successfully',
       data: {
-        id: result.insertedId,
         clerk_id: clerkId,
         email,
         username,
         collectionName,
-        created_at: userDocument.created_at,
+        created_at: userDocuments[0].created_at,
+        configs_created: result.insertedCount,
       },
     });
   } catch (error) {

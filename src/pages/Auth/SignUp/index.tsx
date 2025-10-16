@@ -32,6 +32,8 @@ export const SignUp = () => {
     useState<AuthFormValues>(DEFAULT_PERFORMANCE_PARAMETERS);
   const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
   const [criteriaSaved, setCriteriaSaved] = useState(false);
+  const [resetTrigger, setResetTrigger] = useState(0);
+
   const { isLoaded, setActive, signUp } = useSignUp();
   const { t } = useTranslation('auth');
   const { processErrors } = useClerkErrors();
@@ -76,6 +78,7 @@ export const SignUp = () => {
       verificationCode: '',
       general: '',
     });
+    if (!telegram) return;
     try {
       const result = await signUp.create({
         username: values.name,
@@ -107,6 +110,11 @@ export const SignUp = () => {
       const errorObj = processErrors(err.errors);
       setClerkError(errorObj);
     }
+  };
+
+  const handleReset = () => {
+    setPerformanceParameters({ ...DEFAULT_PERFORMANCE_PARAMETERS });
+    setResetTrigger((prev) => prev + 1);
   };
 
   const handleCodeSubmit = async (e: React.FormEvent) => {
@@ -145,11 +153,13 @@ export const SignUp = () => {
       <div className="max-w-[540px] space-y-12">
         <div className="space-y-4">
           <h1 className="font-instrument text-center text-[44px] leading-[50px] font-semibold tracking-tight">
-            {t('signup.title')}
+            {showCodeInput ? t('signup.codeTitle') : t('signup.title')}
           </h1>
           <div className="flex justify-center">
             <p className="text-muted-foreground max-w-[80%] text-center text-base font-normal">
-              {t('signup.description')}
+              {showCodeInput
+                ? t('signup.codeDescription')
+                : t('signup.description')}
             </p>
           </div>
         </div>
@@ -274,6 +284,8 @@ export const SignUp = () => {
                       setPerformanceParameters(params);
                       setCriteriaSaved(true);
                     }}
+                    onReset={handleReset}
+                    resetTrigger={resetTrigger}
                     performanceParameters={performanceParameters}
                   />
                   {!performanceParameters.bankroll.trim() &&
@@ -284,11 +296,18 @@ export const SignUp = () => {
                     )}
                 </div>
                 {criteriaSaved && (
-                  <TelegramConnect
-                    onDelete={() => setTelegram(undefined)}
-                    onConnect={setTelegram}
-                    telegramData={telegram}
-                  />
+                  <>
+                    <TelegramConnect
+                      onDelete={() => setTelegram(undefined)}
+                      onConnect={setTelegram}
+                      telegramData={telegram}
+                    />
+                    {!telegram && submitAttempted && (
+                      <span className="text-destructive text-xs">
+                        {t('signup.validation.telegramConnect')}
+                      </span>
+                    )}
+                  </>
                 )}
                 {clerkError.general && (
                   <span className="text-destructive block text-xs">
