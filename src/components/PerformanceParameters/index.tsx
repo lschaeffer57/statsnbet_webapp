@@ -15,8 +15,8 @@ import {
   SelectValue,
 } from '../ui/Select';
 
-import PerformanceTabs from './PerformanceTabs';
 import { PerformanceParametersVideoModal } from './PerformanceParametersVideoModal';
+import PerformanceTabs from './PerformanceTabs';
 
 interface PerformanceParametersProps {
   showConfiguration?: boolean;
