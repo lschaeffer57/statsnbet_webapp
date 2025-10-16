@@ -35,6 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             original: data?.original,
             cloneName: data?.cloneName || col.name,
             users: data?.users || 0,
+            running: data?.running || true,
           };
         } catch (error) {
           console.error(error);

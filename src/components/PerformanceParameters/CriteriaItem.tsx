@@ -11,6 +11,7 @@ interface CriteriaItemProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setFieldValue?: (field: string, value: string) => void;
+  limit?: number;
   decimal?: boolean;
   percent?: boolean;
   error?: string | undefined;
@@ -26,6 +27,7 @@ const CriteriaItem = ({
   value,
   onChange,
   setFieldValue,
+  limit,
   decimal = false,
   percent = false,
   error,
@@ -52,7 +54,11 @@ const CriteriaItem = ({
     const result = Math.max(0, currentValue - decrement)
       .toFixed(decimal ? 1 : 0)
       .toString();
-    setFieldValue(name, percent ? `${result}%` : result);
+    if (limit && parseFloat(result) < limit) {
+      setFieldValue(name, percent ? `${limit}%` : limit.toString());
+    } else {
+      setFieldValue(name, percent ? `${result}%` : result);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,11 +72,22 @@ const CriteriaItem = ({
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (percent && e.target.value && !e.target.value.includes('%')) {
-      const newValue = e.target.value + '%';
-      e.target.value = newValue;
-      onChange(e);
+    let value = e.target.value;
+
+    if (!value) return;
+
+    const numValue = parseFloat(value);
+
+    if (limit !== undefined && numValue < limit) {
+      value = limit.toString();
     }
+
+    if (percent && !value.includes('%')) {
+      value = value + '%';
+    }
+
+    e.target.value = value;
+    onChange(e);
   };
 
   return (
@@ -106,7 +123,11 @@ const CriteriaItem = ({
               type="button"
               className="!bg-input -mt-[1px] h-[16px] rounded-md rounded-t-none !px-[4.5px] !py-0.5 !shadow-none"
               onClick={handleDecrement}
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                (typeof limit === 'number' &&
+                  parseFloat(value.replace('%', '')) <= limit)
+              }
             >
               <MinusIcon className="size-3" />
             </Button>

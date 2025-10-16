@@ -313,26 +313,22 @@ const TypeForm = ({
                 className="w-full"
                 disabled={
                   (values.bookmaker.length >= 3 &&
-                    !values.bookmaker.includes(
-                      bookmaker.cloneName.toLowerCase(),
-                    )) ||
+                    !values.bookmaker.includes(bookmaker.cloneName)) ||
                   !bookmaker.running
                 }
                 key={bookmaker.cloneName}
-                checked={values.bookmaker.includes(
-                  bookmaker.cloneName.toLowerCase(),
-                )}
+                checked={values.bookmaker.includes(bookmaker.cloneName)}
                 onSelect={(e) => e.preventDefault()}
                 onCheckedChange={(checked) => {
                   return checked
                     ? setFieldValue('bookmaker', [
                         ...values.bookmaker,
-                        bookmaker.cloneName.toLowerCase(),
+                        bookmaker.cloneName,
                       ])
                     : setFieldValue(
                         'bookmaker',
                         values.bookmaker.filter(
-                          (item) => item !== bookmaker.cloneName.toLowerCase(),
+                          (item) => item !== bookmaker.cloneName,
                         ),
                       );
                 }}
