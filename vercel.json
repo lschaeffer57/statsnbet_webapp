@@ -10,11 +10,5 @@
       "src": "/[^.]+",
       "dest": "/"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/check-expired",
-      "schedule": "0 0 * * *"
-    }
   ]
 }

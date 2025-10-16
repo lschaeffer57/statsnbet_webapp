@@ -122,10 +122,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const clerkUser = await clerkClient.users.getUser(clerkId);
-    console.log(clerkUser);
-    const expiresAtFromMetadata = clerkUser.publicMetadata?.expiresAt as
+
+    let expiresAtFromMetadata = clerkUser.publicMetadata?.expiresAt as
       | string
       | undefined;
+
+    if (!expiresAtFromMetadata) {
+      const invitations = await clerkClient.invitations.getInvitationList();
+      const userInvitation = invitations.data.find(
+        (inv) => inv.emailAddress === email,
+      );
+
+      if (userInvitation?.publicMetadata?.expiresAt) {
+        expiresAtFromMetadata = userInvitation.publicMetadata
+          .expiresAt as string;
+
+        await clerkClient.users.updateUser(clerkId, {
+          publicMetadata: userInvitation.publicMetadata,
+        });
+      }
+    }
 
     if (!expiresAtFromMetadata) {
       return res.status(400).json({
