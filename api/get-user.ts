@@ -29,9 +29,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const user = await db
       .collection(collectionName)
-      .findOne({ clerk_id: clerkId });
+      .find({ clerk_id: clerkId })
+      .toArray();
 
-    if (!user) {
+    if (user.length === 0) {
       return res.status(404).json({
         error: 'User not found',
         message: `User with clerkId ${clerkId} not found`,

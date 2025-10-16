@@ -24,6 +24,8 @@ interface PerformanceParametersProps {
   performanceParameters: AuthFormValues;
   onReset: () => void;
   resetTrigger: number;
+  configuration?: string | undefined;
+  setConfiguration?: (data: string) => void;
   className?: string;
   isLoading?: boolean;
 }
@@ -35,10 +37,11 @@ export const PerformanceParameters = memo(
     performanceParameters,
     onReset,
     resetTrigger,
+    configuration,
+    setConfiguration,
     className,
     isLoading,
   }: PerformanceParametersProps) => {
-    const [configuration, setConfiguration] = useState('conf1');
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const { t } = useTranslation('auth');
 
@@ -63,7 +66,10 @@ export const PerformanceParameters = memo(
             </Button>
             {showConfiguration && (
               <Select value={configuration} onValueChange={setConfiguration}>
-                <SelectTrigger size="sm">
+                <SelectTrigger
+                  size="sm"
+                  isLoading={isLoading || !configuration}
+                >
                   <SelectValue
                     placeholder={t(
                       'signup.performanceParameters.selectPlaceholder',
@@ -71,20 +77,20 @@ export const PerformanceParameters = memo(
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="conf1">
+                  <SelectItem value="1">
                     {t('signup.performanceParameters.configurations.conf1')}
                   </SelectItem>
-                  <SelectItem value="conf2">
+                  <SelectItem value="2">
                     {t('signup.performanceParameters.configurations.conf2')}
                   </SelectItem>
-                  <SelectItem value="conf3">
+                  <SelectItem value="3">
                     {t('signup.performanceParameters.configurations.conf3')}
                   </SelectItem>
-                  <SelectItem value="conf4">
+                  <SelectItem value="4">
                     {t('signup.performanceParameters.configurations.conf4')}
                   </SelectItem>
-                  <SelectItem value="conf-init">
-                    {t('signup.performanceParameters.configurations.confInit')}
+                  <SelectItem value="5">
+                    {t('signup.performanceParameters.configurations.conf5')}
                   </SelectItem>
                 </SelectContent>
               </Select>

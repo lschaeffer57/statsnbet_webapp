@@ -4,6 +4,8 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { Skeleton } from './Skeleton';
+
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
@@ -26,10 +28,15 @@ function SelectTrigger({
   className,
   size = 'default',
   children,
+  isLoading,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: 'sm' | 'default';
+  isLoading?: boolean;
 }) {
+  if (isLoading) {
+    return <Skeleton className="h-8 w-16" />;
+  }
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"

@@ -73,13 +73,18 @@ export const Dashboard = () => {
   // console.log(filteredHistoryData);
 
   const {
-    data: userData,
+    data: userDataList,
     isLoading: isUserDataLoading,
     error: userDataError,
   } = useQuery({
     ...userApi.getUser(user?.id || ''),
     enabled: !!user?.id,
   });
+
+  const userData = useMemo(
+    () => userDataList?.find((u) => u.active_config) || userDataList?.[0],
+    [userDataList],
+  );
 
   const tableData = useMemo(() => {
     if (!data) return { data: undefined, isLoading };

@@ -136,7 +136,8 @@ export interface UserDocument {
   clerk_id: string;
   email: string;
   username: string;
-  config_number?: number;
+  config_number: number;
+  active_config: boolean;
   ev_min_pct: number;
   trj_pct: number;
   telegram?: TelegramUser;

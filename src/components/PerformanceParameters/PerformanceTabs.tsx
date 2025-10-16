@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { bookmakersApi } from '@/api/bookmakersApi';
+import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
 import { useFormValidation } from '@/lib/formValidation';
 import type { AuthFormValues } from '@/types';
 
@@ -36,10 +37,9 @@ const PerformanceTabs = ({
   useEffect(() => {
     if (formikRef.current && resetTrigger !== undefined) {
       formikRef.current.resetForm({
-        values: performanceParameters,
+        values: DEFAULT_PERFORMANCE_PARAMETERS,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetTrigger]);
 
   const validatePercentage = (val: string) => {
@@ -177,7 +177,7 @@ const PerformanceTabs = ({
                 type="button"
                 onClick={() => handleSubmit()}
                 className="mt-9 h-8 w-full"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
               >
                 {t('signup.performanceParameters.criteria.saveButton')}
               </Button>

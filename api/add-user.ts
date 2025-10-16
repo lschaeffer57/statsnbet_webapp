@@ -150,41 +150,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const userDocument: UserDocument = {
-      clerk_id: clerkId,
-      email,
-      username: username,
-      ...(telegram && { telegram }),
-      bot_activated: isBotActivated,
-      ev_min_pct: evMin,
-      trj_pct: trj,
-      odds: {
-        min: minCost,
-        max: maxCost,
-      },
-      min_liquidity: minLiquidity,
-      send_window: {
-        start: performanceParameters.time.start,
-        end: performanceParameters.time.end,
-      },
-      bet_types: performanceParameters.betType,
-      sports: performanceParameters.sport,
-      markets: performanceParameters.market,
-      bookmakers: performanceParameters.bookmaker,
-      bankroll_reference: bankroll,
-      created_at: new Date(),
-      updated_at: new Date(),
-      bankroll_current: null,
-      subscription: {
-        active: true,
-        begin: new Date(),
-        end: new Date(expiresAtFromMetadata),
-      },
-    };
+    const userDocuments: UserDocument[] = [];
 
-    const result = await db.collection(collectionName).insertOne(userDocument);
+    for (let i = 1; i <= 5; i++) {
+      const active_config = i === 1;
+      const bankroll_reference = active_config ? bankroll : 0;
 
-    if (!result.insertedId) {
+      userDocuments.push({
+        clerk_id: clerkId,
+        email,
+        username: username,
+        ...(telegram && { telegram }),
+        bot_activated: isBotActivated,
+        active_config,
+        config_number: i,
+        ev_min_pct: evMin,
+        trj_pct: trj,
+        odds: {
+          min: minCost,
+          max: maxCost,
+        },
+        min_liquidity: minLiquidity,
+        send_window: {
+          start: performanceParameters.time.start,
+          end: performanceParameters.time.end,
+        },
+        bet_types: performanceParameters.betType,
+        sports: performanceParameters.sport,
+        markets: performanceParameters.market,
+        bookmakers: performanceParameters.bookmaker,
+        bankroll_reference,
+        created_at: new Date(),
+        updated_at: new Date(),
+        bankroll_current: null,
+        subscription: {
+          active: true,
+          begin: new Date(),
+          end: new Date(expiresAtFromMetadata),
+        },
+      });
+    }
+
+    const result = await db
+      .collection(collectionName)
+      .insertMany(userDocuments);
+
+    if (!result.insertedCount || result.insertedCount === 0) {
       return res.status(500).json({ error: 'Failed to create user' });
     }
 
@@ -192,12 +203,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       message: 'User created successfully',
       data: {
-        id: result.insertedId,
         clerk_id: clerkId,
         email,
         username,
         collectionName,
-        created_at: userDocument.created_at,
+        created_at: userDocuments[0].created_at,
+        configs_created: result.insertedCount,
       },
     });
   } catch (error) {

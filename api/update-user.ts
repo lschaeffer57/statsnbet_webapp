@@ -25,13 +25,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const {
       clerkId,
+      configNumber,
       performanceParameters,
     }: {
       clerkId: string;
+      configNumber: number;
       performanceParameters: Omit<AuthFormValues, 'betIn'>;
     } = req.body;
 
-    if (!clerkId || !performanceParameters) {
+    if (!clerkId || !performanceParameters || !configNumber) {
       return res.status(400).json({
         error: 'Missing required fields',
         required: ['clerkId', 'performanceParameters'],
@@ -66,7 +68,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const db = client.db('Client_Data');
     const collectionName = clerkId;
 
+    await db
+      .collection(collectionName)
+      .updateMany({ clerk_id: clerkId }, { $set: { active_config: false } });
+
     const updateData: Partial<UserDocument> = {
+      active_config: true,
       ev_min_pct: evMin,
       trj_pct: trj,
       odds: {
@@ -88,7 +95,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const result = await db
       .collection(collectionName)
-      .updateOne({ clerk_id: clerkId }, { $set: updateData });
+      .updateOne(
+        { clerk_id: clerkId, config_number: configNumber },
+        { $set: updateData },
+      );
 
     if (!result.acknowledged) {
       return res.status(500).json({ error: 'Failed to update user' });
