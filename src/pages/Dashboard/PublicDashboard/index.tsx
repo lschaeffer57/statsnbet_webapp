@@ -55,13 +55,23 @@ export const PublicDashboard = () => {
     }),
   });
 
-  const { data: chartData, isLoading } = useQuery({
+  const {
+    data: chartData,
+    refetch,
+    isLoading,
+    isRefetching,
+  } = useQuery({
     ...betsApi.getRecentBetsQueryOptions({
       ...filters,
       search: search,
     }),
     enabled: getData,
   });
+
+  const handleRefresh = () => {
+    tableData.refetch();
+    if (getData) refetch();
+  };
 
   return (
     <main className="px-4 py-3">
@@ -84,6 +94,7 @@ export const PublicDashboard = () => {
                   iconLeft={<RefreshIcon className="size-[14px]" />}
                   variant="secondary"
                   size="sm"
+                  onClick={handleRefresh}
                 >
                   {tCommon('refresh')}
                 </Button>
@@ -123,7 +134,7 @@ export const PublicDashboard = () => {
             />
             <ActiveFilters filters={filters} setFilters={setFilters} />
 
-            {isLoading ? (
+            {isLoading || isRefetching ? (
               <ChartPlaceholder />
             ) : (
               <ProfitChart

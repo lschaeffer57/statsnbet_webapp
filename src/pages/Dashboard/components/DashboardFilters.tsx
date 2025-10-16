@@ -1,6 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { bookmakersApi } from '@/api/bookmakersApi';
 import { FilterLinesIcon } from '@/assets/icons';
 import RangeFilter from '@/components/RangeFilter';
 import { DatePicker } from '@/components/ui/DatePicker';
@@ -28,6 +30,10 @@ const DashboardFilters = ({
   isPublic = false,
 }: DashboardFiltersProps) => {
   const { t } = useTranslation('dashboard');
+
+  const { data: bookmakers } = useQuery(
+    bookmakersApi.getBookmakersQueryOptions(),
+  );
 
   const handleFilter = (value: string, filterKey: string) => {
     setFilters((prev: DashboardFiltersI) => ({
@@ -89,7 +95,9 @@ const DashboardFilters = ({
           <SelectValue placeholder={t('filters.sport')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="Soccer">Soccer</SelectItem>
+          <SelectItem value="football">Football</SelectItem>
+          <SelectItem value="tennis">Tennis</SelectItem>
+          <SelectItem value="basketball">Basketball</SelectItem>
         </SelectContent>
       </Select>
 
@@ -105,7 +113,10 @@ const DashboardFilters = ({
           <SelectValue placeholder={t('filters.market')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="Moneyline">Moneyline</SelectItem>
+          <SelectItem value="moneyline">Moneyline</SelectItem>
+          <SelectItem value="over/under">Over/under</SelectItem>
+          <SelectItem value="handicap">Handicap</SelectItem>
+          <SelectItem value="player-performance">Player performance</SelectItem>
         </SelectContent>
       </Select>
 
@@ -121,7 +132,14 @@ const DashboardFilters = ({
           <SelectValue placeholder={t('filters.bookmaker')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="betclic">Betclic</SelectItem>
+          {bookmakers?.map((item) => (
+            <SelectItem
+              key={item.cloneName}
+              value={item.cloneName.toLowerCase()}
+            >
+              {item.cloneName}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 

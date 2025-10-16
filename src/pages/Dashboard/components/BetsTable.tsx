@@ -30,6 +30,7 @@ interface BetsTableProps {
     | {
         data: BetsApiResponse | undefined;
         isLoading: boolean;
+        isRefetching?: boolean;
       };
   setSearch: (search: string) => void;
   search: string;
@@ -46,7 +47,7 @@ const BetsTable = ({
 }: BetsTableProps) => {
   const { t } = useTranslation('dashboard');
   const { t: tCommon } = useTranslation('common');
-  const { data, isLoading } = tableData;
+  const { data, isLoading, isRefetching } = tableData;
 
   const tableDatas = useMemo(() => {
     return data?.data ?? [];
@@ -143,51 +144,52 @@ const BetsTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tableDatas.map((item) => (
-            <TableRow key={item._id} className="border-b-0">
-              <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
-                {item.match}
-              </TableCell>
-              <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
-                {typeof item.bet === 'string'
-                  ? item.bet
-                  : item.bet?.competition}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.odds?.toFixed(2) ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.stake ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.result === null
-                  ? t('table.result.inProgress')
-                  : item.result}
-              </TableCell>
-              <TableCell className="min-w-[110px] border-r px-4 py-2.5">
-                {item.date}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.fair_odds?.toFixed(2) ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.ev?.toFixed(1) ?? '--'}%
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.liquidity ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[120px] border-r px-4 py-2.5">
-                {item.payout_rate?.toFixed(2) ?? '--'}%
-              </TableCell>
-              <TableCell className="min-w-[120px] border-r px-4 py-2.5">
-                2
-              </TableCell>
-              <TableCell className="min-w-[120px] px-4 py-2.5">
-                {item.bookmaker}
-              </TableCell>
-            </TableRow>
-          ))}
-          {isLoading && (
+          {!isLoading && !isRefetching ? (
+            tableDatas.map((item) => (
+              <TableRow key={item._id} className="border-b-0">
+                <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
+                  {item.match}
+                </TableCell>
+                <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
+                  {typeof item.bet === 'string'
+                    ? item.bet
+                    : item.bet?.competition}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.odds?.toFixed(2) ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.stake ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.result === null
+                    ? t('table.result.inProgress')
+                    : item.result}
+                </TableCell>
+                <TableCell className="min-w-[110px] border-r px-4 py-2.5">
+                  {item.date}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.fair_odds?.toFixed(2) ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.ev?.toFixed(1) ?? '--'}%
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.liquidity ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[120px] border-r px-4 py-2.5">
+                  {item.payout_rate?.toFixed(2) ?? '--'}%
+                </TableCell>
+                <TableCell className="min-w-[120px] border-r px-4 py-2.5">
+                  2
+                </TableCell>
+                <TableCell className="min-w-[120px] px-4 py-2.5">
+                  {item.bookmaker}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
             <>
               <SkeletonRow />
               <SkeletonRow />
