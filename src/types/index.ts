@@ -140,6 +140,7 @@ export interface UserDocument {
   ev_min_pct: number;
   trj_pct: number;
   telegram?: TelegramUser;
+  bot_activated?: boolean;
   odds: {
     min: number;
     max: number;
@@ -164,4 +165,10 @@ export interface UserDocument {
   bankroll_reference: number;
   created_at: Date;
   updated_at: Date;
+  bankroll_current: number | null;
+  subscription: {
+    active: true;
+    begin: Date;
+    end: Date;
+  };
 }

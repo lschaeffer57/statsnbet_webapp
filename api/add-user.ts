@@ -77,6 +77,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid Telegram data' });
     }
 
+    const getBotActivateStatus = async (): Promise<{ ok: boolean }> => {
+      const res = await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChat?chat_id=${telegram?.id}`,
+      );
+      return res.json();
+    };
+
+    const botActivated = await getBotActivateStatus();
+    const isBotActivated = botActivated.ok;
+
     const evMin = parseNumericValue(performanceParameters.evMin);
     const trj = parseNumericValue(performanceParameters.trj);
     const minCost = parseNumericValue(performanceParameters.minCost);
@@ -111,23 +121,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    const expiresAt = new Date();
-    expiresAt.setMonth(expiresAt.getMonth() + 6);
+    const clerkUser = await clerkClient.users.getUser(clerkId);
+    console.log(clerkUser);
+    const expiresAtFromMetadata = clerkUser.publicMetadata?.expiresAt as
+      | string
+      | undefined;
 
-    await clerkClient.users.updateUser(clerkId, {
-      publicMetadata: {
-        expiresAt: expiresAt.toISOString(),
-        role: 'user',
-      },
-    });
+    if (!expiresAtFromMetadata) {
+      return res.status(400).json({
+        error:
+          'User has no active subscription. Please use a valid invitation link.',
+      });
+    }
 
     const userDocument: UserDocument = {
       clerk_id: clerkId,
       email,
       username: username,
+      ...(telegram && { telegram }),
+      bot_activated: isBotActivated,
       ev_min_pct: evMin,
       trj_pct: trj,
-      ...(telegram && { telegram }),
       odds: {
         min: minCost,
         max: maxCost,
@@ -144,6 +158,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       bankroll_reference: bankroll,
       created_at: new Date(),
       updated_at: new Date(),
+      bankroll_current: null,
+      subscription: {
+        active: true,
+        begin: new Date(),
+        end: new Date(expiresAtFromMetadata),
+      },
     };
 
     const result = await db.collection(collectionName).insertOne(userDocument);

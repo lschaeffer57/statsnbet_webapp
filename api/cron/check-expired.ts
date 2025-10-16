@@ -1,5 +1,6 @@
 import { createClerkClient, User } from '@clerk/backend';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { MongoClient } from 'mongodb';
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
@@ -9,6 +10,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  if (!process.env.MONGODB_URI) {
+    return res.status(500).json({ error: 'Database configuration error' });
+  }
+
+  const client = new MongoClient(process.env.MONGODB_URI);
 
   let allUsers: User[] = [];
   let offset = 0;
@@ -41,6 +48,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
 
       await clerkClient.users.lockUser(user.id);
+
+      try {
+        await client.connect();
+
+        const db = client.db('Client_Data');
+        await db
+          .collection(user.id)
+          .updateOne(
+            { clerk_id: user.id },
+            { $set: { 'subscription.active': false, updated_at: new Date() } },
+          );
+      } catch (err) {
+        console.error(`Failed to update subscription for ${user.id}:`, err);
+      } finally {
+        await client.close();
+      }
+
       bannedCount++;
     }
   }

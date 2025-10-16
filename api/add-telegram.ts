@@ -50,6 +50,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid Telegram data' });
   }
 
+  const getBotActivateStatus = async (): Promise<{ ok: boolean }> => {
+    const res = await fetch(
+      `https://api.telegram.org/bot${telegramBotToken}/getChat?chat_id=${telegramUser.id}`,
+    );
+    return res.json();
+  };
+
+  const botActivated = await getBotActivateStatus();
+  const isBotActivated = botActivated.ok;
+
   try {
     await client.connect();
 
@@ -59,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await db.collection(collectionName).updateOne(
       { clerk_id: userId },
       {
-        $set: { telegram: telegramUser },
+        $set: { telegram: telegramUser, bot_activated: isBotActivated },
       },
       { upsert: true },
     );
