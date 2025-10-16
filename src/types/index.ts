@@ -85,6 +85,7 @@ export interface BookmakerI {
   original: string;
   cloneName: string;
   users: number;
+  running: boolean;
 }
 
 export interface AuthFormValues {

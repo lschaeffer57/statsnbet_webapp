@@ -27,11 +27,27 @@ export const Onboarding = () => {
       <Button onClick={handleAccessPlatform}>
         {t('onboarding.accessPlatformButton')}
       </Button>
-      <img
-        src="/images/video.png"
-        className="h-auto w-full max-w-[818px]"
-        alt="video"
-      />
+      <div
+        style={{ position: 'relative', paddingTop: '36.25%', width: '100%' }}
+      >
+        <iframe
+          title="video"
+          src="https://iframe.mediadelivery.net/embed/510725/4cbda37c-4eec-4efd-885e-1a0e69cfb4a1?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+          loading="lazy"
+          style={{
+            border: 0,
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            top: 0,
+            height: '100%',
+            width: '100%',
+            maxWidth: '818px',
+          }}
+          allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+          allowFullScreen={true}
+        />
+      </div>
     </div>
   );
 };

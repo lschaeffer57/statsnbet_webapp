@@ -312,22 +312,27 @@ const TypeForm = ({
               <DropdownMenuCheckboxItem
                 className="w-full"
                 disabled={
-                  values.bookmaker.length >= 3 &&
-                  !values.bookmaker.includes(bookmaker.cloneName)
+                  (values.bookmaker.length >= 3 &&
+                    !values.bookmaker.includes(
+                      bookmaker.cloneName.toLowerCase(),
+                    )) ||
+                  !bookmaker.running
                 }
                 key={bookmaker.cloneName}
-                checked={values.bookmaker.includes(bookmaker.cloneName)}
+                checked={values.bookmaker.includes(
+                  bookmaker.cloneName.toLowerCase(),
+                )}
                 onSelect={(e) => e.preventDefault()}
                 onCheckedChange={(checked) => {
                   return checked
                     ? setFieldValue('bookmaker', [
                         ...values.bookmaker,
-                        bookmaker.cloneName,
+                        bookmaker.cloneName.toLowerCase(),
                       ])
                     : setFieldValue(
                         'bookmaker',
                         values.bookmaker.filter(
-                          (item) => item !== bookmaker.cloneName,
+                          (item) => item !== bookmaker.cloneName.toLowerCase(),
                         ),
                       );
                 }}
