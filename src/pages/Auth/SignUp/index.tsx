@@ -153,11 +153,13 @@ export const SignUp = () => {
       <div className="max-w-[540px] space-y-12">
         <div className="space-y-4">
           <h1 className="font-instrument text-center text-[44px] leading-[50px] font-semibold tracking-tight">
-            {t('signup.title')}
+            {showCodeInput ? t('signup.codeTitle') : t('signup.title')}
           </h1>
           <div className="flex justify-center">
             <p className="text-muted-foreground max-w-[80%] text-center text-base font-normal">
-              {t('signup.description')}
+              {showCodeInput
+                ? t('signup.codeDescription')
+                : t('signup.description')}
             </p>
           </div>
         </div>
