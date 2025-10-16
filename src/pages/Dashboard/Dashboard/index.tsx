@@ -25,7 +25,7 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
   const { user } = useUser();
-  const userId = '8106617828';
+  const userId = '8330228321';
 
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
@@ -50,13 +50,7 @@ export const Dashboard = () => {
     },
   });
 
-  const {
-    data,
-    refetch,
-    isLoading: isBetsLoading,
-    isRefetching,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     ...betsApi.getUserBetsQueryOptions(userId, {
       ...filters,
       search: search,
@@ -110,10 +104,9 @@ export const Dashboard = () => {
           total: data.bets.length,
         },
       },
-      isLoading: isBetsLoading,
-      isRefetching,
+      isLoading,
     };
-  }, [data, currentPage, isBetsLoading, isRefetching]);
+  }, [data, currentPage, isLoading]);
 
   return (
     <div className="relative z-20">
@@ -127,7 +120,6 @@ export const Dashboard = () => {
             iconLeft={<RefreshIcon className="size-[14px]" />}
             variant="secondary"
             size="sm"
-            onClick={() => refetch()}
           >
             {tCommon('refresh')}
           </Button>
@@ -147,7 +139,7 @@ export const Dashboard = () => {
           />
           <StatCard
             title={t('stats.averageReturn')}
-            isLoading={isLoading}
+            isLoading={isUserDataLoading || isLoading}
             value={(() => {
               const bankrollAtStart =
                 (data?.bankrollAtStartOfMonth ?? 0) +
@@ -161,7 +153,7 @@ export const Dashboard = () => {
             })()}
           />
           <StatCard
-            isLoading={isLoading}
+            isLoading={isUserDataLoading || isLoading}
             title={t('stats.updatedBankroll')}
             value={(
               (data?.totalGain ?? 0) + (userData?.bankroll_reference ?? 0)
