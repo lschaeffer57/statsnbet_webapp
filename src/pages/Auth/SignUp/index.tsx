@@ -76,6 +76,7 @@ export const SignUp = () => {
       verificationCode: '',
       general: '',
     });
+    if (!telegram) return;
     try {
       const result = await signUp.create({
         username: values.name,
@@ -284,11 +285,18 @@ export const SignUp = () => {
                     )}
                 </div>
                 {criteriaSaved && (
-                  <TelegramConnect
-                    onDelete={() => setTelegram(undefined)}
-                    onConnect={setTelegram}
-                    telegramData={telegram}
-                  />
+                  <>
+                    <TelegramConnect
+                      onDelete={() => setTelegram(undefined)}
+                      onConnect={setTelegram}
+                      telegramData={telegram}
+                    />
+                    {!telegram && submitAttempted && (
+                      <span className="text-destructive text-xs">
+                        {t('signup.validation.telegramConnect')}
+                      </span>
+                    )}
+                  </>
                 )}
                 {clerkError.general && (
                   <span className="text-destructive block text-xs">
