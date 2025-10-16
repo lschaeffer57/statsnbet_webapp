@@ -16,7 +16,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { email, userRole, subscriptionDuration } = req.body;
   if (!email) return res.status(400).json({ message: 'Email required' });
   if (!userRole) return res.status(400).json({ message: 'User role required' });
-  if (!subscriptionDuration) return res.status(400).json({ message: 'Subscription duration required' });
+  if (!subscriptionDuration)
+    return res.status(400).json({ message: 'Subscription duration required' });
 
   try {
     const payload = await verifyToken(token, {
@@ -30,7 +31,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Calculate expiration date based on subscription duration
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + subscriptionDuration * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      now.getTime() + subscriptionDuration * 24 * 60 * 60 * 1000,
+    );
 
     const invitation = await clerkClient.invitations.createInvitation({
       emailAddress: email,

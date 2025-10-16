@@ -20,7 +20,9 @@ import { RoutesEnum } from '@/enums/router';
 export const InviteUser = () => {
   const [email, setEmail] = useState('');
   const [userRole, setUserRole] = useState('user');
-  const [subscriptionDuration, setSubscriptionDuration] = useState<number | null>(null);
+  const [subscriptionDuration, setSubscriptionDuration] = useState<
+    number | null
+  >(null);
   const [customDays, setCustomDays] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +33,7 @@ export const InviteUser = () => {
 
   const subscriptionOptions = [
     { value: 30, label: t('invite.subscription.30days') },
-    { value: 60, label: t('invite.subscription.60days')},
+    { value: 60, label: t('invite.subscription.60days') },
     { value: 90, label: t('invite.subscription.90days') },
     { value: 120, label: t('invite.subscription.120days') },
     { value: 180, label: t('invite.subscription.6months') },
@@ -87,9 +89,13 @@ export const InviteUser = () => {
       return;
     }
 
-    inviteUserMutation.mutate({ email, userRole, subscriptionDuration: finalDuration, token });
+    inviteUserMutation.mutate({
+      email,
+      userRole,
+      subscriptionDuration: finalDuration,
+      token,
+    });
   };
-
 
   return (
     <div className="mt-[140px] flex flex-col items-center">
@@ -118,10 +124,7 @@ export const InviteUser = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">{t('invite.form.roleLabel')}</Label>
-              <Select
-                value={userRole}
-                onValueChange={setUserRole}
-              >
+              <Select value={userRole} onValueChange={setUserRole}>
                 <SelectTrigger id="role" className="w-full">
                   <SelectValue placeholder={t('invite.form.rolePlaceholder')} />
                 </SelectTrigger>
@@ -135,7 +138,9 @@ export const InviteUser = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="subscription">{t('invite.form.subscriptionLabel')}</Label>
+              <Label htmlFor="subscription">
+                {t('invite.form.subscriptionLabel')}
+              </Label>
               <Select
                 value={selectedOption}
                 onValueChange={(value) => {
@@ -149,11 +154,16 @@ export const InviteUser = () => {
                 }}
               >
                 <SelectTrigger id="subscription" className="w-full">
-                  <SelectValue placeholder={t('invite.form.subscriptionPlaceholder')} />
+                  <SelectValue
+                    placeholder={t('invite.form.subscriptionPlaceholder')}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {subscriptionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value.toString()}>
+                    <SelectItem
+                      key={option.value}
+                      value={option.value.toString()}
+                    >
                       {option.label}
                     </SelectItem>
                   ))}
@@ -161,7 +171,9 @@ export const InviteUser = () => {
               </Select>
               {selectedOption === 'custom' && (
                 <div className="space-y-2">
-                  <Label htmlFor="customDays">{t('invite.form.customDaysLabel')}</Label>
+                  <Label htmlFor="customDays">
+                    {t('invite.form.customDaysLabel')}
+                  </Label>
                   <Input
                     id="customDays"
                     type="number"
@@ -169,12 +181,15 @@ export const InviteUser = () => {
                     value={customDays}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value === '' || (parseInt(value) > 0 && !isNaN(parseInt(value)))) {
+                      if (
+                        value === '' ||
+                        (parseInt(value) > 0 && !isNaN(parseInt(value)))
+                      ) {
                         setCustomDays(value);
                       }
                     }}
                     min="1"
-                    className="[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="[-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
               )}
@@ -185,7 +200,12 @@ export const InviteUser = () => {
           <Button
             size="sm"
             className="w-full"
-            disabled={!email || (!subscriptionDuration && selectedOption !== 'custom') || (selectedOption === 'custom' && !customDays) || inviteUserMutation.isPending}
+            disabled={
+              !email ||
+              (!subscriptionDuration && selectedOption !== 'custom') ||
+              (selectedOption === 'custom' && !customDays) ||
+              inviteUserMutation.isPending
+            }
             type="submit"
           >
             {t('invite.form.sendButton')}

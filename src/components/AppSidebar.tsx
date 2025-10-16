@@ -53,7 +53,7 @@ const AppSidebar = () => {
 
   const isAdmin = user?.publicMetadata?.role === 'admin';
 
-  console.warn(user?.publicMetadata.role)
+  console.warn(user?.publicMetadata.role);
 
   const items = [
     {
@@ -71,11 +71,15 @@ const AppSidebar = () => {
       url: RoutesEnum.PUBLIC_DASHBOARD,
       icon: PublicDashboardIcon,
     },
-    ...(isAdmin ? [{
-      title: t('sidebar.invite'),
-      url: RoutesEnum.INVITE,
-      icon: UserPlus,
-    }] : []),
+    ...(isAdmin
+      ? [
+          {
+            title: t('sidebar.invite'),
+            url: RoutesEnum.INVITE,
+            icon: UserPlus,
+          },
+        ]
+      : []),
   ];
   return (
     <Sidebar>
@@ -119,8 +123,8 @@ const AppSidebar = () => {
                   className="size-9 rounded-full object-cover"
                 />
               ) : (
-                <div className="size-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
+                <div className="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                  <span className="text-sm font-medium text-white">
                     {getInitials(user?.firstName, user?.lastName)}
                   </span>
                 </div>
@@ -135,18 +139,34 @@ const AppSidebar = () => {
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[220px] gap-2" sideOffset={8} align="start">
+          <DropdownMenuContent
+            className="w-[220px] gap-2"
+            sideOffset={8}
+            align="start"
+          >
             <div className="space-y-[2px]">
               <DropdownMenuItem
                 onClick={() => navigate(RoutesEnum.SETTINGS)}
-                className="text-sm text-custom-warm-grey-700"
+                className="text-custom-warm-grey-700 text-sm"
               >
-                <AccountIcon width={20} height={20} className="text-custom-warm-grey-400" />
+                <AccountIcon
+                  width={20}
+                  height={20}
+                  className="text-custom-warm-grey-400"
+                />
                 {t('sidebar.accountSettings')}
               </DropdownMenuItem>
               <Separator className="my-1" />
-              <DropdownMenuItem onClick={handleLogout} className="text-sm text-custom-warm-grey-700">
-                <LogOutIcon width={20} height={20} className="text-custom-warm-grey-400" /> Logout
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-custom-warm-grey-700 text-sm"
+              >
+                <LogOutIcon
+                  width={20}
+                  height={20}
+                  className="text-custom-warm-grey-400"
+                />{' '}
+                Logout
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>

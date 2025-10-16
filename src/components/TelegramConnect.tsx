@@ -72,7 +72,7 @@ const TelegramConnect = ({
 
   return telegramData ? (
     <Card
-      className="shadow-glass-lg flex flex-row items-start gap-4 cursor-pointer"
+      className="shadow-glass-lg flex cursor-pointer flex-row items-start gap-4"
       onClick={() => {
         const widget = widgetRef.current;
         if (!widget) return;
@@ -89,8 +89,7 @@ const TelegramConnect = ({
         }
       }}
     >
-
-    <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-4">
         {imageError ? (
           <div className="size-11 rounded-full">
             <img
