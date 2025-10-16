@@ -1,7 +1,7 @@
-import { useClerk, useUser } from '@clerk/clerk-react';
+import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { Camera } from 'lucide-react';
-import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { userApi } from '@/api/userApi';
@@ -17,33 +17,37 @@ import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
 import type { AuthFormValues, TelegramUser } from '@/types';
 
 import { useSettingsMutation } from './hooks/useSettingsMutation';
+import { useUpdateUser } from './hooks/useUpdateUser';
+import { getInitials, transformUserDataToParameters } from './utils';
 
 export const SettingsPage = () => {
   const { t } = useTranslation('settings');
   const { user } = useUser();
-  const { user: clerkUser } = useClerk();
+
   const [performanceParameters, setPerformanceParameters] = useState(
     DEFAULT_PERFORMANCE_PARAMETERS,
   );
   const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
-  // Password change state
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
-
-  // Profile image state
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
     useSettingsMutation(user?.id || '');
+  const {
+    handlePasswordChange,
+    handleImageSelect,
+    handleImageUpload,
+    isUploadingImage,
+    isChangingPassword,
+    passwordError,
+    selectedImage,
+    imagePreview,
+    passwordData,
+    setSelectedImage,
+    setImagePreview,
+    setPasswordData,
+  } = useUpdateUser();
 
   const { data: userData, isLoading } = useQuery({
     ...userApi.getUser(user?.id || ''),
@@ -52,32 +56,7 @@ export const SettingsPage = () => {
 
   useEffect(() => {
     if (userData) {
-      setPerformanceParameters({
-        evMin: userData.ev_min_pct.toString() ?? '1',
-        trj: userData.trj_pct.toString() ?? '99',
-        minCost: userData.odds.min.toString() ?? '1.3',
-        maxCost: userData.odds.max.toString() ?? '4',
-        minLiquidity: userData.min_liquidity.toString() ?? '500',
-        bankroll: userData.bankroll_reference.toString() ?? '',
-        time: {
-          start: userData.send_window?.start || '00:00',
-          end: userData.send_window?.end || '00:00',
-        },
-        betType: {
-          live: userData.bet_types?.live ?? true,
-          prematch: userData.bet_types?.prematch ?? true,
-        },
-        sport: userData.sports ?? DEFAULT_PERFORMANCE_PARAMETERS.sport,
-        betIn: ['euro'],
-        market: {
-          moneyline: userData.markets?.moneyline ?? true,
-          over_under: userData.markets?.over_under ?? true,
-          handicap: userData.markets?.handicap ?? true,
-          player_performance: userData.markets?.player_performance ?? true,
-        },
-        bookmaker:
-          userData.bookmakers ?? DEFAULT_PERFORMANCE_PARAMETERS.bookmaker,
-      });
+      setPerformanceParameters(transformUserDataToParameters(userData));
       setTelegram(userData.telegram);
     }
   }, [userData]);
@@ -101,84 +80,11 @@ export const SettingsPage = () => {
     });
   };
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPasswordError('');
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return;
+  const handleReset = () => {
+    if (userData) {
+      setPerformanceParameters(transformUserDataToParameters(userData));
+      setResetTrigger((prev) => prev + 1);
     }
-
-    if (passwordData.newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters long');
-      return;
-    }
-
-    setIsChangingPassword(true);
-
-    try {
-      await clerkUser?.updatePassword({
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
-
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
-      setPasswordError('');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setPasswordError(error.message || 'Failed to change password');
-    } finally {
-      setIsChangingPassword(false);
-    }
-  };
-
-  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('File input changed:', e.target.files);
-    const file = e.target.files?.[0];
-    if (file) {
-      console.log('Selected file:', file.name, file.size);
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        setPasswordError('Image size must be less than 5MB');
-        return;
-      }
-
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleImageUpload = async () => {
-    if (!selectedImage || !clerkUser) return;
-
-    setIsUploadingImage(true);
-
-    try {
-      await clerkUser.setProfileImage({ file: selectedImage });
-      setSelectedImage(null);
-      setImagePreview(null);
-      setPasswordError('');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setPasswordError(error.message || 'Failed to upload image');
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
-
-  const getInitials = (firstName?: string | null, lastName?: string | null) => {
-    const firstInitial = firstName?.[0]?.toUpperCase() ?? '';
-    const lastInitial = lastName?.[0]?.toUpperCase() ?? '';
-    return firstInitial + lastInitial;
   };
 
   return (
@@ -374,6 +280,8 @@ export const SettingsPage = () => {
           </Card>
         </div>
         <PerformanceParameters
+          onReset={handleReset}
+          resetTrigger={resetTrigger}
           className="!shadow-glass min-w-[500px] flex-1"
           performanceParameters={performanceParameters}
           isLoading={isLoading}

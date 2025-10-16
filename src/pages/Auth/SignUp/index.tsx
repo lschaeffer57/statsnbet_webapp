@@ -32,6 +32,8 @@ export const SignUp = () => {
     useState<AuthFormValues>(DEFAULT_PERFORMANCE_PARAMETERS);
   const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
   const [criteriaSaved, setCriteriaSaved] = useState(false);
+  const [resetTrigger, setResetTrigger] = useState(0);
+
   const { isLoaded, setActive, signUp } = useSignUp();
   const { t } = useTranslation('auth');
   const { processErrors } = useClerkErrors();
@@ -108,6 +110,11 @@ export const SignUp = () => {
       const errorObj = processErrors(err.errors);
       setClerkError(errorObj);
     }
+  };
+
+  const handleReset = () => {
+    setPerformanceParameters({ ...DEFAULT_PERFORMANCE_PARAMETERS });
+    setResetTrigger((prev) => prev + 1);
   };
 
   const handleCodeSubmit = async (e: React.FormEvent) => {
@@ -275,6 +282,8 @@ export const SignUp = () => {
                       setPerformanceParameters(params);
                       setCriteriaSaved(true);
                     }}
+                    onReset={handleReset}
+                    resetTrigger={resetTrigger}
                     performanceParameters={performanceParameters}
                   />
                   {!performanceParameters.bankroll.trim() &&

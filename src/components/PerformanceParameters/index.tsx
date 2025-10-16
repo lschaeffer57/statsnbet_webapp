@@ -22,6 +22,8 @@ interface PerformanceParametersProps {
   showConfiguration?: boolean;
   setPerformanceParameters: (data: AuthFormValues) => void;
   performanceParameters: AuthFormValues;
+  onReset: () => void;
+  resetTrigger: number;
   className?: string;
   isLoading?: boolean;
 }
@@ -31,6 +33,8 @@ export const PerformanceParameters = memo(
     showConfiguration = true,
     setPerformanceParameters,
     performanceParameters,
+    onReset,
+    resetTrigger,
     className,
     isLoading,
   }: PerformanceParametersProps) => {
@@ -85,7 +89,7 @@ export const PerformanceParameters = memo(
                 </SelectContent>
               </Select>
             )}
-            <Button variant="outline" size="sm" type="button">
+            <Button variant="outline" size="sm" type="button" onClick={onReset}>
               {t('signup.performanceParameters.reset')}
             </Button>
           </div>
@@ -96,6 +100,7 @@ export const PerformanceParameters = memo(
         <PerformanceTabs
           isLoading={isLoading}
           setPerformanceParameters={setPerformanceParameters}
+          resetTrigger={resetTrigger}
           performanceParameters={performanceParameters}
         />
 
