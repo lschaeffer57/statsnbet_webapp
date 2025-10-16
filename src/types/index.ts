@@ -173,3 +173,20 @@ export interface UserDocument {
     end: Date;
   };
 }
+
+export type Locale = 'fr' | 'en' | 'de';
+
+type Loaclization = Record<Locale, string>;
+
+export interface CourseItem {
+  id: string;
+  label: Loaclization;
+  videoUrl: Loaclization;
+}
+
+export interface Course {
+  _id: string;
+  moduleId: string;
+  options: CourseItem[];
+  title: Loaclization;
+}
