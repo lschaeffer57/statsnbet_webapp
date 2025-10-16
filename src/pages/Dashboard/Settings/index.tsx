@@ -34,23 +34,6 @@ export const SettingsPage = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
-    useSettingsMutation(user?.id || '');
-  const {
-    handlePasswordChange,
-    handleImageSelect,
-    handleImageUpload,
-    isUploadingImage,
-    isChangingPassword,
-    passwordError,
-    selectedImage,
-    imagePreview,
-    passwordData,
-    setSelectedImage,
-    setImagePreview,
-    setPasswordData,
-  } = useUpdateUser();
-
   const { data: userData, isLoading } = useQuery({
     ...userApi.getUser(user?.id || ''),
     enabled: !!user?.id,
@@ -83,6 +66,24 @@ export const SettingsPage = () => {
       setTelegram(userData[0].telegram);
     }
   }, [userData, currentConfig]);
+
+  const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
+    useSettingsMutation(user?.id || '');
+
+  const {
+    handlePasswordChange,
+    handleImageSelect,
+    handleImageUpload,
+    isUploadingImage,
+    isChangingPassword,
+    passwordError,
+    selectedImage,
+    imagePreview,
+    passwordData,
+    setSelectedImage,
+    setImagePreview,
+    setPasswordData,
+  } = useUpdateUser();
 
   if (!user) {
     return (

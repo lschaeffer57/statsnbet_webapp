@@ -154,7 +154,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     for (let i = 1; i <= 5; i++) {
       const active_config = i === 1;
-      const bankroll_reference = active_config ? bankroll : 0;
+      const sports = active_config
+        ? performanceParameters.sport
+        : ['Football', 'Tennis', 'Basketball'];
+      const bet_types = active_config
+        ? performanceParameters.betType
+        : {
+            live: true,
+            prematch: true,
+          };
+      const send_window = {
+        start: active_config ? performanceParameters.time.start : '00:00',
+        end: active_config ? performanceParameters.time.end : '00:00',
+      };
+      const odds = {
+        min: active_config ? minCost : 1.3,
+        max: active_config ? maxCost : 4,
+      };
+      const markets = active_config
+        ? performanceParameters.market
+        : {
+            moneyline: true,
+            over_under: true,
+            handicap: true,
+            player_performance: true,
+          };
+      const bookmakers = active_config
+        ? performanceParameters.bookmaker
+        : ['1xBet', '4Kasino', 'Amunra'];
 
       userDocuments.push({
         clerk_id: clerkId,
@@ -164,22 +191,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         bot_activated: isBotActivated,
         active_config,
         config_number: i,
-        ev_min_pct: evMin,
-        trj_pct: trj,
-        odds: {
-          min: minCost,
-          max: maxCost,
-        },
-        min_liquidity: minLiquidity,
-        send_window: {
-          start: performanceParameters.time.start,
-          end: performanceParameters.time.end,
-        },
-        bet_types: performanceParameters.betType,
-        sports: performanceParameters.sport,
-        markets: performanceParameters.market,
-        bookmakers: performanceParameters.bookmaker,
-        bankroll_reference,
+        ev_min_pct: active_config ? evMin : 1,
+        trj_pct: active_config ? trj : 99,
+        odds,
+        min_liquidity: active_config ? minLiquidity : 500,
+        send_window,
+        bet_types,
+        sports,
+        markets,
+        bookmakers,
+        bankroll_reference: active_config ? bankroll : 0,
         created_at: new Date(),
         updated_at: new Date(),
         bankroll_current: null,

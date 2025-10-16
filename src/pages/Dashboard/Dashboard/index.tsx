@@ -88,9 +88,10 @@ export const Dashboard = () => {
 
   const tableData = useMemo(() => {
     if (!data) return { data: undefined, isLoading };
+    const limit = 10;
 
-    const startIndex = (currentPage - 1) * 10;
-    const endIndex = currentPage * 10;
+    const startIndex = (currentPage - 1) * limit;
+    const endIndex = currentPage * limit;
     const paginatedData = data?.bets.slice(startIndex, endIndex);
 
     return {
@@ -99,7 +100,7 @@ export const Dashboard = () => {
         pagination: {
           totalPages: Math.ceil(data.bets.length / 10),
           page: currentPage,
-          limit: 10,
+          limit,
           total: data.bets.length,
         },
       },
