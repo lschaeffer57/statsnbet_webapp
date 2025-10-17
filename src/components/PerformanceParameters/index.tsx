@@ -1,9 +1,10 @@
-import { PlayIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { format } from 'date-fns';
+import { PlayIcon, Plus } from 'lucide-react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
-import type { AuthFormValues } from '@/types';
+import type { AuthFormValues, UserDocument } from '@/types';
 
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -28,6 +29,8 @@ interface PerformanceParametersProps {
   setConfiguration?: (data: string) => void;
   className?: string;
   isLoading?: boolean;
+  isPending?: boolean;
+  userData?: UserDocument[] | undefined;
 }
 
 export const PerformanceParameters = memo(
@@ -41,9 +44,18 @@ export const PerformanceParameters = memo(
     setConfiguration,
     className,
     isLoading,
+    isPending,
+    userData,
   }: PerformanceParametersProps) => {
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const { t } = useTranslation('auth');
+
+    const maxConfigurationNumber = useMemo(() => {
+      return (
+        userData?.reduce((max, user) => Math.max(max, user.config_number), 0) ||
+        0
+      );
+    }, [userData]);
 
     return (
       <Card className={cn('shadow-glass-lg items-start gap-4', className)}>
@@ -60,6 +72,7 @@ export const PerformanceParameters = memo(
               variant="secondary"
               type="button"
               className="mr-1"
+              disabled={isPending}
               onClick={() => setIsVideoModalOpen(true)}
             >
               <PlayIcon className="size-3" />
@@ -68,6 +81,7 @@ export const PerformanceParameters = memo(
               <Select value={configuration} onValueChange={setConfiguration}>
                 <SelectTrigger
                   size="sm"
+                  disabled={isPending}
                   isLoading={isLoading || !configuration}
                 >
                   <SelectValue
@@ -77,25 +91,32 @@ export const PerformanceParameters = memo(
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">
-                    {t('signup.performanceParameters.configurations.conf1')}
-                  </SelectItem>
-                  <SelectItem value="2">
-                    {t('signup.performanceParameters.configurations.conf2')}
-                  </SelectItem>
-                  <SelectItem value="3">
-                    {t('signup.performanceParameters.configurations.conf3')}
-                  </SelectItem>
-                  <SelectItem value="4">
-                    {t('signup.performanceParameters.configurations.conf4')}
-                  </SelectItem>
-                  <SelectItem value="5">
-                    {t('signup.performanceParameters.configurations.conf5')}
+                  {userData?.map((user) => (
+                    <SelectItem
+                      key={user.config_number}
+                      value={user.config_number.toString()}
+                    >
+                      {t('signup.performanceParameters.configuration')}{' '}
+                      {user.config_number}{' '}
+                      <span className="text-xs">
+                        ({format(user.updated_at, 'dd/MM')})
+                      </span>
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={(maxConfigurationNumber + 1).toString()}>
+                    <Plus className="text-foreground/50 size-3" />{' '}
+                    {t('signup.performanceParameters.newConfiguration')}
                   </SelectItem>
                 </SelectContent>
               </Select>
             )}
-            <Button variant="outline" size="sm" type="button" onClick={onReset}>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={onReset}
+              disabled={isPending}
+            >
               {t('signup.performanceParameters.reset')}
             </Button>
           </div>
@@ -108,6 +129,7 @@ export const PerformanceParameters = memo(
           setPerformanceParameters={setPerformanceParameters}
           resetTrigger={resetTrigger}
           performanceParameters={performanceParameters}
+          isPending={isPending}
         />
 
         <PerformanceParametersVideoModal

@@ -74,6 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const updateData: Partial<UserDocument> = {
       active_config: true,
+      config_number: configNumber,
       ev_min_pct: evMin,
       trj_pct: trj,
       odds: {
@@ -98,24 +99,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .updateOne(
         { clerk_id: clerkId, config_number: configNumber },
         { $set: updateData },
+        { upsert: true },
       );
 
     if (!result.acknowledged) {
       return res.status(500).json({ error: 'Failed to update user' });
     }
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({
-        error: 'User not found',
-        message: `User with clerkId ${clerkId} not found`,
-      });
-    }
-
     return res.status(200).json({
       success: true,
-      message: 'User updated successfully',
+      message:
+        result.upsertedCount > 0
+          ? 'Configuration created successfully'
+          : 'Configuration updated successfully',
       data: {
         clerk_id: clerkId,
+        config_number: configNumber,
         updated_at: updateData.updated_at,
         updatedFields: Object.keys(updateData).filter(
           (key) => key !== 'updated_at',

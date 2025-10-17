@@ -72,7 +72,7 @@ const TelegramConnect = ({
 
   return telegramData ? (
     <Card
-      className="shadow-glass-lg flex cursor-pointer flex-row items-start gap-4"
+      className="shadow-glass-lg flex cursor-pointer flex-row items-start justify-between gap-4"
       onClick={() => {
         const widget = widgetRef.current;
         if (!widget) return;

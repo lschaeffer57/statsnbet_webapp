@@ -21,6 +21,7 @@ export const useSettingsMutation = (clerkId: string) => {
     }) => userApi.updateUser(clerkId, configNumber, performanceParameters),
     onSuccess: () => {
       setError('');
+      queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
     },
     onError: (error) => {
       console.error(error);
@@ -48,9 +49,6 @@ export const useSettingsMutation = (clerkId: string) => {
 
   const deleteTelegram = useMutation({
     mutationFn: userApi.deleteTelegram,
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
-    },
     onMutate: async () => {
       setError('');
       await queryClient.cancelQueries({
@@ -64,10 +62,11 @@ export const useSettingsMutation = (clerkId: string) => {
 
       queryClient.setQueryData(
         [userApi.baseKey, clerkId],
-        (old: UserDocument) => ({
-          ...old,
-          telegram: undefined,
-        }),
+        (old: UserDocument[]) => {
+          return old.map((user, index) =>
+            index === 0 ? { ...user, telegram: undefined } : user,
+          );
+        },
       );
 
       return { previousUserData };

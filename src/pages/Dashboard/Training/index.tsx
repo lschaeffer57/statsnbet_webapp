@@ -20,7 +20,6 @@ export const Training = () => {
   const { data: questions, isLoading } = useQuery({
     ...courseApi.getCoursesQueryOptions(),
   });
-  console.log(contentRef.current?.scrollHeight);
 
   const initializedRef = useRef(false);
 

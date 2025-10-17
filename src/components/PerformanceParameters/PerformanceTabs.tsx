@@ -20,10 +20,12 @@ const PerformanceTabs = ({
   performanceParameters,
   isLoading,
   resetTrigger,
+  isPending,
 }: {
   setPerformanceParameters: (data: AuthFormValues) => void;
   performanceParameters: AuthFormValues;
   isLoading?: boolean;
+  isPending?: boolean;
   resetTrigger: number;
 }) => {
   const formikRef = useRef<FormikProps<AuthFormValues>>(null);
@@ -177,7 +179,7 @@ const PerformanceTabs = ({
                 type="button"
                 onClick={() => handleSubmit()}
                 className="mt-9 h-8 w-full"
-                disabled={isSubmitting || isLoading}
+                disabled={isSubmitting || isLoading || isPending}
               >
                 {t('signup.performanceParameters.criteria.saveButton')}
               </Button>

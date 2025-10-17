@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const collectionName = clerkId;
 
     const result = await db.collection(collectionName).updateOne(
-      { clerk_id: clerkId },
+      { clerk_id: clerkId, config_number: 1 },
       {
         $unset: { telegram: 1 },
       },

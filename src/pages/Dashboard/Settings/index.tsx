@@ -1,8 +1,7 @@
 import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Camera } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { userApi } from '@/api/userApi';
@@ -10,17 +9,15 @@ import { AccountIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { PerformanceParameters } from '@/components/PerformanceParameters';
 import TelegramConnect from '@/components/TelegramConnect';
-import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Spinner } from '@/components/ui/Spinner';
 import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
 import type { AuthFormValues, TelegramUser } from '@/types';
 
+import EditClerkProfile from './components/EditClerkProfile';
 import { useSettingsMutation } from './hooks/useSettingsMutation';
-import { useUpdateUser } from './hooks/useUpdateUser';
-import { getInitials, transformUserDataToParameters } from './utils';
+import { transformUserDataToParameters } from './utils';
 
 export const SettingsPage = () => {
   const { t } = useTranslation('settings');
@@ -32,12 +29,12 @@ export const SettingsPage = () => {
   const [telegram, setTelegram] = useState<TelegramUser | undefined>(undefined);
   const [resetTrigger, setResetTrigger] = useState(0);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const { data: userData, isLoading } = useQuery({
     ...userApi.getUser(user?.id || ''),
     enabled: !!user?.id,
   });
+
+  console.log(userData);
 
   const currentConfig = useMemo(
     () => userData?.find((u) => u.active_config) || userData?.[0],
@@ -45,19 +42,8 @@ export const SettingsPage = () => {
   );
 
   const [configuration, setConfiguration] = useState<string | undefined>(
-    undefined,
+    currentConfig?.config_number.toString(),
   );
-
-  useEffect(() => {
-    if (userData && configuration) {
-      const selectedConfig = userData.find(
-        (u) => u.config_number.toString() === configuration,
-      );
-      if (selectedConfig) {
-        setPerformanceParameters(transformUserDataToParameters(selectedConfig));
-      }
-    }
-  }, [configuration, userData]);
 
   useEffect(() => {
     if (userData && currentConfig) {
@@ -67,23 +53,17 @@ export const SettingsPage = () => {
     }
   }, [userData, currentConfig]);
 
+  useEffect(() => {
+    if (userData && configuration) {
+      const selectedConfig = userData.find(
+        (u) => u.config_number.toString() === configuration,
+      );
+      setPerformanceParameters(transformUserDataToParameters(selectedConfig));
+    }
+  }, [configuration, userData]);
+
   const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
     useSettingsMutation(user?.id || '');
-
-  const {
-    handlePasswordChange,
-    handleImageSelect,
-    handleImageUpload,
-    isUploadingImage,
-    isChangingPassword,
-    passwordError,
-    selectedImage,
-    imagePreview,
-    passwordData,
-    setSelectedImage,
-    setImagePreview,
-    setPasswordData,
-  } = useUpdateUser();
 
   if (!user) {
     return (
@@ -95,13 +75,14 @@ export const SettingsPage = () => {
 
   const handleUpdateUser = (
     clerkId: string,
+    configNumber: string | undefined,
     performanceParameters: AuthFormValues,
   ) => {
     setPerformanceParameters(performanceParameters);
-    if (configuration) {
+    if (configNumber) {
       updateUser.mutate({
         clerkId,
-        configNumber: parseInt(configuration),
+        configNumber: parseInt(configNumber),
         performanceParameters,
       });
     }
@@ -114,6 +95,11 @@ export const SettingsPage = () => {
     }
   };
 
+  const isPending =
+    updateUser.isPending ||
+    deleteTelegram.isPending ||
+    connectTelegram.isPending;
+
   return (
     <div className="relative z-20">
       <header className="flex items-center justify-between border-b px-8 pb-8">
@@ -125,146 +111,7 @@ export const SettingsPage = () => {
       </header>
       <section className="mt-5 flex flex-wrap items-start gap-5 px-7">
         <div className="min-w-[350px] flex-1 space-y-5">
-          <Card className="gap-5 p-5">
-            <h2 className="text-foreground text-lg font-medium">
-              {t('profile.title')}
-            </h2>
-
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                {user?.hasImage && user?.imageUrl ? (
-                  <img
-                    src={user.imageUrl}
-                    alt="profile"
-                    className="size-16 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
-                    <span className="text-lg font-medium text-white">
-                      {getInitials(user?.firstName, user?.lastName)}
-                    </span>
-                  </div>
-                )}
-                {imagePreview && (
-                  <div className="absolute inset-0 overflow-hidden rounded-full">
-                    <img
-                      src={imagePreview}
-                      alt="preview"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  iconLeft={<Camera className="size-4" />}
-                  className="cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {t('profile.uploadImageButton')}
-                </Button>
-
-                {selectedImage && (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleImageUpload}
-                      disabled={isUploadingImage}
-                      size="sm"
-                      variant="default"
-                    >
-                      {isUploadingImage ? 'Uploading...' : 'Upload'}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setImagePreview(null);
-                      }}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <form onSubmit={handlePasswordChange} className="space-y-4">
-              <h3 className="text-foreground text-base font-medium">
-                {t('profile.changePassword')}
-              </h3>
-
-              <Input
-                type="password"
-                placeholder={t('profile.currentPassword')}
-                value={passwordData.currentPassword}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({
-                    ...prev,
-                    currentPassword: e.target.value,
-                  }))
-                }
-                className="text-white"
-                required
-              />
-
-              <Input
-                type="password"
-                placeholder={t('profile.newPassword')}
-                value={passwordData.newPassword}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({
-                    ...prev,
-                    newPassword: e.target.value,
-                  }))
-                }
-                className="text-white"
-                required
-              />
-
-              <Input
-                type="password"
-                placeholder={t('profile.confirmPassword')}
-                value={passwordData.confirmPassword}
-                onChange={(e) =>
-                  setPasswordData((prev) => ({
-                    ...prev,
-                    confirmPassword: e.target.value,
-                  }))
-                }
-                className="text-white"
-                required
-              />
-
-              <Button
-                type="submit"
-                disabled={isChangingPassword}
-                className="w-full"
-              >
-                {isChangingPassword
-                  ? 'Updating...'
-                  : t('profile.updatePassword')}
-              </Button>
-            </form>
-
-            {(passwordError || error) && (
-              <p className="text-destructive text-sm">
-                {passwordError || error}
-              </p>
-            )}
-          </Card>
+          <EditClerkProfile error={error} />
 
           <TelegramConnect
             telegramData={telegram}
@@ -323,12 +170,16 @@ export const SettingsPage = () => {
         <PerformanceParameters
           configuration={configuration}
           setConfiguration={setConfiguration}
+          userData={userData}
           onReset={handleReset}
           resetTrigger={resetTrigger}
           className="!shadow-glass min-w-[500px] flex-1"
           performanceParameters={performanceParameters}
           isLoading={isLoading}
-          setPerformanceParameters={(data) => handleUpdateUser(user.id, data)}
+          isPending={isPending}
+          setPerformanceParameters={(data) =>
+            handleUpdateUser(user.id, configuration, data)
+          }
           showConfiguration={true}
         />
       </section>
