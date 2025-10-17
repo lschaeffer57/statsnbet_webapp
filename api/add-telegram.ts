@@ -50,15 +50,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid Telegram data' });
   }
 
-  const getBotActivateStatus = async (): Promise<{ ok: boolean }> => {
-    const res = await fetch(
-      `https://api.telegram.org/bot${telegramBotToken}/getChat?chat_id=${telegramUser.id}`,
-    );
-    return res.json();
+  const getBotActivateStatus = async (): Promise<boolean> => {
+    try {
+      const res = await fetch(
+        `https://api.telegram.org/bot${telegramBotToken}/sendChatAction`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramUser.id,
+            action: 'typing',
+          }),
+        },
+      );
+      const data = await res.json();
+      return data.ok === true;
+    } catch {
+      return false;
+    }
   };
 
-  const botActivated = await getBotActivateStatus();
-  const isBotActivated = botActivated.ok;
+  const isBotActivated = await getBotActivateStatus();
 
   try {
     await client.connect();
