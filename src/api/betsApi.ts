@@ -8,63 +8,11 @@ import type {
   ChartData,
   DashboardFiltersI,
   DailyStats,
+  FilteredBet,
 } from '@/types';
 
 export const betsApi = {
   baseKey: 'bets',
-  getFilteredDashboardQueryOptions: (
-    userId?: string,
-    filters?: DashboardFiltersI & {
-      collection?: string;
-    },
-  ) => {
-    return queryOptions({
-      queryKey: [betsApi.baseKey, 'filtered-dashboard', userId, filters],
-      queryFn: async ({ signal }) => {
-        const searchParams = new URLSearchParams();
-
-        if (userId) searchParams.set('userId', userId);
-        if (filters?.collection)
-          searchParams.set('collection', filters.collection);
-
-        if (filters?.liquidity?.more)
-          searchParams.set('liquidity_min', filters.liquidity.more);
-
-        if (filters?.payout_rate?.more)
-          searchParams.set('payout_min', filters.payout_rate.more);
-
-        if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
-
-        if (filters?.sport) searchParams.set('sports', filters.sport);
-        if (filters?.bookmaker)
-          searchParams.set('bookmakers', filters.bookmaker);
-
-        if (filters?.period?.start)
-          searchParams.set(
-            'date_min',
-            format(filters.period.start, 'yyyy-MM-dd'),
-          );
-        if (filters?.period?.end)
-          searchParams.set(
-            'date_max',
-            format(filters.period.end, 'yyyy-MM-dd'),
-          );
-
-        return jsonApiInstance<{
-          filtered_doc: Record<string, unknown>;
-          metrics: {
-            total_profit: number;
-            settled_count: number;
-            settled_stake_sum: number;
-          };
-          source_id: string;
-          bets: Array<Record<string, unknown>>;
-        }>(`filter-dashboard?${searchParams}`, {
-          signal,
-        });
-      },
-    });
-  },
   getBetsQueryOptions: (
     filters?: DashboardFiltersI & {
       search?: string;
@@ -223,7 +171,7 @@ export const betsApi = {
     });
   },
   getFilteredHistoryQueryOptions: (
-    collection?: string,
+    bankroll: string,
     userId?: string,
     filters?: DashboardFiltersI & {
       page_size?: number;
@@ -234,14 +182,14 @@ export const betsApi = {
       queryKey: [
         betsApi.baseKey,
         'filtered-history',
-        collection,
+        bankroll,
         userId,
         filters,
       ],
       queryFn: async ({ signal }) => {
         const searchParams = new URLSearchParams();
 
-        if (collection) searchParams.set('collection', collection);
+        searchParams.set('bankroll', bankroll);
         if (userId) searchParams.set('userId', userId);
 
         if (filters?.liquidity?.more)
@@ -268,21 +216,77 @@ export const betsApi = {
           searchParams.set('page_number', filters.page_number.toString());
 
         return jsonApiInstance<{
-          page_rows: Array<Record<string, unknown>>;
-          page_number: number;
-          page_size: number;
-          page_count: number;
-          total_rows: number;
+          page_rows: FilteredBet[];
+          pagination: {
+            page_number: number;
+            page_size: number;
+            page_count: number;
+            total_rows: number;
+          };
           metrics: {
             total_profit: number;
             settled_count: number;
             settled_stake_sum: number;
             roi: number;
           };
-          bankroll_reference: number;
+          bankroll: number;
           filters: Record<string, unknown>;
           source_id: string;
         }>(`filter-history?${searchParams}`, {
+          signal,
+        });
+      },
+    });
+  },
+  getFilteredDashboardQueryOptions: (
+    userId?: string,
+    filters?: DashboardFiltersI & {
+      collection?: string;
+    },
+  ) => {
+    return queryOptions({
+      queryKey: [betsApi.baseKey, 'filtered-dashboard', userId, filters],
+      queryFn: async ({ signal }) => {
+        const searchParams = new URLSearchParams();
+
+        if (userId) searchParams.set('userId', userId);
+        if (filters?.collection)
+          searchParams.set('collection', filters.collection);
+
+        if (filters?.liquidity?.more)
+          searchParams.set('liquidity_min', filters.liquidity.more);
+
+        if (filters?.payout_rate?.more)
+          searchParams.set('payout_min', filters.payout_rate.more);
+
+        if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
+
+        if (filters?.sport) searchParams.set('sports', filters.sport);
+        if (filters?.bookmaker)
+          searchParams.set('bookmakers', filters.bookmaker);
+
+        if (filters?.period?.start)
+          searchParams.set(
+            'date_min',
+            format(filters.period.start, 'yyyy-MM-dd'),
+          );
+        if (filters?.period?.end)
+          searchParams.set(
+            'date_max',
+            format(filters.period.end, 'yyyy-MM-dd'),
+          );
+
+        return jsonApiInstance<{
+          filtered_doc: Record<string, unknown>;
+          metrics: {
+            total_profit: number;
+            settled_count: number;
+            settled_stake_sum: number;
+            roi: number;
+          };
+          source_id: string;
+          bets: FilteredBet[];
+        }>(`filter-dashboard?${searchParams}`, {
           signal,
         });
       },

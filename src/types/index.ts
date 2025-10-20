@@ -56,6 +56,26 @@ export interface BetI {
   sent_at: string;
 }
 
+export interface FilteredBet {
+  idx: number;
+  bet: string;
+  bet_id: number;
+  bookmaker: string;
+  competition: string;
+  date: string;
+  ev: number;
+  liquidity: number;
+  match: string;
+  match_url?: string;
+  odds: string | number;
+  payout_rate: number;
+  sport: string;
+  stake: number;
+  status: string;
+  theorical_gain: number;
+  pnl: number;
+}
+
 export interface ChartData {
   date: string;
   betNumber: number;
@@ -77,6 +97,16 @@ export interface BetsApiResponse {
     limit: number;
     total: number;
     totalPages: number;
+  };
+}
+
+export interface FilteredBetsWithPagination {
+  data: FilteredBet[];
+  pagination: {
+    page_number: number;
+    page_size: number;
+    page_count: number;
+    total_rows: number;
   };
 }
 

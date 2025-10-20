@@ -36,7 +36,7 @@ const ActiveFilters = ({
   };
 
   return (
-    <div className="mt-5 flex flex-wrap gap-1.5 px-7">
+    <div className="mt-5 mb-5 flex flex-wrap gap-1.5 px-7">
       {Object.entries(filters)
         .filter(([key, value]) => {
           if (key === 'period') {

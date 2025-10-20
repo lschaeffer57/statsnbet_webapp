@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { DebounceInput } from 'react-debounce-input';
 import { useTranslation } from 'react-i18next';
 import {
   ComposedChart,
@@ -13,8 +14,8 @@ import {
   Cell,
 } from 'recharts';
 
-import { Button } from '@/components/ui/Button';
 import { CustomTooltip, CustomLegend } from '@/components/ui/Chart';
+import { Input } from '@/components/ui/Input';
 import type { ChartData, DailyStats } from '@/types';
 
 interface ProfitChartProps {
@@ -23,7 +24,8 @@ interface ProfitChartProps {
   cumulativeRealGain: number;
   isDate: boolean;
   setIsDate: (isDate: boolean) => void;
-  setGetData?: (getData: boolean) => void;
+  setBankroll?: (bankroll: string) => void;
+  bankroll?: string;
 }
 
 const ProfitChart = ({
@@ -32,7 +34,8 @@ const ProfitChart = ({
   isDate,
   setIsDate,
   cumulativeRealGain,
-  setGetData,
+  setBankroll,
+  bankroll,
 }: ProfitChartProps) => {
   const { t } = useTranslation('dashboard');
   return (
@@ -54,14 +57,15 @@ const ProfitChart = ({
           </p>
         </div>
         {isPublic && (
-          <Button
-            variant="secondary"
-            size="sm"
-            className="w-50 justify-start"
-            onClick={() => setGetData?.(true)}
-          >
-            {t('chart.baseBankroll')}
-          </Button>
+          <DebounceInput
+            minLength={0}
+            debounceTimeout={300}
+            placeholder={t('chart.baseBankroll')}
+            value={bankroll}
+            onChange={(e) => setBankroll?.(e.target.value)}
+            element={Input}
+            className="w-50"
+          />
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
@@ -8,11 +8,13 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
-import type { DashboardFiltersI } from '@/types';
+import { getChartData, getDailyStats } from '@/lib/getChartData';
+import type { DashboardFiltersI, FilteredBetsWithPagination } from '@/types';
 
 import ActiveFilters from '../components/ActiveFilters';
 import BetsTable from '../components/BetsTable';
 import DashboardFilters from '../components/DashboardFilters';
+import DashboardStats from '../components/DashboardStats';
 import ProfitChart from '../components/ProfitChart';
 
 export const PublicDashboard = () => {
@@ -21,7 +23,7 @@ export const PublicDashboard = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
-  const [getData, setGetData] = useState(false);
+  const [bankroll, setBankroll] = useState('');
 
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
@@ -46,32 +48,64 @@ export const PublicDashboard = () => {
     },
   });
 
-  const tableData = useQuery({
-    ...betsApi.getBetsQueryOptions({
-      ...filters,
-      search: search,
-      page: currentPage,
-      limit: 10,
-    }),
-  });
+  // const tableData = useQuery({
+  //   ...betsApi.getBetsQueryOptions({
+  //     ...filters,
+  //     search: search,
+  //     page: currentPage,
+  //     limit: 10,
+  //   }),
+  // });
+
+  // const { data: chartData, isLoading } = useQuery({
+  //   ...betsApi.getRecentBetsQueryOptions({
+  //     ...filters,
+  //     search: search,
+  //   }),
+  //   enabled: getData,
+  // });
 
   const {
-    data: chartData,
-    refetch,
+    data: filteredHistoryData,
     isLoading,
-    isRefetching,
+    error,
+    refetch,
   } = useQuery({
-    ...betsApi.getRecentBetsQueryOptions({
+    ...betsApi.getFilteredHistoryQueryOptions(bankroll, undefined, {
       ...filters,
-      search: search,
+      page_number: currentPage,
+      page_size: 20,
     }),
-    enabled: getData,
+    enabled: !!bankroll.trim(),
   });
 
-  const handleRefresh = () => {
-    tableData.refetch();
-    if (getData) refetch();
-  };
+  useEffect(() => {
+    if (bankroll.trim().length === 0) return;
+    refetch();
+  }, [bankroll, refetch]);
+
+  const tableData = useMemo(() => {
+    if (!filteredHistoryData) return { data: undefined, isLoading };
+
+    const data: FilteredBetsWithPagination = {
+      data: filteredHistoryData?.page_rows,
+      pagination: filteredHistoryData?.pagination,
+    };
+
+    return {
+      data,
+      isLoading,
+    };
+  }, [filteredHistoryData, isLoading]);
+
+  const chartData = useMemo(
+    () => getChartData(filteredHistoryData?.page_rows),
+    [filteredHistoryData],
+  );
+  const dailyStats = useMemo(
+    () => getDailyStats(filteredHistoryData?.page_rows),
+    [filteredHistoryData],
+  );
 
   return (
     <main className="px-4 py-3">
@@ -94,7 +128,6 @@ export const PublicDashboard = () => {
                   iconLeft={<RefreshIcon className="size-[14px]" />}
                   variant="secondary"
                   size="sm"
-                  onClick={handleRefresh}
                 >
                   {tCommon('refresh')}
                 </Button>
@@ -125,7 +158,19 @@ export const PublicDashboard = () => {
                 </Button>
               </Card>
             </div>
-
+            {filteredHistoryData && (
+              <div className="mt-10 px-7">
+                <DashboardStats
+                  isLoading={isLoading}
+                  roi={filteredHistoryData?.metrics.roi}
+                  settled_stake_sum={
+                    filteredHistoryData?.metrics.settled_stake_sum
+                  }
+                  total_profit={filteredHistoryData?.metrics.total_profit}
+                  settled_count={filteredHistoryData?.metrics.settled_count}
+                />
+              </div>
+            )}
             <DashboardFilters
               className="mt-10"
               isPublic
@@ -134,20 +179,21 @@ export const PublicDashboard = () => {
             />
             <ActiveFilters filters={filters} setFilters={setFilters} />
 
-            {isLoading || isRefetching ? (
-              <ChartPlaceholder />
+            {isLoading ? (
+              <div className="px-7">
+                <ChartPlaceholder />
+              </div>
             ) : (
               <ProfitChart
                 isPublic
-                data={
-                  isDate
-                    ? (chartData?.dailyStats ?? [])
-                    : (chartData?.chartData ?? [])
+                data={isDate ? dailyStats : chartData}
+                cumulativeRealGain={
+                  filteredHistoryData?.metrics.total_profit ?? 0
                 }
-                cumulativeRealGain={chartData?.totalGain ?? 0}
                 isDate={isDate}
                 setIsDate={setIsDate}
-                setGetData={setGetData}
+                setBankroll={setBankroll}
+                bankroll={bankroll}
               />
             )}
 
@@ -158,9 +204,9 @@ export const PublicDashboard = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
-            {tableData.error && (
+            {error && (
               <p className="px-7 text-sm text-red-500">
-                Error: {tableData.error.message}
+                Error: {error.message}
               </p>
             )}
           </div>

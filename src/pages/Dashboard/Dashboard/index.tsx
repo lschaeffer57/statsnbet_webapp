@@ -1,22 +1,20 @@
-import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
-import { userApi } from '@/api/userApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
+import { getChartData, getDailyStats } from '@/lib/getChartData';
 import type { DashboardFiltersI } from '@/types';
 
 import ActiveFilters from '../components/ActiveFilters';
 import BetsTable from '../components/BetsTable';
 import DashboardFilters from '../components/DashboardFilters';
+import DashboardStats from '../components/DashboardStats';
 import ProfitChart from '../components/ProfitChart';
-
-import StatCard from './components/StatCard';
 
 export const Dashboard = () => {
   const { t } = useTranslation('dashboard');
@@ -24,8 +22,7 @@ export const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
-  const { user } = useUser();
-  const userId = '8330228321';
+  const collection = '2097730097';
 
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
@@ -50,63 +47,43 @@ export const Dashboard = () => {
     },
   });
 
+  // const { data, isLoading, error } = useQuery({
+  //   ...betsApi.getUserBetsQueryOptions(userId, {
+  //     ...filters,
+  //     search: search,
+  //   }),
+  // });
+
   const { data, isLoading, error } = useQuery({
-    ...betsApi.getUserBetsQueryOptions(userId, {
+    ...betsApi.getFilteredDashboardQueryOptions(undefined, {
       ...filters,
-      search: search,
+      collection,
     }),
   });
 
-  // const { data: filteredData } = useQuery({
-  //   ...betsApi.getFilteredDashboardQueryOptions(undefined, {
-  //     ...filters,
-  //     collection: '2097730097',
-  //   }),
-  // });
-  // console.log(filteredData);
-
-  // const { data: filteredHistoryData } = useQuery({
-  //   ...betsApi.getFilteredHistoryQueryOptions(userId, undefined, {
-  //     ...filters,
-  //   }),
-  // });
-  // console.log(filteredHistoryData);
-
-  const {
-    data: userDataList,
-    isLoading: isUserDataLoading,
-    error: userDataError,
-  } = useQuery({
-    ...userApi.getUser(user?.id || ''),
-    enabled: !!user?.id,
-  });
-
-  const userData = useMemo(
-    () => userDataList?.find((u) => u.active_config) || userDataList?.[0],
-    [userDataList],
-  );
-
   const tableData = useMemo(() => {
     if (!data) return { data: undefined, isLoading };
-    const limit = 10;
 
-    const startIndex = (currentPage - 1) * limit;
-    const endIndex = currentPage * limit;
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = currentPage * 10;
     const paginatedData = data?.bets.slice(startIndex, endIndex);
 
     return {
       data: {
         data: paginatedData,
         pagination: {
-          totalPages: Math.ceil(data.bets.length / 10),
-          page: currentPage,
-          limit,
-          total: data.bets.length,
+          page_count: Math.ceil(data.bets.length / 10),
+          page_number: currentPage,
+          page_size: 10,
+          total_rows: data.bets.length,
         },
       },
       isLoading,
     };
   }, [data, currentPage, isLoading]);
+
+  const chartData = useMemo(() => getChartData(data?.bets), [data]);
+  const dailyStats = useMemo(() => getDailyStats(data?.bets), [data]);
 
   return (
     <div className="relative z-20">
@@ -127,57 +104,28 @@ export const Dashboard = () => {
         </div>
       </header>
       <section className="mt-[23px] px-7">
-        <div className="grid grid-cols-4 gap-3">
-          <StatCard
-            isLoading={isLoading}
-            title={t('stats.averageRoi')}
-            value={
-              data?.totalStakes && data?.totalStakes > 0
-                ? `${((data.totalGain / data.totalStakes) * 100).toFixed(2)}%`
-                : '0.00%'
-            }
-          />
-          <StatCard
-            title={t('stats.averageReturn')}
-            isLoading={isUserDataLoading || isLoading}
-            value={(() => {
-              const bankrollAtStart =
-                (data?.bankrollAtStartOfMonth ?? 0) +
-                (userData?.bankroll_reference ?? 0);
-              const bankrollAtEnd = bankrollAtStart + (data?.monthlyGain ?? 0);
-
-              if (bankrollAtStart === 0) return '0.00%';
-
-              const monthlyYield = (bankrollAtEnd / bankrollAtStart - 1) * 100;
-              return `${monthlyYield.toFixed(2)}%`;
-            })()}
-          />
-          <StatCard
-            isLoading={isUserDataLoading || isLoading}
-            title={t('stats.updatedBankroll')}
-            value={(
-              (data?.totalGain ?? 0) + (userData?.bankroll_reference ?? 0)
-            ).toFixed(0)}
-          />
-          <StatCard
-            isLoading={isLoading}
-            title={t('stats.numberOfBets')}
-            value={data?.totalBets ?? 0}
-          />
-        </div>
+        <DashboardStats
+          isLoading={isLoading}
+          roi={data?.metrics.roi}
+          settled_stake_sum={data?.metrics.settled_stake_sum}
+          total_profit={data?.metrics.total_profit}
+          settled_count={data?.metrics.settled_count}
+        />
       </section>
 
       <DashboardFilters filters={filters} setFilters={setFilters} />
       <ActiveFilters filters={filters} setFilters={setFilters} />
 
       {isLoading ? (
-        <ChartPlaceholder />
+        <div className="px-7">
+          <ChartPlaceholder />
+        </div>
       ) : (
         <ProfitChart
-          data={isDate ? (data?.dailyStats ?? []) : (data?.chartData ?? [])}
+          data={isDate ? dailyStats : chartData}
           isDate={isDate}
           setIsDate={setIsDate}
-          cumulativeRealGain={data?.totalGain ?? 0}
+          cumulativeRealGain={data?.metrics.total_profit ?? 0}
         />
       )}
       <BetsTable
@@ -187,10 +135,8 @@ export const Dashboard = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
-      {(error || userDataError) && (
-        <p className="px-7 text-sm text-red-500">
-          Error: {error?.message || userDataError?.message}
-        </p>
+      {error && (
+        <p className="px-7 text-sm text-red-500">Error: {error?.message}</p>
       )}
     </div>
   );
