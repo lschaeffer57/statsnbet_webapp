@@ -65,9 +65,14 @@ const ActiveFilters = ({
               {typeof value === 'string' ? (
                 <>
                   <Separator orientation="vertical" />
-                  <span className="text-foreground text-sm font-medium capitalize">
-                    {value}
-                  </span>
+                  {value.split(',').map((item) => (
+                    <span
+                      key={item}
+                      className="text-foreground text-sm font-medium capitalize"
+                    >
+                      {item}
+                    </span>
+                  ))}
                 </>
               ) : key === 'period' && (value.start || value.end) ? (
                 <>

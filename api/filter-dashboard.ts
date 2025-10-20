@@ -183,7 +183,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     if (obj instanceof Date)
       return new Date(obj.getFullYear(), obj.getMonth(), obj.getDate());
     if (typeof obj === 'string') {
-      function tryParse(str: string, fmt: string): Date | null {
+      const tryParse = (str: string, fmt: string): Date | null => {
         let rx: RegExp;
         if (fmt === 'YYYY-MM-DD') rx = /^(\d{4})-(\d{2})-(\d{2})$/;
         else if (fmt === 'DD/MM/YYYY') rx = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -211,7 +211,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
         )
           return dt;
         return null;
-      }
+      };
       const fmts = [
         'YYYY-MM-DD',
         'DD/MM/YYYY',

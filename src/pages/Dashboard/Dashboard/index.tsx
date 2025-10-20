@@ -1,8 +1,10 @@
+import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
+import { userApi } from '@/api/userApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
@@ -23,6 +25,7 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
   const collection = '2097730097';
+  const { user } = useUser();
 
   const [filters, setFilters] = useState<DashboardFiltersI>({
     configuration: '',
@@ -46,7 +49,7 @@ export const Dashboard = () => {
       end: undefined,
     },
   });
-
+  console.log(filters);
   // const { data, isLoading, error } = useQuery({
   //   ...betsApi.getUserBetsQueryOptions(userId, {
   //     ...filters,
@@ -60,6 +63,41 @@ export const Dashboard = () => {
       collection,
     }),
   });
+
+  const { data: userData, error: userDataError } = useQuery({
+    ...userApi.getUser(user?.id || ''),
+    enabled: !!user?.id,
+  });
+
+  useEffect(() => {
+    if (filters.configuration && userData) {
+      const user = userData.find(
+        (user) => user.config_number === parseInt(filters.configuration),
+      );
+
+      if (!user) return;
+
+      setFilters((prev) => ({
+        ...prev,
+        liquidity: {
+          ...prev.liquidity,
+          more: user.min_liquidity.toString(),
+        },
+        ev: {
+          ...prev.ev,
+          more: user.ev_min_pct.toString(),
+        },
+        sport: user.sports.join(',') ?? '',
+        market:
+          Object.entries(user.markets)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([_, value]) => value)
+            .map(([key]) => key)
+            .join(',') ?? '',
+        bookmaker: user.bookmakers.join(',') ?? '',
+      }));
+    }
+  }, [filters.configuration, userData]);
 
   const tableData = useMemo(() => {
     if (!data) return { data: undefined, isLoading };
@@ -113,7 +151,11 @@ export const Dashboard = () => {
         />
       </section>
 
-      <DashboardFilters filters={filters} setFilters={setFilters} />
+      <DashboardFilters
+        filters={filters}
+        setFilters={setFilters}
+        userData={userData}
+      />
       <ActiveFilters filters={filters} setFilters={setFilters} />
 
       {isLoading ? (
@@ -135,8 +177,10 @@ export const Dashboard = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
-      {error && (
-        <p className="px-7 text-sm text-red-500">Error: {error?.message}</p>
+      {(error || userDataError) && (
+        <p className="px-7 text-sm text-red-500">
+          Error: {error?.message || userDataError?.message}
+        </p>
       )}
     </div>
   );

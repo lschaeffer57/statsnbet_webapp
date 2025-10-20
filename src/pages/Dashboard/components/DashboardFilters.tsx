@@ -14,13 +14,14 @@ import {
   SelectItem,
 } from '@/components/ui/Select';
 import { cn } from '@/lib/utils';
-import type { DashboardFiltersI } from '@/types';
+import type { DashboardFiltersI, UserDocument } from '@/types';
 
 interface DashboardFiltersProps {
   filters: DashboardFiltersI;
   setFilters: Dispatch<SetStateAction<DashboardFiltersI>>;
   className?: string;
   isPublic?: boolean;
+  userData?: UserDocument[];
 }
 
 const DashboardFilters = ({
@@ -28,6 +29,7 @@ const DashboardFilters = ({
   setFilters,
   className,
   isPublic = false,
+  userData,
 }: DashboardFiltersProps) => {
   const { t } = useTranslation('dashboard');
 
@@ -57,7 +59,14 @@ const DashboardFilters = ({
             <SelectValue placeholder={t('filters.configuration')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="conf1">Conf 1</SelectItem>
+            {userData?.map((user) => (
+              <SelectItem
+                key={user.config_number}
+                value={user.config_number.toString()}
+              >
+                {`${t('filters.configuration')} ${user.config_number}`}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}
