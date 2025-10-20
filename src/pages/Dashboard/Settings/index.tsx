@@ -34,8 +34,6 @@ export const SettingsPage = () => {
     enabled: !!user?.id,
   });
 
-  console.log(userData);
-
   const currentConfig = useMemo(
     () => userData?.find((u) => u.active_config) || userData?.[0],
     [userData],

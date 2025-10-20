@@ -22,7 +22,7 @@ export const DEFAULT_PERFORMANCE_PARAMETERS = {
   },
   betType: { live: true, prematch: true },
   sport: ['Football', 'Tennis', 'Basketball'],
-  betIn: ['euro'],
+  betIn: 'euro',
   market: {
     moneyline: true,
     over_under: true,

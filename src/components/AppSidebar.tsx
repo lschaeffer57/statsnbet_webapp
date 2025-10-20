@@ -53,8 +53,6 @@ const AppSidebar = () => {
 
   const isAdmin = user?.publicMetadata?.role === 'admin';
 
-  console.warn(user?.publicMetadata.role);
-
   const items = [
     {
       title: t('sidebar.dashboard'),

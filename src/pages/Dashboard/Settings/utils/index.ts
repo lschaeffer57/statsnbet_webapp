@@ -32,7 +32,7 @@ export const transformUserDataToParameters = (
       prematch: userData?.bet_types?.prematch ?? true,
     },
     sport: userData?.sports ?? DEFAULT_PERFORMANCE_PARAMETERS.sport,
-    betIn: ['euro'],
+    betIn: userData?.percentage ? 'pct' : 'euro',
     market: {
       moneyline: userData?.markets?.moneyline ?? true,
       over_under: userData?.markets?.over_under ?? true,

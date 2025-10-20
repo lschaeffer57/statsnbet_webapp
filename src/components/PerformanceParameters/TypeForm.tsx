@@ -155,14 +155,9 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                checked={values.betIn.includes('euro')}
+                checked={values.betIn === 'euro'}
                 onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('betIn', [...values.betIn, 'euro'])
-                    : setFieldValue(
-                        'betIn',
-                        values.betIn.filter((item) => item !== 'euro'),
-                      );
+                  return checked && setFieldValue('betIn', 'euro');
                 }}
               />
               {t('signup.performanceParameters.type.betIn.euro')}
@@ -170,14 +165,9 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                checked={values.betIn.includes('pct')}
+                checked={values.betIn === 'pct'}
                 onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('betIn', [...values.betIn, 'pct'])
-                    : setFieldValue(
-                        'betIn',
-                        values.betIn.filter((item) => item !== 'pct'),
-                      );
+                  return checked && setFieldValue('betIn', 'pct');
                 }}
               />
               {t('signup.performanceParameters.type.betIn.percentage')}

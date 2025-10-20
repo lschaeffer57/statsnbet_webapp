@@ -171,6 +171,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       bet_types: performanceParameters.betType,
       sports: performanceParameters.sport,
+      percentage: performanceParameters.betIn === 'pct',
       markets: performanceParameters.market,
       bookmakers: performanceParameters.bookmaker,
       bankroll_reference: bankroll,

@@ -74,7 +74,7 @@ const PerformanceTabs = ({
       .array(z.string())
       .min(1, t('signup.performanceParameters.validation.selectAtLeastOne')),
     betIn: z
-      .array(z.string())
+      .string()
       .min(1, t('signup.performanceParameters.validation.selectAtLeastOne')),
     market: z
       .object({

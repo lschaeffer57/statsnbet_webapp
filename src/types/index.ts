@@ -104,7 +104,7 @@ export interface AuthFormValues {
     prematch: boolean;
   };
   sport: string[];
-  betIn: string[];
+  betIn: string;
   market: {
     moneyline: boolean;
     over_under: boolean;
@@ -156,6 +156,7 @@ export interface UserDocument {
     prematch: boolean;
   };
   sports: string[];
+  percentage: boolean;
   markets: {
     moneyline: boolean;
     over_under: boolean;
