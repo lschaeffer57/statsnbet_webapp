@@ -57,13 +57,21 @@ export const Dashboard = () => {
   //   }),
   // });
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data,
+    isLoading: isBetsLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useQuery({
     ...betsApi.getFilteredDashboardQueryOptions(undefined, {
       ...filters,
       collection,
       search: search,
     }),
   });
+
+  const isLoading = isBetsLoading || isRefetching;
 
   const { data: userData, error: userDataError } = useQuery({
     ...userApi.getUser(user?.id || ''),
@@ -136,6 +144,7 @@ export const Dashboard = () => {
             iconLeft={<RefreshIcon className="size-[14px]" />}
             variant="secondary"
             size="sm"
+            onClick={() => refetch()}
           >
             {tCommon('refresh')}
           </Button>

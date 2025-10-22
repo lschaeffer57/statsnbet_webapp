@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
@@ -67,9 +67,10 @@ export const PublicDashboard = () => {
 
   const {
     data: filteredHistoryData,
-    isLoading,
+    isLoading: isBetsLoading,
     error,
     refetch,
+    isRefetching,
   } = useQuery({
     ...betsApi.getFilteredHistoryQueryOptions(bankroll, undefined, {
       ...filters,
@@ -80,10 +81,7 @@ export const PublicDashboard = () => {
     enabled: !!bankroll.trim(),
   });
 
-  useEffect(() => {
-    if (bankroll.trim().length === 0) return;
-    refetch();
-  }, [bankroll, refetch]);
+  const isLoading = isBetsLoading || isRefetching;
 
   const tableData = useMemo(() => {
     if (!filteredHistoryData) return { data: undefined, isLoading };
@@ -129,6 +127,7 @@ export const PublicDashboard = () => {
                   iconLeft={<RefreshIcon className="size-[14px]" />}
                   variant="secondary"
                   size="sm"
+                  onClick={() => refetch()}
                 >
                   {tCommon('refresh')}
                 </Button>

@@ -144,56 +144,57 @@ const BetsTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tableDatas.map((item) => (
-            <TableRow key={item.idx} className="border-b-0">
-              <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
-                {item.match}
-              </TableCell>
-              <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
-                {typeof item.bet === 'string' ? item.bet : item?.competition}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.odds ? Number(item.odds).toFixed(2) : '--'}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.stake ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.status === 'pending'
-                  ? t('table.result.inProgress')
-                  : item.status}
-              </TableCell>
-              <TableCell className="min-w-[110px] border-r px-4 py-2.5">
-                {item.date}
-              </TableCell>
-              {/* <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.fair_odds?.toFixed(2) ?? '--'}
-              </TableCell> */}
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.ev?.toFixed(1) ?? '--'}%
-              </TableCell>
-              <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.liquidity ?? '--'}
-              </TableCell>
-              <TableCell className="min-w-[120px] border-r px-4 py-2.5">
-                {item.payout_rate?.toFixed(2) ?? '--'}%
-              </TableCell>
-              {configuration !== undefined && (
-                <TableCell className="min-w-[120px] border-r px-4 py-2.5">
-                  {configuration === '' ? '--' : configuration}
-                </TableCell>
-              )}
-              <TableCell className="min-w-[120px] px-4 py-2.5">
-                {item.bookmaker}
-              </TableCell>
-            </TableRow>
-          ))}
-          {isLoading && (
+          {isLoading ? (
             <>
               <SkeletonRow />
               <SkeletonRow />
               <SkeletonRow />
             </>
+          ) : (
+            tableDatas.map((item) => (
+              <TableRow key={item.idx} className="border-b-0">
+                <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
+                  {item.match}
+                </TableCell>
+                <TableCell className="min-w-[200px] border-r px-4 py-2.5 whitespace-normal">
+                  {typeof item.bet === 'string' ? item.bet : item?.competition}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.odds ? Number(item.odds).toFixed(2) : '--'}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.stake ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.status === 'pending'
+                    ? t('table.result.inProgress')
+                    : item.status}
+                </TableCell>
+                <TableCell className="min-w-[110px] border-r px-4 py-2.5">
+                  {item.date}
+                </TableCell>
+                {/* <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                {item.fair_odds?.toFixed(2) ?? '--'}
+              </TableCell> */}
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.ev?.toFixed(1) ?? '--'}%
+                </TableCell>
+                <TableCell className="min-w-[90px] border-r px-4 py-2.5">
+                  {item.liquidity ?? '--'}
+                </TableCell>
+                <TableCell className="min-w-[120px] border-r px-4 py-2.5">
+                  {item.payout_rate?.toFixed(2) ?? '--'}%
+                </TableCell>
+                {configuration !== undefined && (
+                  <TableCell className="min-w-[120px] border-r px-4 py-2.5">
+                    {configuration === '' ? '--' : configuration}
+                  </TableCell>
+                )}
+                <TableCell className="min-w-[120px] px-4 py-2.5">
+                  {item.bookmaker}
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
