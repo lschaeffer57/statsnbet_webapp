@@ -176,6 +176,7 @@ export const betsApi = {
     filters?: DashboardFiltersI & {
       page_size?: number;
       page_number?: number;
+      search?: string;
     },
   ) => {
     return queryOptions({
@@ -191,6 +192,7 @@ export const betsApi = {
 
         searchParams.set('bankroll', bankroll);
         if (userId) searchParams.set('userId', userId);
+        if (filters?.search) searchParams.set('search', filters.search);
 
         if (filters?.liquidity?.more)
           searchParams.set('liquidity_min', filters.liquidity.more);
@@ -201,6 +203,7 @@ export const betsApi = {
         if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
 
         if (filters?.sport) searchParams.set('sports', filters.sport);
+        if (filters?.market) searchParams.set('markets', filters.market);
         if (filters?.bookmaker)
           searchParams.set('bookmakers', filters.bookmaker);
 
@@ -242,6 +245,7 @@ export const betsApi = {
     userId?: string,
     filters?: DashboardFiltersI & {
       collection?: string;
+      search?: string;
     },
   ) => {
     return queryOptions({
@@ -250,6 +254,7 @@ export const betsApi = {
         const searchParams = new URLSearchParams();
 
         if (userId) searchParams.set('userId', userId);
+        if (filters?.search) searchParams.set('search', filters.search);
         if (filters?.collection)
           searchParams.set('collection', filters.collection);
 
@@ -262,6 +267,7 @@ export const betsApi = {
         if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
 
         if (filters?.sport) searchParams.set('sports', filters.sport);
+        if (filters?.market) searchParams.set('markets', filters.market);
         if (filters?.bookmaker)
           searchParams.set('bookmakers', filters.bookmaker);
 

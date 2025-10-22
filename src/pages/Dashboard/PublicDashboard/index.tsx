@@ -75,6 +75,7 @@ export const PublicDashboard = () => {
       ...filters,
       page_number: currentPage,
       page_size: 20,
+      search: search,
     }),
     enabled: !!bankroll.trim(),
   });

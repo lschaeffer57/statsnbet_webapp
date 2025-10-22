@@ -26,6 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const userIdStr = getStringValue(req.query.userId);
   const userId = userIdStr || null;
 
+  const search = getStringValue(req.query.search);
+
   const liquidityMinStr = getStringValue(req.query.liquidity_min);
   const liquidity_min = liquidityMinStr ? Number(liquidityMinStr) : null;
 
@@ -66,6 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       date_field: 'date',
       page_size,
       page_number,
+      search,
     });
 
     return res.status(200).json(result);
@@ -148,6 +151,7 @@ interface FilterOptions {
   date_field?: string;
   page_size?: number;
   page_number?: number;
+  search?: string | null;
 }
 
 interface PnLResult {
@@ -190,6 +194,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     date_field = 'date',
     page_size = 20,
     page_number = 1,
+    search = null,
   } = options;
 
   function sixMonthsAgo(d: Date): Date {
@@ -349,7 +354,21 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
         if (dmin && dv < dmin) continue;
         if (dmax && dv > dmax) continue;
       }
+      if (search) {
+        const searchLower = search.toLowerCase();
+        const betArr = safeGetArray(doc, 'bet');
+        const matchArr = safeGetArray(doc, 'match');
 
+        const betVal =
+          betArr && i < betArr.length ? String(betArr[i]).toLowerCase() : '';
+        const matchVal =
+          matchArr && i < matchArr.length
+            ? String(matchArr[i]).toLowerCase()
+            : '';
+
+        if (!betVal.includes(searchLower) && !matchVal.includes(searchLower))
+          continue;
+      }
       keep.push(i);
     }
 
@@ -410,6 +429,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       date_min: dmin ? dmin.toISOString().slice(0, 10) : null,
       date_max: dmax ? dmax.toISOString().slice(0, 10) : null,
       date_field: date_field,
+      search: search || null,
     };
     return out;
   }

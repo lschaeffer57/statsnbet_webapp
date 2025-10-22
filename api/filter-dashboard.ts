@@ -19,7 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return value || '';
   };
 
-  const collection = getStringValue(req.query.collection) || 'userhistory';
+  const collection = getStringValue(req.query.collection);
+  if (!collection) {
+    return res.status(400).json({ error: 'Collection is required' });
+  }
+  const search = getStringValue(req.query.search);
 
   const userIdStr = getStringValue(req.query.userId);
   const userId = userIdStr || null;
@@ -57,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       date_max,
       date_field: 'date',
       return_rows: true,
-      writeBack: false,
+      search,
     });
 
     return res.status(200).json(result);
@@ -138,7 +142,7 @@ interface FilterOptions {
   date_max?: string | null;
   date_field?: string;
   return_rows?: boolean;
-  writeBack?: boolean;
+  search?: string | null;
 }
 
 interface FilterResult {
@@ -176,6 +180,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     date_max = null,
     date_field = 'date',
     return_rows = true,
+    search = null,
   } = options;
 
   function toDate(obj: string | Date | null | undefined): Date | null {
@@ -329,6 +334,21 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
         if (dmin && dv && dv < dmin) continue;
         if (dmax && dv && dv > dmax) continue;
       }
+      if (search) {
+        const searchLower = search.toLowerCase();
+        const betArr = safeGetArray(doc, 'bet');
+        const matchArr = safeGetArray(doc, 'match');
+
+        const betVal =
+          betArr && i < betArr.length ? String(betArr[i]).toLowerCase() : '';
+        const matchVal =
+          matchArr && i < matchArr.length
+            ? String(matchArr[i]).toLowerCase()
+            : '';
+
+        if (!betVal.includes(searchLower) && !matchVal.includes(searchLower))
+          continue;
+      }
       keep.push(i);
     }
     if (return_format === 'rows') {
@@ -386,6 +406,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       date_min: dmin ? dmin.toISOString().slice(0, 10) : null,
       date_max: dmax ? dmax.toISOString().slice(0, 10) : null,
       date_field: date_field,
+      search: search || null,
     };
     return out as FilteredDocument;
   }

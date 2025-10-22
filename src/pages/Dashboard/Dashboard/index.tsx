@@ -49,7 +49,7 @@ export const Dashboard = () => {
       end: undefined,
     },
   });
-  console.log(filters);
+
   // const { data, isLoading, error } = useQuery({
   //   ...betsApi.getUserBetsQueryOptions(userId, {
   //     ...filters,
@@ -61,6 +61,7 @@ export const Dashboard = () => {
     ...betsApi.getFilteredDashboardQueryOptions(undefined, {
       ...filters,
       collection,
+      search: search,
     }),
   });
 
