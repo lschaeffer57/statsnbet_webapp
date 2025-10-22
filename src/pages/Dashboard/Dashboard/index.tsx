@@ -172,6 +172,7 @@ export const Dashboard = () => {
         />
       )}
       <BetsTable
+        configuration={filters.configuration}
         tableData={tableData}
         search={search}
         setSearch={setSearch}

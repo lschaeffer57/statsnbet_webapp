@@ -199,6 +199,7 @@ export const PublicDashboard = () => {
             )}
 
             <BetsTable
+              configuration={undefined}
               tableData={tableData}
               search={search}
               setSearch={setSearch}

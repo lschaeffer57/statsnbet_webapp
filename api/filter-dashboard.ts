@@ -30,12 +30,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const liquidityMinStr = getStringValue(req.query.liquidity_min);
   const liquidity_min = liquidityMinStr ? Number(liquidityMinStr) : null;
+  const liquidityMaxStr = getStringValue(req.query.liquidity_max);
+  const liquidity_max = liquidityMaxStr ? Number(liquidityMaxStr) : null;
 
   const payoutMinStr = getStringValue(req.query.payout_min);
   const payout_min = payoutMinStr ? Number(payoutMinStr) : null;
+  const payoutMaxStr = getStringValue(req.query.payout_max);
+  const payout_max = payoutMaxStr ? Number(payoutMaxStr) : null;
 
   const evMinStr = getStringValue(req.query.ev_min);
   const ev_min = evMinStr ? Number(evMinStr) : null;
+  const evMaxStr = getStringValue(req.query.ev_max);
+  const ev_max = evMaxStr ? Number(evMaxStr) : null;
 
   const sportsStr = getStringValue(req.query.sports);
   const sports = sportsStr ? sportsStr.split(',') : null;
@@ -53,8 +59,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       collection,
       userId,
       liquidity_min,
+      liquidity_max,
       payout_min,
+      payout_max,
       ev_min,
+      ev_max,
       sports,
       bookmakers,
       date_min,
@@ -134,8 +143,11 @@ interface FilterOptions {
   collection: string;
   userId?: string | null;
   liquidity_min?: number | null;
+  liquidity_max?: number | null;
   payout_min?: number | null;
+  payout_max?: number | null;
   ev_min?: number | null;
+  ev_max?: number | null;
   sports?: string[] | null;
   bookmakers?: string[] | null;
   date_min?: string | null;
@@ -172,8 +184,11 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     collection,
     userId = null,
     liquidity_min = null,
+    liquidity_max = null,
     payout_min = null,
+    payout_max = null,
     ev_min = null,
+    ev_max = null,
     sports = null,
     bookmakers = null,
     date_min = null,
@@ -306,10 +321,16 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       const pay = doc.payout_rate[i];
       if (liq == null || pay == null) continue;
       if (liquidity_min !== null && +liq < liquidity_min) continue;
+      if (liquidity_max !== null && +liq > liquidity_max) continue;
       if (payout_min !== null && +pay < payout_min) continue;
+      if (payout_max !== null && +pay > payout_max) continue;
       if (ev_min != null) {
         const evVal = doc.ev![i];
         if (evVal == null || +evVal < ev_min) continue;
+      }
+      if (ev_max != null) {
+        const evVal = doc.ev![i];
+        if (evVal == null || +evVal > ev_max) continue;
       }
       if (sportsSet) {
         const sArr = safeGetArray(doc, 'sport');
@@ -399,8 +420,11 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     }
     out.applied_filters = {
       liquidity_min: liquidity_min,
+      liquidity_max: liquidity_max,
       payout_min: payout_min,
+      payout_max: payout_max,
       ev_min: ev_min,
+      ev_max: ev_max,
       sports: sports,
       bookmakers: bookmakers,
       date_min: dmin ? dmin.toISOString().slice(0, 10) : null,

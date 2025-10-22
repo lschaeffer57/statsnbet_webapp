@@ -66,7 +66,7 @@ const RangeFilter = ({
               className="w-15 px-2.5 py-0.5"
             />
           </div>
-          {/* <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <span className="text-foreground/50 block text-sm">
               {t(translationKey)}
             </span>
@@ -80,7 +80,7 @@ const RangeFilter = ({
               element={Input}
               className="w-15 px-2.5 py-0.5"
             />
-          </div> */}
+          </div>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

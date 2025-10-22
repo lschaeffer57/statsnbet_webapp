@@ -196,11 +196,16 @@ export const betsApi = {
 
         if (filters?.liquidity?.more)
           searchParams.set('liquidity_min', filters.liquidity.more);
+        if (filters?.liquidity?.less)
+          searchParams.set('liquidity_max', filters.liquidity.less);
 
         if (filters?.payout_rate?.more)
           searchParams.set('payout_min', filters.payout_rate.more);
+        if (filters?.payout_rate?.less)
+          searchParams.set('payout_max', filters.payout_rate.less);
 
         if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
+        if (filters?.ev?.less) searchParams.set('ev_max', filters.ev.less);
 
         if (filters?.sport) searchParams.set('sports', filters.sport);
         if (filters?.market) searchParams.set('markets', filters.market);
@@ -260,11 +265,16 @@ export const betsApi = {
 
         if (filters?.liquidity?.more)
           searchParams.set('liquidity_min', filters.liquidity.more);
+        if (filters?.liquidity?.less)
+          searchParams.set('liquidity_max', filters.liquidity.less);
 
         if (filters?.payout_rate?.more)
           searchParams.set('payout_min', filters.payout_rate.more);
+        if (filters?.payout_rate?.less)
+          searchParams.set('payout_max', filters.payout_rate.less);
 
         if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
+        if (filters?.ev?.less) searchParams.set('ev_max', filters.ev.less);
 
         if (filters?.sport) searchParams.set('sports', filters.sport);
         if (filters?.market) searchParams.set('markets', filters.market);

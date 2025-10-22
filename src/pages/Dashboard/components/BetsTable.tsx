@@ -24,6 +24,7 @@ import SkeletonRow from '@/pages/Dashboard/components/SkeletonRow';
 import type { FilteredBetsWithPagination } from '@/types';
 
 interface BetsTableProps {
+  configuration: string | undefined;
   tableData: {
     data: FilteredBetsWithPagination | undefined;
     isLoading: boolean;
@@ -35,6 +36,7 @@ interface BetsTableProps {
 }
 
 const BetsTable = ({
+  configuration,
   tableData,
   setSearch,
   search,
@@ -131,9 +133,11 @@ const BetsTable = ({
             <TableHead className="text-foreground/50 px-4 py-[7px]">
               {t('table.headers.payoutRate')}
             </TableHead>
-            <TableHead className="text-foreground/50 px-4 py-[7px]">
-              {t('table.headers.configuration')}
-            </TableHead>
+            {configuration !== undefined && (
+              <TableHead className="text-foreground/50 px-4 py-[7px]">
+                {t('table.headers.configuration')}
+              </TableHead>
+            )}
             <TableHead className="text-foreground/50 rounded-r-2xl px-4 py-[7px]">
               {t('table.headers.bookmakers')}
             </TableHead>
@@ -174,9 +178,11 @@ const BetsTable = ({
               <TableCell className="min-w-[120px] border-r px-4 py-2.5">
                 {item.payout_rate?.toFixed(2) ?? '--'}%
               </TableCell>
-              <TableCell className="min-w-[120px] border-r px-4 py-2.5">
-                2
-              </TableCell>
+              {configuration !== undefined && (
+                <TableCell className="min-w-[120px] border-r px-4 py-2.5">
+                  {configuration === '' ? '--' : configuration}
+                </TableCell>
+              )}
               <TableCell className="min-w-[120px] px-4 py-2.5">
                 {item.bookmaker}
               </TableCell>
