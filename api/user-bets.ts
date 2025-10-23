@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { ChartData, DailyStats } from '../src/types';
+import type { ChartData, DailyStats } from '@/types';
 
 interface MongoFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

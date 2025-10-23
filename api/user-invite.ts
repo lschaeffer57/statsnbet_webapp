@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     res.status(200).json({ success: true, invitation });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err.errors[0].longMessage);
     res.status(500).json({
       message: err.errors[0].longMessage ?? 'Failed to create invitation',

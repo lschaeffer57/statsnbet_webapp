@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { TelegramUser } from '../src/types';
+import type { TelegramUser } from '@/types';
 
 function verifyTelegramAuth(data: TelegramUser, botToken: string) {
   const secret = crypto.createHash('sha256').update(botToken).digest();

@@ -8,7 +8,7 @@ import type {
   CreateUserRequest,
   TelegramUser,
   UserDocument,
-} from '../src/types';
+} from '@/types';
 
 function verifyTelegramAuth(data: TelegramUser, botToken: string) {
   const secret = crypto.createHash('sha256').update(botToken).digest();

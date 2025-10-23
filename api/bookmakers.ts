@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(_: VercelRequest, res: VercelResponse) {
   if (!process.env.MONGODB_URI) {
     return res.status(500).json({ error: 'Database configuration error' });
   }
