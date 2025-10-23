@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 import { useTranslation } from 'react-i18next';
@@ -171,7 +172,7 @@ const BetsTable = ({
                     : item.status}
                 </TableCell>
                 <TableCell className="min-w-[110px] border-r px-4 py-2.5">
-                  {item.date}
+                  {format(item.date, 'dd/MM/yyyy')}
                 </TableCell>
                 {/* <TableCell className="min-w-[90px] border-r px-4 py-2.5">
                 {item.fair_odds?.toFixed(2) ?? '--'}

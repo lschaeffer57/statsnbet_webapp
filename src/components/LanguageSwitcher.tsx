@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -18,14 +18,6 @@ export function LanguageSwitcher() {
     const code = (i18n.language || 'fr').toLowerCase();
     return code.includes('-') ? code.split('-')[0] : code;
   }, [i18n.language]);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(LANG_STORAGE_KEY);
-    if (stored && stored !== current) {
-      i18n.changeLanguage(stored);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleChange = (val: string) => {
     i18n.changeLanguage(val);
