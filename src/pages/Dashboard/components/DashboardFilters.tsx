@@ -3,8 +3,9 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { bookmakersApi } from '@/api/bookmakersApi';
-import { FilterLinesIcon } from '@/assets/icons';
+import { FilterLinesIcon, XCircleIcon } from '@/assets/icons';
 import RangeFilter from '@/components/RangeFilter';
+import { Button } from '@/components/ui/Button';
 import { DatePicker } from '@/components/ui/DatePicker';
 import {
   Select,
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectItem,
 } from '@/components/ui/Select';
+import { DEFAULT_FILTERS } from '@/constants';
 import { cn } from '@/lib/utils';
 import type { DashboardFiltersI, UserDocument } from '@/types';
 
@@ -174,6 +176,20 @@ const DashboardFilters = ({
           className="border-border rounded-l-none border"
         />
       </div>
+      {Object.entries(filters).some(
+        ([key, value]) =>
+          value !== DEFAULT_FILTERS[key as keyof typeof DEFAULT_FILTERS],
+      ) && (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="from-input !shadow-glass to-muted bg-gradient-to-b opacity-100"
+          onClick={() => setFilters(DEFAULT_FILTERS)}
+        >
+          <XCircleIcon className="size-4" />
+          {t('filters.clearAllFilters')}
+        </Button>
+      )}
     </div>
   );
 };

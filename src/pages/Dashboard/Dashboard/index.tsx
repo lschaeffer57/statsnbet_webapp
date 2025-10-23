@@ -9,6 +9,7 @@ import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
+import { DEFAULT_FILTERS } from '@/constants';
 import { getChartData, getDailyStats } from '@/lib/getChartData';
 import type { DashboardFiltersI } from '@/types';
 
@@ -27,28 +28,7 @@ export const Dashboard = () => {
   const collection = '2097730097';
   const { user } = useUser();
 
-  const [filters, setFilters] = useState<DashboardFiltersI>({
-    configuration: '',
-    liquidity: {
-      more: '',
-      less: '',
-    },
-    payout_rate: {
-      more: '',
-      less: '',
-    },
-    ev: {
-      more: '',
-      less: '',
-    },
-    sport: '',
-    market: '',
-    bookmaker: '',
-    period: {
-      start: undefined,
-      end: undefined,
-    },
-  });
+  const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
   // const { data, isLoading, error } = useQuery({
   //   ...betsApi.getUserBetsQueryOptions(userId, {

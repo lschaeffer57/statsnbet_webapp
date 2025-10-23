@@ -8,6 +8,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
+import { DEFAULT_FILTERS } from '@/constants';
 import { getChartData, getDailyStats } from '@/lib/getChartData';
 import type { DashboardFiltersI, FilteredBetsWithPagination } from '@/types';
 
@@ -25,28 +26,7 @@ export const PublicDashboard = () => {
   const [isDate, setIsDate] = useState(false);
   const [bankroll, setBankroll] = useState('');
 
-  const [filters, setFilters] = useState<DashboardFiltersI>({
-    configuration: '',
-    liquidity: {
-      more: '',
-      less: '',
-    },
-    payout_rate: {
-      more: '',
-      less: '',
-    },
-    ev: {
-      more: '',
-      less: '',
-    },
-    sport: '',
-    market: '',
-    bookmaker: '',
-    period: {
-      start: undefined,
-      end: undefined,
-    },
-  });
+  const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
   // const tableData = useQuery({
   //   ...betsApi.getBetsQueryOptions({

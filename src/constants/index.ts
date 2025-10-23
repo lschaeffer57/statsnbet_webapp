@@ -31,3 +31,26 @@ export const DEFAULT_PERFORMANCE_PARAMETERS = {
   },
   bookmaker: ['1xBet', '4Kasino', 'Amunra'],
 };
+
+export const DEFAULT_FILTERS = {
+  configuration: '',
+  liquidity: {
+    more: '',
+    less: '',
+  },
+  payout_rate: {
+    more: '',
+    less: '',
+  },
+  ev: {
+    more: '',
+    less: '',
+  },
+  sport: '',
+  market: '',
+  bookmaker: '',
+  period: {
+    start: undefined,
+    end: undefined,
+  },
+};
