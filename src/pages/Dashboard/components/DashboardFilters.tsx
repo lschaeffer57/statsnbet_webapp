@@ -1,8 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { bookmakersApi } from '@/api/bookmakersApi';
 import { FilterLinesIcon, XCircleIcon } from '@/assets/icons';
 import RangeFilter from '@/components/RangeFilter';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +14,7 @@ import {
 } from '@/components/ui/Select';
 import { DEFAULT_FILTERS } from '@/constants';
 import { cn } from '@/lib/utils';
-import type { DashboardFiltersI, UserDocument } from '@/types';
+import type { BookmakerI, DashboardFiltersI, UserDocument } from '@/types';
 
 interface DashboardFiltersProps {
   filters: DashboardFiltersI;
@@ -24,6 +22,7 @@ interface DashboardFiltersProps {
   className?: string;
   isPublic?: boolean;
   userData?: UserDocument[];
+  bookmakers: BookmakerI[] | undefined;
 }
 
 const DashboardFilters = ({
@@ -32,12 +31,9 @@ const DashboardFilters = ({
   className,
   isPublic = false,
   userData,
+  bookmakers,
 }: DashboardFiltersProps) => {
   const { t } = useTranslation('dashboard');
-
-  const { data: bookmakers } = useQuery(
-    bookmakersApi.getBookmakersQueryOptions(),
-  );
 
   const handleFilter = (value: string, filterKey: string) => {
     setFilters((prev: DashboardFiltersI) => {

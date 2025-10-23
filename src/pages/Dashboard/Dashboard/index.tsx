@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
+import { bookmakersApi } from '@/api/bookmakersApi';
 import { userApi } from '@/api/userApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -37,6 +38,10 @@ export const Dashboard = () => {
   //   }),
   // });
 
+  const { data: bookmakers } = useQuery(
+    bookmakersApi.getBookmakersQueryOptions(),
+  );
+
   const {
     data,
     isLoading: isBetsLoading,
@@ -46,6 +51,20 @@ export const Dashboard = () => {
   } = useQuery({
     ...betsApi.getFilteredDashboardQueryOptions(undefined, {
       ...filters,
+      bookmaker: filters.bookmaker
+        ? Array.from(
+            new Set(
+              filters.bookmaker
+                .split(',')
+                .map((cloneName) =>
+                  bookmakers
+                    ?.find((b) => b.cloneName.toLowerCase() === cloneName)
+                    ?.original.toLowerCase(),
+                )
+                .filter(Boolean),
+            ),
+          ).join(',')
+        : '',
       collection,
       search: search,
     }),
@@ -145,6 +164,7 @@ export const Dashboard = () => {
         filters={filters}
         setFilters={setFilters}
         userData={userData}
+        bookmakers={bookmakers}
       />
       <ActiveFilters filters={filters} setFilters={setFilters} />
 
