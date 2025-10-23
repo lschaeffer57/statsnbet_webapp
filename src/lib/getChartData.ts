@@ -2,12 +2,20 @@ import type { ChartData, DailyStats, FilteredBet } from '@/types';
 
 export const getChartData = (data: FilteredBet[] | undefined): ChartData[] => {
   if (!data) return [];
-  return data.map((bet, index) => ({
-    date: bet.date,
-    betNumber: index + 1,
-    realGain: bet.pnl,
-    theoreticalGain: bet.theorical_gain ?? 0,
-  }));
+  let cumulativeRealGain = 0;
+  let cumulativeTheoreticalGain = 0;
+
+  return data.reverse().map((bet, index) => {
+    cumulativeRealGain += bet.pnl;
+    cumulativeTheoreticalGain += bet.theorical_gain ?? 0;
+
+    return {
+      date: bet.date,
+      betNumber: index + 1,
+      realGain: cumulativeRealGain,
+      theoreticalGain: cumulativeTheoreticalGain,
+    };
+  });
 };
 
 export const getDailyStats = (

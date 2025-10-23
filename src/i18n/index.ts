@@ -3,8 +3,10 @@ import { initReactI18next } from 'react-i18next';
 
 import { resources } from './resources';
 
-const storedLng =
-  typeof window !== 'undefined' ? localStorage.getItem('lng') : null;
+const storedLng = localStorage.getItem('lng');
+
+const urlParams = new URLSearchParams(window.location.search);
+const urlLng = urlParams.get('language');
 
 const browserLanguage = navigator.language.split('-')[0];
 
@@ -14,11 +16,20 @@ const defaultLng = supportedLngs.includes(browserLanguage)
   ? browserLanguage
   : 'en';
 
+const initialLng =
+  (urlLng && supportedLngs.includes(urlLng) ? urlLng : null) ||
+  storedLng ||
+  defaultLng;
+
 i18n.use(initReactI18next).init({
   resources,
-  lng: storedLng || defaultLng,
+  lng: initialLng,
   fallbackLng: 'en',
   supportedLngs,
   ns: ['common', 'auth', 'dashboard', 'settings', 'training'],
   defaultNS: 'common',
 });
+
+if (urlLng && supportedLngs.includes(urlLng)) {
+  localStorage.setItem('lng', urlLng);
+}

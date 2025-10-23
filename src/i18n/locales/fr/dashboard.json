@@ -34,7 +34,8 @@
     "sport": "Sport",
     "market": "Marché",
     "bookmaker": "Bookmakers",
-    "period": "Période"
+    "period": "Période",
+    "clearAllFilters": "Tout les filtres"
   },
   "public": {
     "title": "Dashboard publique",

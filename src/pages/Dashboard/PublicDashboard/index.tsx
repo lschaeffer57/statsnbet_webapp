@@ -3,11 +3,13 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
+import { bookmakersApi } from '@/api/bookmakersApi';
 import { PublicDashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
+import { DEFAULT_FILTERS } from '@/constants';
 import { getChartData, getDailyStats } from '@/lib/getChartData';
 import type { DashboardFiltersI, FilteredBetsWithPagination } from '@/types';
 
@@ -25,28 +27,7 @@ export const PublicDashboard = () => {
   const [isDate, setIsDate] = useState(false);
   const [bankroll, setBankroll] = useState('');
 
-  const [filters, setFilters] = useState<DashboardFiltersI>({
-    configuration: '',
-    liquidity: {
-      more: '',
-      less: '',
-    },
-    payout_rate: {
-      more: '',
-      less: '',
-    },
-    ev: {
-      more: '',
-      less: '',
-    },
-    sport: '',
-    market: '',
-    bookmaker: '',
-    period: {
-      start: undefined,
-      end: undefined,
-    },
-  });
+  const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
   // const tableData = useQuery({
   //   ...betsApi.getBetsQueryOptions({
@@ -65,6 +46,10 @@ export const PublicDashboard = () => {
   //   enabled: getData,
   // });
 
+  const { data: bookmakers } = useQuery(
+    bookmakersApi.getBookmakersQueryOptions(),
+  );
+
   const {
     data: filteredHistoryData,
     isLoading: isBetsLoading,
@@ -74,6 +59,20 @@ export const PublicDashboard = () => {
   } = useQuery({
     ...betsApi.getFilteredHistoryQueryOptions(bankroll, undefined, {
       ...filters,
+      bookmaker: filters.bookmaker
+        ? Array.from(
+            new Set(
+              filters.bookmaker
+                .split(',')
+                .map((cloneName) =>
+                  bookmakers
+                    ?.find((b) => b.cloneName.toLowerCase() === cloneName)
+                    ?.original.toLowerCase(),
+                )
+                .filter(Boolean),
+            ),
+          ).join(',')
+        : '',
       page_number: currentPage,
       page_size: 20,
       search: search,
@@ -176,6 +175,7 @@ export const PublicDashboard = () => {
               isPublic
               filters={filters}
               setFilters={setFilters}
+              bookmakers={bookmakers}
             />
             <ActiveFilters filters={filters} setFilters={setFilters} />
 
