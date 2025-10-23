@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { AuthFormValues, UserDocument } from '../src/types';
+import type { AuthFormValues, UserDocument } from '@/types';
 
 const parseNumericValue = (value: string): number => {
   const cleanedValue = value.replace(/[^\d.,-]/g, '');
@@ -69,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const collectionName = clerkId;
 
     await db
-      .collection(collectionName)
+      .collection<UserDocument>(collectionName)
       .updateMany({ clerk_id: clerkId }, { $set: { active_config: false } });
 
     const updateData: Partial<UserDocument> = {
@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     const result = await db
-      .collection(collectionName)
+      .collection<UserDocument>(collectionName)
       .updateOne(
         { clerk_id: clerkId, config_number: configNumber },
         { $set: updateData },
@@ -107,6 +107,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Failed to update user' });
     }
 
+    const updatedConfig = await db
+      .collection<UserDocument>(collectionName)
+      .findOne({ clerk_id: clerkId, config_number: configNumber });
+
+    const safeConfig = updatedConfig as UserDocument | null;
+
     return res.status(200).json({
       success: true,
       message:
@@ -116,10 +122,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       data: {
         clerk_id: clerkId,
         config_number: configNumber,
-        updated_at: updateData.updated_at,
+        updated_at: safeConfig?.updated_at ?? updateData.updated_at,
         updatedFields: Object.keys(updateData).filter(
           (key) => key !== 'updated_at',
         ),
+        date: safeConfig?.updated_at ?? new Date(),
       },
     });
   } catch (error) {
