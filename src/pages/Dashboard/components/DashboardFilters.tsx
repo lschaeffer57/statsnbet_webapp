@@ -40,10 +40,22 @@ const DashboardFilters = ({
   );
 
   const handleFilter = (value: string, filterKey: string) => {
-    setFilters((prev: DashboardFiltersI) => ({
-      ...prev,
-      [filterKey]: value,
-    }));
+    setFilters((prev: DashboardFiltersI) => {
+      if (
+        filterKey === 'bookmaker' ||
+        filterKey === 'sport' ||
+        filterKey === 'market'
+      ) {
+        const currentValues = prev[filterKey] ? prev[filterKey].split(',') : [];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter((v) => v !== value)
+          : [...currentValues, value];
+
+        return { ...prev, [filterKey]: newValues.join(',') };
+      } else {
+        return { ...prev, [filterKey]: value };
+      }
+    });
   };
 
   return (
@@ -100,15 +112,26 @@ const DashboardFilters = ({
       >
         <SelectTrigger
           size="sm"
-          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b"
+          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b capitalize"
         >
           <FilterLinesIcon className="size-[14px]" />
-          <SelectValue placeholder={t('filters.sport')} />
+          <SelectValue placeholder={t('filters.sport')}>
+            {filters.sport
+              ? `${t('filters.sport')} (${filters.sport.split(',').length})`
+              : t('filters.sport')}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="football">Football</SelectItem>
-          <SelectItem value="tennis">Tennis</SelectItem>
-          <SelectItem value="basketball">Basketball</SelectItem>
+          {['football', 'tennis', 'basketball'].map((sport) => (
+            <SelectItem
+              isSelected={filters.sport.split(',').includes(sport)}
+              value={sport}
+              key={sport}
+              className="capitalize"
+            >
+              {sport}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
@@ -118,16 +141,28 @@ const DashboardFilters = ({
       >
         <SelectTrigger
           size="sm"
-          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b"
+          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b capitalize"
         >
           <FilterLinesIcon className="size-[14px]" />
-          <SelectValue placeholder={t('filters.market')} />
+          <SelectValue placeholder={t('filters.market')}>
+            {filters.market
+              ? `${t('filters.market')} (${filters.market.split(',').length})`
+              : t('filters.market')}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="moneyline">Moneyline</SelectItem>
-          <SelectItem value="over/under">Over/under</SelectItem>
-          <SelectItem value="handicap">Handicap</SelectItem>
-          <SelectItem value="player-performance">Player performance</SelectItem>
+          {['moneyline', 'over_under', 'handicap', 'player_performance'].map(
+            (market) => (
+              <SelectItem
+                isSelected={filters.market.split(',').includes(market)}
+                value={market}
+                key={market}
+                className="capitalize"
+              >
+                {market.split('_').join(' ')}
+              </SelectItem>
+            ),
+          )}
         </SelectContent>
       </Select>
 
@@ -137,16 +172,24 @@ const DashboardFilters = ({
       >
         <SelectTrigger
           size="sm"
-          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b"
+          className="from-input !shadow-glass !text-foreground to-muted bg-gradient-to-b capitalize"
         >
           <FilterLinesIcon className="size-[14px]" />
-          <SelectValue placeholder={t('filters.bookmaker')} />
+          <SelectValue placeholder={t('filters.bookmaker')}>
+            {filters.bookmaker
+              ? `${t('filters.bookmaker')} (${filters.bookmaker.split(',').length})`
+              : t('filters.bookmaker')}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {bookmakers?.map((item) => (
             <SelectItem
               key={item.cloneName}
               value={item.cloneName.toLowerCase()}
+              isSelected={filters.bookmaker
+                .split(',')
+                .includes(item.cloneName.toLowerCase())}
+              className="capitalize"
             >
               {item.cloneName}
             </SelectItem>

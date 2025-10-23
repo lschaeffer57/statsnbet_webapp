@@ -65,12 +65,13 @@ const ActiveFilters = ({
               {typeof value === 'string' ? (
                 <>
                   <Separator orientation="vertical" />
-                  {value.split(',').map((item) => (
+                  {value.split(',').map((item, index, array) => (
                     <span
                       key={item}
                       className="text-foreground text-sm font-medium capitalize"
                     >
-                      {item}
+                      {item.split('_').join(' ')}
+                      {index < array.length - 1 && ', '}
                     </span>
                   ))}
                 </>
