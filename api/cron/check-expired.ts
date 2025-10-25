@@ -1,4 +1,4 @@
-import { createClerkClient, User } from '@clerk/backend';
+import { createClerkClient, type User } from '@clerk/backend';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
