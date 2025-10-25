@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import { type ChartData, type DailyStats } from '@/types';
+import { type ChartData, type DailyStats } from '../src/types/index.js';
 
 interface MongoFilter {
   $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;

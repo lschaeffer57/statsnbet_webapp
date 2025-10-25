@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { ChartData, DailyStats } from '@/types';
+import type { ChartData, DailyStats } from '../src/types/index.js';
 
 interface MongoFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,17 +145,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       totalStakes += bet.stake || 0;
       totalBets += 1;
 
-      chartData.push({
-        date: bet.sent_at,
-        betNumber: totalBets,
-        realGain: cumulativeRealGain,
-        theoreticalGain: cumulativeTheoreticalGain,
-      });
+      const betDate = new Date(bet.sent_at);
+      if (!isNaN(betDate.getTime())) {
+        chartData.push({
+          date: bet.sent_at,
+          betNumber: totalBets,
+          realGain: cumulativeRealGain,
+          theoreticalGain: cumulativeTheoreticalGain,
+        });
+      }
     });
 
     const groupedByDate = bets.reduce(
       (acc, bet) => {
-        const date = new Date(bet.sent_at).toISOString().split('T')[0];
+        const betDate = new Date(bet.sent_at);
+        if (isNaN(betDate.getTime())) {
+          return acc;
+        }
+
+        const date = betDate.toISOString().split('T')[0];
 
         if (!acc[date]) {
           acc[date] = {
@@ -187,7 +195,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     const dailyStats = Object.values(groupedByDate).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      (a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+          return 0;
+        }
+        return dateA.getTime() - dateB.getTime();
+      },
     );
 
     const currentDate = new Date();
@@ -204,6 +219,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const monthlyBets = bets.filter((bet) => {
       const betDate = new Date(bet.sent_at);
+      if (isNaN(betDate.getTime())) {
+        return false;
+      }
       return betDate >= startOfMonth && betDate <= endOfMonth;
     });
 
@@ -219,15 +237,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let bankrollAtStartOfMonth = 0;
     if (monthlyBets.length > 0) {
-      const firstBetDate = new Date(monthlyBets[monthlyBets.length - 1].sent_at)
-        .toISOString()
-        .split('T')[0];
-      bankrollAtStartOfMonth =
-        chartData.find((entry) =>
-          Array.isArray(entry.date)
-            ? entry.date[0].startsWith(firstBetDate)
-            : entry.date.startsWith(firstBetDate),
-        )?.realGain ?? 0;
+      const firstBetDateObj = new Date(monthlyBets[monthlyBets.length - 1].sent_at);
+      if (!isNaN(firstBetDateObj.getTime())) {
+        const firstBetDate = firstBetDateObj.toISOString().split('T')[0];
+        bankrollAtStartOfMonth =
+          chartData.find((entry) =>
+            Array.isArray(entry.date)
+              ? entry.date[0].startsWith(firstBetDate)
+              : entry.date.startsWith(firstBetDate),
+          )?.realGain ?? 0;
+      }
     }
 
     return res.status(200).json({
