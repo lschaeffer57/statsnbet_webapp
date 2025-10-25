@@ -1,4 +1,5 @@
 import type { ChartData, DailyStats, FilteredBet } from '@/types';
+import { format, parse } from 'date-fns';
 
 export const getChartData = (data: FilteredBet[] | undefined): ChartData[] => {
   if (!data) return [];
@@ -24,8 +25,8 @@ export const getDailyStats = (
   if (!data) return [];
   const groupedByDate = data.reduce(
     (acc, bet) => {
-      const date = new Date(bet.date).toISOString().split('T')[0];
-      if (!acc[date]) {
+      const parsedDate = parse(bet.date, 'dd/MM/yyyy', new Date());
+      const date = format(parsedDate, 'yyyy-MM-dd');      if (!acc[date]) {
         acc[date] = {
           date,
           lossTotal: 0,
