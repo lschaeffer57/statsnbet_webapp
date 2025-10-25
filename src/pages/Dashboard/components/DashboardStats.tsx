@@ -28,12 +28,12 @@ const DashboardStats = ({
       <StatCard
         title={t('stats.averageReturn')}
         isLoading={isLoading}
-        value={`€${(settled_stake_sum ?? 0).toFixed(2)}`}
+        value={`${(settled_stake_sum ?? 0).toFixed(2)}%`}
       />
       <StatCard
         isLoading={isLoading}
         title={t('stats.updatedBankroll')}
-        value={`€${(total_profit ?? 0).toFixed(2)}`}
+        value={`${(total_profit ?? 0).toFixed(2)}€`}
       />
       <StatCard
         isLoading={isLoading}

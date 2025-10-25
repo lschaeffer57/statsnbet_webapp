@@ -16,6 +16,7 @@ import {
 
 import { CustomTooltip, CustomLegend } from '@/components/ui/Chart';
 import { Input } from '@/components/ui/Input';
+import { cn } from '@/lib/utils';
 import type { ChartData, DailyStats } from '@/types';
 
 interface ProfitChartProps {
@@ -46,7 +47,7 @@ const ProfitChart = ({
             {isPublic ? t('chart.simulation') : t('chart.totalProfit')}
           </h3>
           <p className="bg-gradient-to-b from-[#28FCE0] to-[#00CAAF] bg-clip-text text-xl font-medium text-transparent">
-            {isPublic || data.length === 0
+            {data.length === 0
               ? '--'
               : cumulativeRealGain.toLocaleString('fr-FR', {
                   style: 'currency',
@@ -64,7 +65,10 @@ const ProfitChart = ({
             value={bankroll}
             onChange={(e) => setBankroll?.(e.target.value)}
             element={Input}
-            className="w-50"
+            className={cn(
+              'z-50 w-50',
+              !bankroll && 'shadow-[0_0_0_9999px_rgba(0,0,0,0.7)]',
+            )}
           />
         )}
       </div>

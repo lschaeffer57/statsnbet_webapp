@@ -26,8 +26,8 @@ export const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
-  const collection = '2097730097';
   const { user } = useUser();
+  const collection = '2097730097';
 
   const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
@@ -69,10 +69,14 @@ export const Dashboard = () => {
       search: search,
     }),
   });
-
+  console.log(data);
   const isLoading = isBetsLoading || isRefetching;
 
-  const { data: userData, error: userDataError } = useQuery({
+  const {
+    data: userData,
+    error: userDataError,
+    isLoading: isUserDataLoading,
+  } = useQuery({
     ...userApi.getUser(user?.id || ''),
     enabled: !!user?.id,
   });
@@ -130,6 +134,12 @@ export const Dashboard = () => {
 
   const chartData = useMemo(() => getChartData(data?.bets), [data]);
   const dailyStats = useMemo(() => getDailyStats(data?.bets), [data]);
+  const totalProfit = useMemo(() => {
+    return (
+      (data?.metrics.total_profit ?? 0) +
+      Number(userData?.[0].bankroll_reference)
+    );
+  }, [data?.metrics, userData]);
 
   return (
     <div className="relative z-20">
@@ -152,10 +162,12 @@ export const Dashboard = () => {
       </header>
       <section className="mt-[23px] px-7">
         <DashboardStats
-          isLoading={isLoading}
+          isLoading={isLoading || isUserDataLoading}
           roi={data?.metrics.roi}
-          settled_stake_sum={data?.metrics.settled_stake_sum}
-          total_profit={data?.metrics.total_profit}
+          settled_stake_sum={
+            (totalProfit / (userData?.[0].bankroll_reference ?? 0) - 1) * 100
+          }
+          total_profit={totalProfit}
           settled_count={data?.metrics.settled_count}
         />
       </section>

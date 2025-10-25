@@ -104,9 +104,13 @@ export const PublicDashboard = () => {
     () => getDailyStats(filteredHistoryData?.page_rows),
     [filteredHistoryData],
   );
+  const totalProfit = useMemo(() => {
+    return (filteredHistoryData?.metrics.total_profit ?? 0) + Number(bankroll);
+  }, [filteredHistoryData?.metrics, bankroll]);
 
   return (
-    <main className="px-4 py-3">
+    <main className="relative px-4 py-3">
+      {/* <div className="absolute inset-0 z-40 bg-black/50" /> */}
       <div className="border-border relative z-10 w-full flex-1 rounded-3xl border py-10">
         <div
           className="absolute inset-0 rounded-3xl bg-cover bg-top bg-no-repeat"
@@ -162,10 +166,8 @@ export const PublicDashboard = () => {
                 <DashboardStats
                   isLoading={isLoading}
                   roi={filteredHistoryData?.metrics.roi}
-                  settled_stake_sum={
-                    filteredHistoryData?.metrics.settled_stake_sum
-                  }
-                  total_profit={filteredHistoryData?.metrics.total_profit}
+                  settled_stake_sum={(totalProfit / Number(bankroll) - 1) * 100}
+                  total_profit={totalProfit}
                   settled_count={filteredHistoryData?.metrics.settled_count}
                 />
               </div>
