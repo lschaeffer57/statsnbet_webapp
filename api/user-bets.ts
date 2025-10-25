@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { ChartData, DailyStats } from '../src/types/index.js';
+import type { ChartData, DailyStats } from '@/types';
 
 interface MongoFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -163,7 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return acc;
         }
 
-        const date = betDate.toISOString().split('T')[0];
+        const date: string = betDate.toISOString().split('T')[0];
 
         if (!acc[date]) {
           acc[date] = {

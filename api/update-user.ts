@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { AuthFormValues, UserDocument } from '../src/types/index.js';
+import type { AuthFormValues, UserDocument } from '@/types';
 
 const parseNumericValue = (value: string): number => {
   const cleanedValue = value.replace(/[^\d.,-]/g, '');
