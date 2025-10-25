@@ -90,8 +90,17 @@ const ProfitChart = ({
             tickLine={false}
             domain={!isDate ? ['dataMin', 'dataMax'] : undefined}
             tickFormatter={
-              isDate ? (value) => format(value, 'dd/MM/yy') : undefined
+              isDate
+                ? (value) => {
+                  const date = new Date(value);
+
+                  if (isNaN(date.getTime())) return '';
+
+                  return format(date, 'dd/MM/yy');
+                }
+                : undefined
             }
+
           />
 
           <YAxis
