@@ -29,7 +29,7 @@ export const DEFAULT_PERFORMANCE_PARAMETERS = {
     handicap: true,
     player_performance: true,
   },
-  bookmaker: ['1xBet', '4Kasino', 'Amunra'],
+  bookmaker: ['1xbet', '4kasino', 'amunra'],
 };
 
 export const DEFAULT_FILTERS = {

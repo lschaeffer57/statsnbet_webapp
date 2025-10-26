@@ -132,10 +132,12 @@ export const PerformanceParameters = memo(
           isPending={isPending}
         />
 
-        <PerformanceParametersVideoModal
-          isOpen={isVideoModalOpen}
-          onClose={() => setIsVideoModalOpen(false)}
-        />
+        {isVideoModalOpen && (
+          <PerformanceParametersVideoModal
+            isOpen={isVideoModalOpen}
+            onClose={() => setIsVideoModalOpen(false)}
+          />
+        )}
       </Card>
     );
   },

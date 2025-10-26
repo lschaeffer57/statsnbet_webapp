@@ -32,7 +32,6 @@ const TypeForm = ({
   isLoading,
 }: TypeFormProps) => {
   const { t } = useTranslation('auth');
-
   return (
     <div className="space-y-6">
       <div className="space-y-0.5">
@@ -290,7 +289,9 @@ const TypeForm = ({
                     </span>
                   </span>
                   <span className="text-foreground">
-                    {values.bookmaker.join(', ')}
+                    {values.bookmaker.map(name =>
+                      name.charAt(0).toUpperCase() + name.slice(1)
+                    ).join(', ')}
                   </span>
                 </div>
                 <ChevronDownIcon className="size-[14px]" />
@@ -303,7 +304,7 @@ const TypeForm = ({
                 className="w-full"
                 disabled={
                   (values.bookmaker.length >= 3 &&
-                    !values.bookmaker.includes(bookmaker.cloneName)) ||
+                    !values.bookmaker.includes(bookmaker.cloneName.toLowerCase())) ||
                   !bookmaker.running
                 }
                 key={bookmaker.cloneName}
