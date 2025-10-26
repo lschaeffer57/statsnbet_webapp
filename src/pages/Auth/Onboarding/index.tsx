@@ -32,7 +32,7 @@ export const Onboarding = () => {
       >
         <iframe
           title="video"
-          src="https://iframe.mediadelivery.net/embed/510725/4cbda37c-4eec-4efd-885e-1a0e69cfb4a1?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+          src="https://iframe.mediadelivery.net/embed/510725/072af899-abb1-437c-ab30-dc2a3838fc2c?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
           loading="lazy"
           style={{
             border: 0,
