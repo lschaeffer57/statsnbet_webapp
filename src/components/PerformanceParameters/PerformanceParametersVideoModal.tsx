@@ -53,31 +53,6 @@ export const PerformanceParametersVideoModal = ({
               </div>
             </div>
           </div>
-
-          <div className="text-muted-foreground space-y-3 text-sm">
-            <p>
-              {t('signup.performanceParameters.videoModal.explanation.evMin')}
-            </p>
-            <p>
-              {t('signup.performanceParameters.videoModal.explanation.trj')}
-            </p>
-            <p>
-              {t('signup.performanceParameters.videoModal.explanation.minCost')}
-            </p>
-            <p>
-              {t('signup.performanceParameters.videoModal.explanation.maxCost')}
-            </p>
-            <p>
-              {t(
-                'signup.performanceParameters.videoModal.explanation.minLiquidity',
-              )}
-            </p>
-            <p>
-              {t(
-                'signup.performanceParameters.videoModal.explanation.bankroll',
-              )}
-            </p>
-          </div>
         </div>
       </ModalContent>
     </Modal>
