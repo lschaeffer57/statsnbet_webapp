@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/Button';
 import { RoutesEnum } from '@/enums/router';
+import { ONBOARDING_VIDEO_URL } from '@/constants';
 
 export const Onboarding = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export const Onboarding = () => {
       >
         <iframe
           title="video"
-          src="https://iframe.mediadelivery.net/embed/510725/072af899-abb1-437c-ab30-dc2a3838fc2c?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+          src={ONBOARDING_VIDEO_URL}
           loading="lazy"
           style={{
             border: 0,

@@ -54,3 +54,6 @@ export const DEFAULT_FILTERS = {
     end: undefined,
   },
 };
+
+export const ONBOARDING_VIDEO_URL =
+  'https://iframe.mediadelivery.net/embed/510725/072af899-abb1-437c-ab30-dc2a3838fc2c?autoplay=true&loop=false&muted=false&preload=true&responsive=true';

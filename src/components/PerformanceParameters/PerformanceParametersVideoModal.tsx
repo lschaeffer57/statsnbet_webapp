@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from '../ui/Modal';
+import { ONBOARDING_VIDEO_URL } from '@/constants';
 
 interface PerformanceParametersVideoModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export const PerformanceParametersVideoModal = ({
               <div style={{ position: 'relative', paddingTop: '56.25%' }}>
                 <iframe
                   title="video"
-                  src="https://iframe.mediadelivery.net/embed/510725/4cbda37c-4eec-4efd-885e-1a0e69cfb4a1?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+                  src={ONBOARDING_VIDEO_URL}
                   loading="lazy"
                   style={{
                     border: 0,
