@@ -13,7 +13,7 @@ import type { CourseItem, Course, Locale } from '@/types';
 
 export const Training = () => {
   const { t } = useTranslation('training');
-  const locale = localStorage.getItem('lng') as Locale;
+  const locale = (localStorage.getItem('lng') ?? 'en') as Locale;
   const navigate = useNavigate();
   const [openId, setOpenId] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -106,7 +106,7 @@ export const Training = () => {
                               className="font-geise h-auto justify-start p-4 text-left text-[14px] font-normal"
                               onClick={() => handleVideoClick(q, opt)}
                               iconLeft={
-                                <div className="bg-[#1f2028]z flex h-[20px] w-[20px] items-center justify-center rounded-full border border-white/30"></div>
+                                <div className="bg-[#1f2028] flex h-[20px] w-[20px] items-center justify-center rounded-full border border-white/30"></div>
                               }
                             >
                               <div className="flex flex-col items-start gap-1">

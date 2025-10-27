@@ -14,7 +14,7 @@ import type { Locale } from '@/types';
 export const TrainingVideo = () => {
   const { t } = useTranslation('training');
   const navigate = useNavigate();
-  const locale = localStorage.getItem('lng') as Locale;
+  const locale = (localStorage.getItem('lng') || 'en') as Locale;
   const { videoId = '' } = useParams();
   const { state } = useLocation() as {
     state?: {
