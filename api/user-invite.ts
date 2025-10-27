@@ -46,6 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     res.status(200).json({ success: true, invitation });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error(err.errors[0].longMessage);
     res.status(500).json({

@@ -27,7 +27,6 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
   const { user } = useUser();
-  const collection = '2097730097';
 
   const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
@@ -37,6 +36,17 @@ export const Dashboard = () => {
   //     search: search,
   //   }),
   // });
+
+  const {
+    data: userData,
+    error: userDataError,
+    isLoading: isUserDataLoading,
+  } = useQuery({
+    ...userApi.getUser(user?.id || ''),
+    enabled: !!user?.id,
+  });
+
+  const collection = userData?.[0]?.telegram?.id?.toString() ?? '';
 
   const { data: bookmakers } = useQuery(
     bookmakersApi.getBookmakersQueryOptions(),
@@ -68,18 +78,10 @@ export const Dashboard = () => {
       collection,
       search: search,
     }),
+    enabled: !!collection,
   });
   console.log(data);
-  const isLoading = isBetsLoading || isRefetching;
-
-  const {
-    data: userData,
-    error: userDataError,
-    isLoading: isUserDataLoading,
-  } = useQuery({
-    ...userApi.getUser(user?.id || ''),
-    enabled: !!user?.id,
-  });
+  const isLoading = isUserDataLoading || isBetsLoading || isRefetching;
 
   useEffect(() => {
     if (filters.configuration && userData) {

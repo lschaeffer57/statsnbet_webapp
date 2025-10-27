@@ -200,58 +200,32 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
 
   function toDate(obj: string | Date | null | undefined): Date | null {
     if (obj == null) return null;
-    if (obj instanceof Date)
-      return new Date(obj.getFullYear(), obj.getMonth(), obj.getDate());
-    if (typeof obj === 'string') {
-      const tryParse = (str: string, fmt: string): Date | null => {
-        let rx: RegExp;
-        if (fmt === 'YYYY-MM-DD') rx = /^(\d{4})-(\d{2})-(\d{2})$/;
-        else if (fmt === 'DD/MM/YYYY') rx = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-        else if (fmt === 'DD-MM-YYYY') rx = /^(\d{2})-(\d{2})-(\d{4})$/;
-        else if (fmt === 'MM/DD/YYYY') rx = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-        else if (fmt === 'YYYY-MM-DD HH:mm:ss')
-          rx = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/;
-        else if (fmt === 'YYYY-MM-DD HH:mm:ss.SSS')
-          rx =
-            /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})\.(\d{1,3})$/;
-        else if (fmt === 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-          rx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{1,3})Z$/;
-        else return null;
 
-        const m = rx.exec(str);
-        if (!m) return null;
-        const y = +m[1],
-          mo = +m[2],
-          d = +m[3];
-        const dt = new Date(y, mo - 1, d);
-        if (
-          dt.getFullYear() === y &&
-          dt.getMonth() === mo - 1 &&
-          dt.getDate() === d
-        )
-          return dt;
-        return null;
-      };
-      const fmts = [
-        'YYYY-MM-DD',
-        'DD/MM/YYYY',
-        'DD-MM-YYYY',
-        'MM/DD/YYYY',
-        'YYYY-MM-DD HH:mm:ss',
-        'YYYY-MM-DD HH:mm:ss.SSS',
-        'YYYY-MM-DDTHH:mm:ss.SSSZ',
-      ];
-      for (let i = 0; i < fmts.length; i++) {
-        const d = tryParse(obj, fmts[i]);
-        if (d) return d;
-      }
-      const t = Date.parse(obj);
-      if (!isNaN(t)) {
-        const nd = new Date(t);
-        return new Date(nd.getFullYear(), nd.getMonth(), nd.getDate());
-      }
-      throw new Error('Format de date non reconnu: ' + JSON.stringify(obj));
+    if (obj instanceof Date) {
+      return new Date(obj.getFullYear(), obj.getMonth(), obj.getDate());
     }
+    // Parse strict DD/MM/YYYY
+    if (typeof obj === 'string') {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(obj.trim());
+      if (!m)
+        throw new Error(
+          'Format de date non reconnu (attendu DD/MM/YYYY): ' +
+            JSON.stringify(obj),
+        );
+      const d = +m[1],
+        mo = +m[2],
+        y = +m[3];
+      const dt = new Date(y, mo - 1, d);
+      if (
+        dt.getFullYear() === y &&
+        dt.getMonth() === mo - 1 &&
+        dt.getDate() === d
+      ) {
+        return new Date(y, mo - 1, d); // normalisé à minuit local
+      }
+      throw new Error('Date invalide (ex: 31/02/2024): ' + JSON.stringify(obj));
+    }
+
     throw new Error('Type de date non supporté: ' + typeof obj);
   }
 
