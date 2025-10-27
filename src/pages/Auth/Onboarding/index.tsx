@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/Button';
-import { RoutesEnum } from '@/enums/router';
 import { ONBOARDING_VIDEO_URL } from '@/constants';
+import { RoutesEnum } from '@/enums/router';
 
 export const Onboarding = () => {
   const navigate = useNavigate();

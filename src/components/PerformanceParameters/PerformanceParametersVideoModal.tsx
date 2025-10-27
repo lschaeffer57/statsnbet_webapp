@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
+import { ONBOARDING_VIDEO_URL } from '@/constants';
+
 import {
   Modal,
   ModalContent,
@@ -7,7 +9,6 @@ import {
   ModalHeader,
   ModalTitle,
 } from '../ui/Modal';
-import { ONBOARDING_VIDEO_URL } from '@/constants';
 
 interface PerformanceParametersVideoModalProps {
   isOpen: boolean;
