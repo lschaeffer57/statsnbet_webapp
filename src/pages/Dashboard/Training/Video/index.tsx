@@ -12,9 +12,9 @@ import { RoutesEnum } from '@/enums/router';
 import type { Locale } from '@/types';
 
 export const TrainingVideo = () => {
-  const { t } = useTranslation('training');
+  const { t, i18n } = useTranslation('training');
+  const locale = i18n.language as Locale;
   const navigate = useNavigate();
-  const locale = (localStorage.getItem('lng') || 'en') as Locale;
   const { videoId = '' } = useParams();
   const { state } = useLocation() as {
     state?: {

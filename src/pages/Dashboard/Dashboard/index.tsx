@@ -80,7 +80,7 @@ export const Dashboard = () => {
     }),
     enabled: !!collection,
   });
-  console.log(data);
+
   const isLoading = isUserDataLoading || isBetsLoading || isRefetching;
 
   useEffect(() => {
