@@ -177,6 +177,7 @@ export const betsApi = {
       page_size?: number;
       page_number?: number;
       search?: string;
+      get_all?: boolean;
     },
   ) => {
     return queryOptions({
@@ -217,6 +218,9 @@ export const betsApi = {
             'date_max',
             format(filters.period.end, 'yyyy-MM-dd'),
           );
+
+        if (filters?.get_all)
+          searchParams.set('get_all', filters.get_all.toString());
 
         if (filters?.page_size)
           searchParams.set('page_size', filters.page_size.toString());

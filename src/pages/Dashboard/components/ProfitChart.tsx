@@ -88,35 +88,64 @@ const ProfitChart = ({
             tickCount={!isDate ? 31 : undefined}
             axisLine={false}
             tickLine={false}
+            minTickGap={50}
             domain={!isDate ? ['dataMin', 'dataMax'] : undefined}
             tickFormatter={
               isDate
                 ? (value) => {
-                  const date = new Date(value);
+                    const date = new Date(value);
 
-                  if (isNaN(date.getTime())) return '';
+                    if (isNaN(date.getTime())) return '';
 
-                  return format(date, 'dd/MM/yy');
-                }
+                    return format(date, 'dd/MM/yy');
+                  }
                 : undefined
             }
-
           />
 
           <YAxis
+            yAxisId="profit"
             stroke={'rgba(255,255,255,0.5)'}
             tick={{ fontSize: 12 }}
-            dataKey={isDate ? 'gainTotal' : 'realGain'}
+            dataKey={isDate ? 'profit' : 'realGain'}
             tickCount={8}
             axisLine={false}
             tickLine={false}
           />
 
+          {isDate && (
+            <YAxis
+              yAxisId="bars"
+              orientation="right"
+              domain={[0, 'dataMax']}
+              hide
+            />
+          )}
+
           {isDate ? (
             <>
               <Tooltip content={<CustomTooltip data={data} />} />
 
-              <Bar dataKey="gainTotal" radius={[4, 4, 0, 0]} opacity={0.7}>
+              <Line
+                type="linear"
+                yAxisId="profit"
+                dataKey="profit"
+                stroke="#3B4EE0"
+                strokeWidth={2}
+                dot={false}
+                activeDot={false}
+              />
+
+              <Bar
+                dataKey="gainTotal"
+                yAxisId="bars"
+                radius={[4, 4, 0, 0]}
+                opacity={0.7}
+                activeBar={{
+                  stroke: '#FFFFFF',
+                  strokeWidth: 1,
+                }}
+              >
                 {data.map((entry, index) => {
                   const netGain =
                     'gainTotal' in entry

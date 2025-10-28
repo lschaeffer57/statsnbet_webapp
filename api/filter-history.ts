@@ -54,6 +54,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const pageSizeStr = getStringValue(req.query.page_size);
   const page_size = pageSizeStr ? Number(pageSizeStr) : 20;
 
+  const getAllStr = getStringValue(req.query.get_all);
+  const get_all = getAllStr === 'true';
+
   const pageNumberStr = getStringValue(req.query.page_number);
   const page_number = pageNumberStr ? Number(pageNumberStr) : 1;
 
@@ -78,6 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       page_size,
       page_number,
       search,
+      get_all,
     });
 
     return res.status(200).json(result);
@@ -164,6 +168,7 @@ interface FilterOptions {
   page_size?: number;
   page_number?: number;
   search?: string | null;
+  get_all?: boolean;
 }
 
 interface PnLResult {
@@ -210,6 +215,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     page_size = 20,
     page_number = 1,
     search = null,
+    get_all = false,
   } = options;
 
   function sixMonthsAgo(d: Date): Date {
@@ -507,16 +513,26 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       if (s == null) return '';
       return String(s).trim().toLowerCase().replace(/[-_]/g, ' ');
     }
-    const stakeKey = pick([
-      'stake',
-      'stakes',
-      'mise',
+    const stakeKeyPct = pick([
       'amount_pct',
       'bet_amount_pct',
       'kelly_pct',
+      'stake_pct',
     ]);
+
+    const stakeKeyAbs = pick([
+      'stake',
+      'stakes',
+      'mise',
+      'amount',
+      'bet_amount',
+    ]);
+    const isPercentage = !!stakeKeyPct;
+    const stakeKey = stakeKeyPct || stakeKeyAbs;
+
     const oddsKey = pick(['odds', 'cote', 'decimal_odds']);
     const resKey = pick(['result', 'status', 'settlement']);
+
     if (!stakeKey || !oddsKey || !resKey)
       throw new Error(
         'Champs stake/odds/result introuvables dans le document filtré.',
@@ -531,19 +547,21 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       settled_stake_sum = 0,
       total_profit = 0;
     for (let i = 0; i < n; i++) {
-      const stakePct = filtered[stakeKey][i];
+      const stakeValue = filtered[stakeKey][i];
       let odds = filtered[oddsKey][i];
       const rs = norm(filtered[resKey][i]);
       if (
-        stakePct == null ||
+        stakeValue == null ||
         odds == null ||
-        !isFinite(+stakePct) ||
+        !isFinite(+stakeValue) ||
         !isFinite(+odds)
       ) {
         pnl.push(null);
         continue;
       }
-      const stake = (+bankroll_value * +stakePct) / 100;
+      const stake = isPercentage
+        ? (+bankroll_value * +stakeValue) / 100
+        : +stakeValue;
       odds = +odds;
       let val = 0,
         settled = false;
@@ -666,6 +684,27 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     sortRowsDesc(rows);
 
     const total_rows = rows.length;
+    if (get_all) {
+      return {
+        page_rows: rows,
+        pagination: {
+          page_number: 1,
+          page_size: total_rows,
+          page_count: 1,
+          total_rows: total_rows,
+        },
+        metrics: {
+          total_profit: pnlRes.total_profit,
+          settled_count: pnlRes.settled_count,
+          settled_stake_sum: pnlRes.settled_stake_sum,
+          roi: roi,
+        },
+        bankroll: bankroll,
+        filters: filtered_doc.applied_filters,
+        source_id: source_id,
+      };
+    }
+
     const page_count = Math.max(1, Math.ceil(total_rows / page_size));
     const p = Math.min(
       Math.max(1, parseInt(String(page_number), 10) || 1),

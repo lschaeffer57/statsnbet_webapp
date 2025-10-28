@@ -80,7 +80,37 @@ export const PublicDashboard = () => {
     enabled: !!bankroll.trim(),
   });
 
+  const {
+    data: filteredChartData,
+    isLoading: isChartDataLoading,
+    error: chartError,
+    refetch: chartRefetch,
+    isRefetching: isChartRefetching,
+  } = useQuery({
+    ...betsApi.getFilteredHistoryQueryOptions(bankroll, undefined, {
+      ...filters,
+      bookmaker: filters.bookmaker
+        ? Array.from(
+            new Set(
+              filters.bookmaker
+                .split(',')
+                .map((cloneName) =>
+                  bookmakers
+                    ?.find((b) => b.cloneName.toLowerCase() === cloneName)
+                    ?.original.toLowerCase(),
+                )
+                .filter(Boolean),
+            ),
+          ).join(',')
+        : '',
+      get_all: true,
+      search: search,
+    }),
+    enabled: !!bankroll.trim(),
+  });
+
   const isLoading = isBetsLoading || isRefetching;
+  const isChartLoading = isChartDataLoading || isChartRefetching;
 
   const tableData = useMemo(() => {
     if (!filteredHistoryData) return { data: undefined, isLoading };
@@ -97,12 +127,12 @@ export const PublicDashboard = () => {
   }, [filteredHistoryData, isLoading]);
 
   const chartData = useMemo(
-    () => getChartData(filteredHistoryData?.page_rows),
-    [filteredHistoryData],
+    () => getChartData(filteredChartData?.page_rows),
+    [filteredChartData],
   );
   const dailyStats = useMemo(
-    () => getDailyStats(filteredHistoryData?.page_rows),
-    [filteredHistoryData],
+    () => getDailyStats(filteredChartData?.page_rows),
+    [filteredChartData],
   );
   const totalProfit = useMemo(() => {
     return (filteredHistoryData?.metrics.total_profit ?? 0) + Number(bankroll);
@@ -110,7 +140,6 @@ export const PublicDashboard = () => {
 
   return (
     <main className="relative px-4 py-3">
-      {/* <div className="absolute inset-0 z-40 bg-black/50" /> */}
       <div className="border-border relative z-10 w-full flex-1 rounded-3xl border py-10">
         <div
           className="absolute inset-0 rounded-3xl bg-cover bg-top bg-no-repeat"
@@ -130,7 +159,10 @@ export const PublicDashboard = () => {
                   iconLeft={<RefreshIcon className="size-[14px]" />}
                   variant="secondary"
                   size="sm"
-                  onClick={() => refetch()}
+                  onClick={() => {
+                    refetch();
+                    chartRefetch();
+                  }}
                 >
                   {tCommon('refresh')}
                 </Button>
@@ -168,7 +200,7 @@ export const PublicDashboard = () => {
                   roi={filteredHistoryData?.metrics.roi}
                   settled_stake_sum={(totalProfit / Number(bankroll) - 1) * 100}
                   total_profit={totalProfit}
-                  settled_count={filteredHistoryData?.metrics.settled_count}
+                  settled_count={filteredHistoryData?.pagination.total_rows}
                 />
               </div>
             )}
@@ -181,7 +213,7 @@ export const PublicDashboard = () => {
             />
             <ActiveFilters filters={filters} setFilters={setFilters} />
 
-            {isLoading ? (
+            {isChartLoading ? (
               <div className="px-7">
                 <ChartPlaceholder />
               </div>
@@ -207,9 +239,9 @@ export const PublicDashboard = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
-            {error && (
+            {(error || chartError) && (
               <p className="px-7 text-sm text-red-500">
-                Error: {error.message}
+                Error: {error?.message || chartError?.message}
               </p>
             )}
           </div>
