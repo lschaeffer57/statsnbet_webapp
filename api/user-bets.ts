@@ -171,6 +171,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             lossTotal: 0,
             gainTotal: 0,
             betCount: 0,
+            profit: 0,
           };
         }
 
