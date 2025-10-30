@@ -21,12 +21,14 @@ const PerformanceTabs = ({
   isLoading,
   resetTrigger,
   isPending,
+  isNewConfiguration = true,
 }: {
   setPerformanceParameters: (data: AuthFormValues) => void;
   performanceParameters: AuthFormValues;
   isLoading?: boolean;
   isPending?: boolean;
   resetTrigger: number;
+  isNewConfiguration?: boolean;
 }) => {
   const formikRef = useRef<FormikProps<AuthFormValues>>(null);
 
@@ -163,6 +165,7 @@ const PerformanceTabs = ({
                   touched={touched}
                   handleChange={handleChange}
                   setFieldValue={setFieldValue}
+                  isNewConfiguration={isNewConfiguration}
                 />
               </TabsContent>
               <TabsContent className="text-foreground" value="type">
@@ -173,16 +176,24 @@ const PerformanceTabs = ({
                   touched={touched}
                   setFieldValue={setFieldValue}
                   isLoading={isLoading}
+                  isNewConfiguration={isNewConfiguration}
                 />
               </TabsContent>
-              <Button
-                type="button"
-                onClick={() => handleSubmit()}
-                className="mt-9 h-8 w-full"
-                disabled={isSubmitting || isLoading || isPending}
-              >
-                {t('signup.performanceParameters.criteria.saveButton')}
-              </Button>
+              {isNewConfiguration && (
+                <Button
+                  type="button"
+                  onClick={() => handleSubmit()}
+                  className="mt-9 h-8 w-full"
+                  disabled={
+                    isSubmitting ||
+                    isLoading ||
+                    isPending ||
+                    !isNewConfiguration
+                  }
+                >
+                  {t('signup.performanceParameters.criteria.saveButton')}
+                </Button>
+              )}
             </div>
           );
         }}

@@ -14,6 +14,7 @@ interface CriteriaFormProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setFieldValue: (field: string, value: string) => void;
   isLoading?: boolean;
+  isNewConfiguration?: boolean;
 }
 
 const CriteriaForm = ({
@@ -23,6 +24,7 @@ const CriteriaForm = ({
   handleChange,
   setFieldValue,
   isLoading,
+  isNewConfiguration = true,
 }: CriteriaFormProps) => {
   const { t } = useTranslation('auth');
 
@@ -41,6 +43,7 @@ const CriteriaForm = ({
         percent={true}
         error={errors?.evMin}
         touched={touched?.evMin}
+        isNewConfiguration={isNewConfiguration}
       />
       <CriteriaItem
         isLoading={isLoading}
@@ -55,6 +58,7 @@ const CriteriaForm = ({
         percent={true}
         error={errors?.trj}
         touched={touched?.trj}
+        isNewConfiguration={isNewConfiguration}
       />
       <CriteriaItem
         isLoading={isLoading}
@@ -68,6 +72,7 @@ const CriteriaForm = ({
         decimal={true}
         error={errors?.minCost}
         touched={touched?.minCost}
+        isNewConfiguration={isNewConfiguration}
       />
       <CriteriaItem
         isLoading={isLoading}
@@ -80,6 +85,7 @@ const CriteriaForm = ({
         limit={1.3}
         error={errors?.maxCost}
         touched={touched?.maxCost}
+        isNewConfiguration={isNewConfiguration}
       />
       <CriteriaItem
         isLoading={isLoading}
@@ -92,6 +98,7 @@ const CriteriaForm = ({
         limit={500}
         error={errors?.minLiquidity}
         touched={touched?.minLiquidity}
+        isNewConfiguration={isNewConfiguration}
       />
       <CriteriaItem
         isLoading={isLoading}
@@ -103,6 +110,7 @@ const CriteriaForm = ({
         setFieldValue={setFieldValue}
         error={errors?.bankroll}
         touched={touched?.bankroll}
+        isNewConfiguration={isNewConfiguration}
       />
       <div className="flex w-full items-center justify-between">
         <span className="text-foreground/50 text-sm font-normal">
@@ -112,6 +120,7 @@ const CriteriaForm = ({
           <Input
             isLoading={isLoading}
             skeletonClassName="h-[32px] w-[62px]"
+            disabled={!isNewConfiguration}
             type="time"
             name="time.start"
             className="!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]"
@@ -124,6 +133,7 @@ const CriteriaForm = ({
           <Input
             isLoading={isLoading}
             skeletonClassName="h-[32px] w-[62px]"
+            disabled={!isNewConfiguration}
             type="time"
             name="time.end"
             className="!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]"
