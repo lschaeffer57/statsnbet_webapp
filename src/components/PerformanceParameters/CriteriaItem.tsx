@@ -17,6 +17,7 @@ interface CriteriaItemProps {
   error?: string | undefined;
   touched?: boolean | undefined;
   isLoading?: boolean;
+  isNewConfiguration?: boolean;
 }
 
 const CriteriaItem = ({
@@ -32,6 +33,7 @@ const CriteriaItem = ({
   percent = false,
   error,
   touched,
+  isNewConfiguration = true,
 }: CriteriaItemProps) => {
   const handleIncrement = () => {
     if (!setFieldValue) return;
@@ -97,6 +99,7 @@ const CriteriaItem = ({
         <div className="flex items-center gap-0.5">
           <Input
             isLoading={isLoading}
+            disabled={!isNewConfiguration}
             skeletonClassName="h-[32px] w-[54px]"
             name={name}
             placeholder={placeholder}
@@ -114,7 +117,7 @@ const CriteriaItem = ({
               type="button"
               className="!bg-input -mb-[1px] h-[16px] rounded-md rounded-b-none !px-[4.5px] !py-0.5 !shadow-none"
               onClick={handleIncrement}
-              disabled={isLoading}
+              disabled={isLoading || !isNewConfiguration}
             >
               <PlusIcon className="size-3" />
             </Button>
@@ -126,7 +129,8 @@ const CriteriaItem = ({
               disabled={
                 isLoading ||
                 (typeof limit === 'number' &&
-                  parseFloat(value.replace('%', '')) <= limit)
+                  parseFloat(value.replace('%', '')) <= limit) ||
+                !isNewConfiguration
               }
             >
               <MinusIcon className="size-3" />

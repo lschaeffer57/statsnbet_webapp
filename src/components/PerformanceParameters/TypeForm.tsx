@@ -21,6 +21,7 @@ interface TypeFormProps {
   touched: FormikTouched<AuthFormValues> | undefined;
   setFieldValue: (field: string, value: string | string[] | object) => void;
   isLoading?: boolean;
+  isNewConfiguration?: boolean;
 }
 
 const TypeForm = ({
@@ -30,6 +31,7 @@ const TypeForm = ({
   touched,
   setFieldValue,
   isLoading,
+  isNewConfiguration = true,
 }: TypeFormProps) => {
   const { t } = useTranslation('auth');
   return (
@@ -43,6 +45,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.betType.live}
                 onCheckedChange={(checked) => {
                   return checked
@@ -61,6 +64,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.betType.prematch}
                 onCheckedChange={(checked) => {
                   return checked
@@ -96,6 +100,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.sport.includes('Football')}
                 onCheckedChange={(checked) => {
                   return checked
@@ -111,6 +116,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.sport.includes('Tennis')}
                 onCheckedChange={(checked) => {
                   return checked
@@ -126,6 +132,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.sport.includes('Basketball')}
                 onCheckedChange={(checked) => {
                   return checked
@@ -154,6 +161,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.betIn === 'euro'}
                 onCheckedChange={(checked) => {
                   return checked && setFieldValue('betIn', 'euro');
@@ -164,6 +172,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.betIn === 'pct'}
                 onCheckedChange={(checked) => {
                   return checked && setFieldValue('betIn', 'pct');
@@ -187,6 +196,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.market.moneyline}
                 onCheckedChange={(checked) => {
                   return checked
@@ -205,6 +215,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.market.over_under}
                 onCheckedChange={(checked) => {
                   return checked
@@ -223,6 +234,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.market.handicap}
                 onCheckedChange={(checked) => {
                   return checked
@@ -241,6 +253,7 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
+                disabled={!isNewConfiguration}
                 checked={values.market.player_performance}
                 onCheckedChange={(checked) => {
                   return checked
@@ -277,6 +290,7 @@ const TypeForm = ({
               variant="secondary"
               className="from-muted w-full !bg-gradient-to-b to-transparent py-1.5 pr-2.5 pl-2 opacity-100"
               size="sm"
+              disabled={!isNewConfiguration}
             >
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -289,9 +303,11 @@ const TypeForm = ({
                     </span>
                   </span>
                   <span className="text-foreground">
-                    {values.bookmaker.map(name =>
-                      name.charAt(0).toUpperCase() + name.slice(1)
-                    ).join(', ')}
+                    {values.bookmaker
+                      .map(
+                        (name) => name.charAt(0).toUpperCase() + name.slice(1),
+                      )
+                      .join(', ')}
                   </span>
                 </div>
                 <ChevronDownIcon className="size-[14px]" />
@@ -304,7 +320,9 @@ const TypeForm = ({
                 className="w-full"
                 disabled={
                   (values.bookmaker.length >= 3 &&
-                    !values.bookmaker.includes(bookmaker.cloneName.toLowerCase())) ||
+                    !values.bookmaker.includes(
+                      bookmaker.cloneName.toLowerCase(),
+                    )) ||
                   !bookmaker.running
                 }
                 key={bookmaker.cloneName}

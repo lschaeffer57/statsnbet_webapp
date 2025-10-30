@@ -99,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .collection<UserDocument>(collectionName)
       .updateOne(
         { clerk_id: clerkId, config_number: configNumber },
-        { $set: updateData },
+        { $set: updateData, $setOnInsert: { created_at: new Date() } },
         { upsert: true },
       );
 

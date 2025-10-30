@@ -51,14 +51,20 @@ export const SettingsPage = () => {
     }
   }, [userData, currentConfig]);
 
-  useEffect(() => {
-    if (userData && configuration) {
-      const selectedConfig = userData.find(
-        (u) => u.config_number.toString() === configuration,
-      );
-      setPerformanceParameters(transformUserDataToParameters(selectedConfig));
+  const handleSetConfiguration = (configuration: string) => {
+    setConfiguration(configuration);
+    const selectedConfig = userData?.find(
+      (u) => u.config_number.toString() === configuration,
+    );
+    setPerformanceParameters(transformUserDataToParameters(selectedConfig));
+    if (selectedConfig && !selectedConfig.active_config) {
+      updateUser.mutate({
+        clerkId: user?.id || '',
+        configNumber: parseInt(configuration),
+        performanceParameters: transformUserDataToParameters(selectedConfig),
+      });
     }
-  }, [configuration, userData]);
+  };
 
   const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
     useSettingsMutation(user?.id || '');
@@ -167,7 +173,7 @@ export const SettingsPage = () => {
         </div>
         <PerformanceParameters
           configuration={configuration}
-          setConfiguration={setConfiguration}
+          setConfiguration={handleSetConfiguration}
           userData={userData}
           onReset={handleReset}
           resetTrigger={resetTrigger}

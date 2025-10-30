@@ -57,6 +57,10 @@ export const PerformanceParameters = memo(
       );
     }, [userData]);
 
+    const isNewConfiguration = useMemo(() => {
+      return configuration === (maxConfigurationNumber + 1).toString();
+    }, [configuration, maxConfigurationNumber]);
+
     return (
       <Card className={cn('shadow-glass-lg items-start gap-4', className)}>
         <h2 className="text-foreground text-base font-medium">
@@ -115,7 +119,7 @@ export const PerformanceParameters = memo(
               size="sm"
               type="button"
               onClick={onReset}
-              disabled={isPending}
+              disabled={isPending || !isNewConfiguration}
             >
               {t('signup.performanceParameters.reset')}
             </Button>
@@ -130,6 +134,7 @@ export const PerformanceParameters = memo(
           resetTrigger={resetTrigger}
           performanceParameters={performanceParameters}
           isPending={isPending}
+          isNewConfiguration={isNewConfiguration}
         />
 
         {isVideoModalOpen && (
