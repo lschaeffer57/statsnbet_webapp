@@ -58,6 +58,7 @@ export const PerformanceParameters = memo(
     }, [userData]);
 
     const isNewConfiguration = useMemo(() => {
+      if (!configuration) return true;
       return configuration === (maxConfigurationNumber + 1).toString();
     }, [configuration, maxConfigurationNumber]);
 
