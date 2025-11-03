@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { AuthFormValues, UserDocument } from '@/types';
+import type { AuthFormValues, UserDocument, UserInfo } from '@/types';
 
 const parseNumericValue = (value: string): number => {
   const cleanedValue = value.replace(/[^\d.,-]/g, '');
@@ -10,7 +10,7 @@ const parseNumericValue = (value: string): number => {
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'PUT') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -27,16 +27,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       clerkId,
       configNumber,
       performanceParameters,
+      userInfo,
     }: {
       clerkId: string;
       configNumber: number;
       performanceParameters: AuthFormValues;
+      userInfo: UserInfo;
     } = req.body;
 
-    if (!clerkId || !performanceParameters || !configNumber) {
+    if (!clerkId || !performanceParameters || !configNumber || !userInfo) {
       return res.status(400).json({
         error: 'Missing required fields',
-        required: ['clerkId', 'performanceParameters'],
+        required: [
+          'clerkId',
+          'performanceParameters',
+          'userInfo',
+          'configNumber',
+        ],
       });
     }
 
@@ -68,11 +75,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const db = client.db('Client_Data');
     const collectionName = clerkId;
 
+    const existingConfig = await db
+      .collection<UserDocument>(collectionName)
+      .findOne({ clerk_id: clerkId, config_number: configNumber });
+
+    if (existingConfig) {
+      return res.status(409).json({
+        error:
+          'Configuration already exists. Cannot modify existing configurations',
+      });
+    }
+
     await db
       .collection<UserDocument>(collectionName)
       .updateMany({ clerk_id: clerkId }, { $set: { active_config: false } });
 
-    const updateData: Partial<UserDocument> = {
+    const newConfig: UserDocument = {
+      clerk_id: clerkId,
+      email: userInfo.email,
+      username: userInfo.username,
+      ...(userInfo.telegram && { telegram: userInfo.telegram }),
+      bot_activated: userInfo.bot_activated,
       active_config: true,
       config_number: configNumber,
       ev_min_pct: evMin,
@@ -93,46 +116,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       bookmakers: performanceParameters.bookmaker,
       bankroll_reference: bankroll,
       updated_at: new Date(),
+      created_at: new Date(),
+      bankroll_current: userInfo.bankroll_current,
+      subscription: {
+        active: userInfo.subscription.active,
+        begin: userInfo.subscription.begin,
+        end: userInfo.subscription.end,
+      },
     };
 
     const result = await db
       .collection<UserDocument>(collectionName)
-      .updateOne(
-        { clerk_id: clerkId, config_number: configNumber },
-        { $set: updateData, $setOnInsert: { created_at: new Date() } },
-        { upsert: true },
-      );
+      .insertOne(newConfig);
 
     if (!result.acknowledged) {
-      return res.status(500).json({ error: 'Failed to update user' });
+      return res.status(500).json({ error: 'Failed to create configuration' });
     }
 
-    const updatedConfig = await db
-      .collection<UserDocument>(collectionName)
-      .findOne({ clerk_id: clerkId, config_number: configNumber });
-
-    const safeConfig = updatedConfig as UserDocument | null;
-
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
-      message:
-        result.upsertedCount > 0
-          ? 'Configuration created successfully'
-          : 'Configuration updated successfully',
+      message: 'Configuration created successfully',
       data: {
         clerk_id: clerkId,
         config_number: configNumber,
-        updated_at: safeConfig?.updated_at ?? updateData.updated_at,
-        updatedFields: Object.keys(updateData).filter(
-          (key) => key !== 'updated_at',
-        ),
-        date: safeConfig?.updated_at ?? new Date(),
+        created_at: newConfig.created_at,
       },
     });
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error creating configuration:', error);
     return res.status(500).json({
-      error: 'Failed to update user',
+      error: 'Failed to create configuration',
       details: error instanceof Error ? error.message : 'Unknown error',
     });
   } finally {

@@ -2,23 +2,44 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { userApi } from '@/api/userApi';
-import type { AuthFormValues, UserDocument } from '@/types';
+import type { AuthFormValues, UserDocument, UserInfo } from '@/types';
 
 export const useSettingsMutation = (clerkId: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const queryClient = useQueryClient();
 
-  const updateUser = useMutation({
+  const addConfig = useMutation({
     mutationFn: ({
       clerkId,
       configNumber,
       performanceParameters,
+      userInfo,
     }: {
       clerkId: string;
       configNumber: number;
       performanceParameters: AuthFormValues;
-    }) => userApi.updateUser(clerkId, configNumber, performanceParameters),
+      userInfo: UserInfo;
+    }) =>
+      userApi.addConfig(clerkId, configNumber, performanceParameters, userInfo),
+    onSuccess: () => {
+      setError('');
+      queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
+    },
+    onError: (error) => {
+      console.error(error);
+      setError(error.message);
+    },
+  });
+
+  const switchConfig = useMutation({
+    mutationFn: ({
+      clerkId,
+      configNumber,
+    }: {
+      clerkId: string;
+      configNumber: number;
+    }) => userApi.switchConfig(clerkId, configNumber),
     onSuccess: () => {
       setError('');
       queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
@@ -84,9 +105,10 @@ export const useSettingsMutation = (clerkId: string) => {
   });
 
   return {
-    updateUser,
+    addConfig,
     connectTelegram,
     deleteTelegram,
+    switchConfig,
     error,
     setError,
     isInvalidating: isLoading,

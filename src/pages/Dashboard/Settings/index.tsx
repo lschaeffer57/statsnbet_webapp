@@ -58,16 +58,22 @@ export const SettingsPage = () => {
     );
     setPerformanceParameters(transformUserDataToParameters(selectedConfig));
     if (selectedConfig && !selectedConfig.active_config) {
-      updateUser.mutate({
+      switchConfig.mutate({
         clerkId: user?.id || '',
         configNumber: parseInt(configuration),
-        performanceParameters: transformUserDataToParameters(selectedConfig),
       });
     }
   };
 
-  const { updateUser, connectTelegram, deleteTelegram, error, isInvalidating } =
-    useSettingsMutation(user?.id || '');
+  const {
+    addConfig,
+    switchConfig,
+    connectTelegram,
+    deleteTelegram,
+    error,
+    setError,
+    isInvalidating,
+  } = useSettingsMutation(user?.id || '');
 
   if (!user) {
     return (
@@ -77,17 +83,35 @@ export const SettingsPage = () => {
     );
   }
 
-  const handleUpdateUser = (
+  const handleAddConfig = (
     clerkId: string,
     configNumber: string | undefined,
     performanceParameters: AuthFormValues,
   ) => {
+    if (!userData?.[0]) {
+      setError('User data not loaded');
+      return;
+    }
     setPerformanceParameters(performanceParameters);
     if (configNumber) {
-      updateUser.mutate({
+      addConfig.mutate({
         clerkId,
         configNumber: parseInt(configNumber),
         performanceParameters,
+        userInfo: {
+          email: user.emailAddresses[0].emailAddress || '',
+          username: user.username || '',
+          bot_activated: userData[0].bot_activated || telegram !== undefined,
+          telegram,
+          bankroll_current: userData[0]?.bankroll_current || null,
+          subscription: userData[0].subscription || {
+            active:
+              new Date() <
+              new Date((user.publicMetadata?.expiresAt as string) || ''),
+            begin: new Date(),
+            end: new Date((user.publicMetadata?.expiresAt as string) || ''),
+          },
+        },
       });
     }
   };
@@ -100,7 +124,8 @@ export const SettingsPage = () => {
   };
 
   const isPending =
-    updateUser.isPending ||
+    addConfig.isPending ||
+    switchConfig.isPending ||
     deleteTelegram.isPending ||
     connectTelegram.isPending;
 
@@ -182,7 +207,7 @@ export const SettingsPage = () => {
           isLoading={isLoading}
           isPending={isPending}
           setPerformanceParameters={(data) =>
-            handleUpdateUser(user.id, configuration, data)
+            handleAddConfig(user.id, configuration, data)
           }
           showConfiguration={true}
         />

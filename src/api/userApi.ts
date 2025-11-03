@@ -6,6 +6,7 @@ import type {
   CreateUserRequest,
   TelegramUser,
   UserDocument,
+  UserInfo,
 } from '@/types';
 
 export const userApi = {
@@ -38,15 +39,28 @@ export const userApi = {
       body: JSON.stringify({ clerkId: userId }),
     });
   },
-  updateUser: (
+  addConfig: (
     clerkId: string,
     configNumber: number,
     performanceParameters: AuthFormValues,
+    userInfo: UserInfo,
   ) => {
-    return jsonApiInstance('update-user', {
+    return jsonApiInstance('add-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clerkId,
+        configNumber,
+        performanceParameters,
+        userInfo,
+      }),
+    });
+  },
+  switchConfig: (clerkId: string, configNumber: number) => {
+    return jsonApiInstance('switch-config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clerkId, configNumber, performanceParameters }),
+      body: JSON.stringify({ clerkId, configNumber }),
     });
   },
   inviteUser: ({

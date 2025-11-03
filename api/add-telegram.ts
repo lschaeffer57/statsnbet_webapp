@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
-import type { TelegramUser } from '../src/types/index.js';
+import type { TelegramUser, UserDocument } from '../src/types/index.js';
 
 function verifyTelegramAuth(data: TelegramUser, botToken: string) {
   const secret = crypto.createHash('sha256').update(botToken).digest();
@@ -78,13 +78,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const db = client.db('Client_Data');
     const collectionName = userId;
 
-    const result = await db.collection(collectionName).updateOne(
+    const result = await db.collection<UserDocument>(collectionName).updateMany(
       { clerk_id: userId },
       {
         $set: { telegram: telegramUser, bot_activated: isBotActivated },
       },
-      { upsert: true },
     );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'User documents not found' });
+    }
 
     if (!result.acknowledged) {
       return res.status(500).json({ error: 'Failed to save Telegram data' });

@@ -163,6 +163,19 @@ export interface TelegramUser {
   hash: string;
 }
 
+export interface UserInfo {
+  email: string;
+  username: string;
+  bot_activated: boolean;
+  telegram?: TelegramUser;
+  bankroll_current: number | null;
+  subscription: {
+    active: boolean;
+    begin: Date;
+    end: Date;
+  };
+}
+
 export interface UserDocument {
   clerk_id: string;
   email: string;
@@ -200,7 +213,7 @@ export interface UserDocument {
   updated_at: Date;
   bankroll_current: number | null;
   subscription: {
-    active: true;
+    active: boolean;
     begin: Date;
     end: Date;
   };
