@@ -137,7 +137,7 @@ const ProfitChart = ({
               />
 
               <Bar
-                dataKey="gainTotal"
+                dataKey="dailyProfit"
                 yAxisId="bars"
                 radius={[4, 4, 0, 0]}
                 opacity={0.7}
@@ -149,7 +149,7 @@ const ProfitChart = ({
                 {data.map((entry, index) => {
                   const netGain =
                     'gainTotal' in entry
-                      ? entry.gainTotal - entry.lossTotal
+                      ? entry.gainTotal - Math.abs(entry.lossTotal)
                       : 0;
                   return (
                     <Cell

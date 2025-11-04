@@ -138,6 +138,8 @@ export const PublicDashboard = () => {
     return (filteredHistoryData?.metrics.total_profit ?? 0) + Number(bankroll);
   }, [filteredHistoryData?.metrics, bankroll]);
 
+  console.log(dailyStats);
+
   return (
     <main className="relative px-4 py-3">
       <div className="border-border relative z-10 w-full flex-1 rounded-3xl border py-10">

@@ -41,7 +41,7 @@ export const getDailyStats = (
       acc[date].betCount += 1;
       return acc;
     },
-    {} as Record<string, Omit<DailyStats, 'profit'>>,
+    {} as Record<string, Omit<DailyStats, 'profit' | 'dailyProfit'>>,
   );
   const sorted = Object.values(groupedByDate).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
@@ -49,10 +49,12 @@ export const getDailyStats = (
 
   let cumulativeProfit = 0;
   return sorted.map((day) => {
-    cumulativeProfit += day.gainTotal + day.lossTotal;
+    const dailyProfit = day.gainTotal + day.lossTotal;
+    cumulativeProfit += dailyProfit;
     return {
       ...day,
       profit: Number(cumulativeProfit.toFixed(2)),
+      dailyProfit: Number(dailyProfit.toFixed(2)),
     };
   });
 };

@@ -89,6 +89,7 @@ export interface DailyStats {
   gainTotal: number;
   betCount: number;
   profit: number;
+  dailyProfit: number;
 }
 
 export interface BetsApiResponse {
