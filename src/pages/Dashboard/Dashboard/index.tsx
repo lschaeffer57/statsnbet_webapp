@@ -46,7 +46,8 @@ export const Dashboard = () => {
     enabled: !!user?.id,
   });
 
-  const collection = userData?.[0]?.telegram?.id?.toString() ?? '';
+  const collection =
+    userData?.find((u) => u.telegram?.id)?.telegram?.id?.toString() ?? '';
 
   const { data: bookmakers } = useQuery(
     bookmakersApi.getBookmakersQueryOptions(),
@@ -136,12 +137,13 @@ export const Dashboard = () => {
 
   const chartData = useMemo(() => getChartData(data?.bets), [data]);
   const dailyStats = useMemo(() => getDailyStats(data?.bets), [data]);
+  const bankrollReference = useMemo(() => {
+    return userData?.find((u) => u.bankroll_reference && u.active_config)
+      ?.bankroll_reference;
+  }, [userData]);
   const totalProfit = useMemo(() => {
-    return (
-      (data?.metrics.total_profit ?? 0) +
-      Number(userData?.[0].bankroll_reference)
-    );
-  }, [data?.metrics, userData]);
+    return (data?.metrics.total_profit ?? 0) + Number(bankrollReference);
+  }, [data?.metrics, bankrollReference]);
 
   return (
     <div className="relative z-20">
@@ -166,9 +168,7 @@ export const Dashboard = () => {
         <DashboardStats
           isLoading={isLoading || isUserDataLoading}
           roi={data?.metrics.roi}
-          settled_stake_sum={
-            (totalProfit / (userData?.[0].bankroll_reference ?? 0) - 1) * 100
-          }
+          settled_stake_sum={(totalProfit / (bankrollReference ?? 0) - 1) * 100}
           total_profit={totalProfit}
           settled_count={data?.metrics.settled_count}
         />

@@ -178,6 +178,7 @@ export const betsApi = {
       page_number?: number;
       search?: string;
       get_all?: boolean;
+      is_percent?: boolean;
     },
   ) => {
     return queryOptions({
@@ -221,6 +222,9 @@ export const betsApi = {
 
         if (filters?.get_all)
           searchParams.set('get_all', filters.get_all.toString());
+
+        if (filters?.is_percent)
+          searchParams.set('is_percent', filters.is_percent.toString());
 
         if (filters?.page_size)
           searchParams.set('page_size', filters.page_size.toString());

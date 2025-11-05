@@ -47,7 +47,7 @@ export const SettingsPage = () => {
     if (userData && currentConfig) {
       setConfiguration(currentConfig.config_number.toString());
       setPerformanceParameters(transformUserDataToParameters(currentConfig));
-      setTelegram(userData[0].telegram);
+      setTelegram(userData.find((u) => u.telegram?.id)?.telegram);
     }
   }, [userData, currentConfig]);
 
@@ -101,10 +101,13 @@ export const SettingsPage = () => {
         userInfo: {
           email: user.emailAddresses[0].emailAddress || '',
           username: user.username || '',
-          bot_activated: userData[0].bot_activated || telegram !== undefined,
+          bot_activated:
+            userData.find((u) => u.bot_activated !== undefined)
+              ?.bot_activated || telegram !== undefined,
           telegram,
-          bankroll_current: userData[0]?.bankroll_current || null,
-          subscription: userData[0].subscription || {
+          bankroll_current:
+            userData.find((u) => u.bankroll_current)?.bankroll_current || null,
+          subscription: userData.find((u) => u.subscription)?.subscription || {
             active:
               new Date() <
               new Date((user.publicMetadata?.expiresAt as string) || ''),
@@ -170,9 +173,13 @@ export const SettingsPage = () => {
                   {t('subscription.startDate')}
                 </p>
                 <p className="text-foreground text-sm leading-5 font-medium -tracking-[.04em]">
-                  {userData?.[0]?.subscription?.begin
+                  {userData?.find((u) => u.subscription?.begin)?.subscription
+                    ?.begin
                     ? format(
-                        new Date(userData[0].subscription.begin),
+                        new Date(
+                          userData.find((u) => u.subscription?.begin)
+                            ?.subscription?.begin || '',
+                        ),
                         'dd/MM/yyyy',
                       )
                     : '25/08/2025'}
@@ -183,9 +190,12 @@ export const SettingsPage = () => {
                   {t('subscription.endDate')}
                 </p>
                 <p className="text-foreground text-sm leading-5 font-medium -tracking-[.04em]">
-                  {userData?.[0]?.subscription?.end
+                  {userData?.find((u) => u.subscription?.end)?.subscription?.end
                     ? format(
-                        new Date(userData[0].subscription.end),
+                        new Date(
+                          userData.find((u) => u.subscription?.end)
+                            ?.subscription?.end || '',
+                        ),
                         'dd/MM/yyyy',
                       )
                     : '25/11/2025'}

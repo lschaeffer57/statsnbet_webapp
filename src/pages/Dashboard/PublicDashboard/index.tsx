@@ -73,6 +73,7 @@ export const PublicDashboard = () => {
             ),
           ).join(',')
         : '',
+      is_percent: true,
       page_number: currentPage,
       page_size: 20,
       search: search,
@@ -104,6 +105,7 @@ export const PublicDashboard = () => {
           ).join(',')
         : '',
       get_all: true,
+      is_percent: true,
       search: search,
     }),
     enabled: !!bankroll.trim(),

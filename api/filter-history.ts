@@ -51,6 +51,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const date_max = getStringValue(req.query.date_max) || null;
 
+  const isPercent = getStringValue(req.query.is_percent);
+  const is_percent = isPercent === 'true';
+
   const pageSizeStr = getStringValue(req.query.page_size);
   const page_size = pageSizeStr ? Number(pageSizeStr) : 20;
 
@@ -82,6 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       page_number,
       search,
       get_all,
+      is_percent,
     });
 
     return res.status(200).json(result);
@@ -169,6 +173,7 @@ interface FilterOptions {
   page_number?: number;
   search?: string | null;
   get_all?: boolean;
+  is_percent?: boolean;
 }
 
 interface PnLResult {
@@ -216,6 +221,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     page_number = 1,
     search = null,
     get_all = false,
+    is_percent = false,
   } = options;
 
   function sixMonthsAgo(d: Date): Date {
@@ -527,7 +533,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       'amount',
       'bet_amount',
     ]);
-    const isPercentage = !!stakeKeyPct;
+    const isPercentage = !!stakeKeyPct || is_percent;
     const stakeKey = stakeKeyPct || stakeKeyAbs;
 
     const oddsKey = pick(['odds', 'cote', 'decimal_odds']);
