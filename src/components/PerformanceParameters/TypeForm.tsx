@@ -279,9 +279,6 @@ const TypeForm = ({
                     >
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div
-                            className={`h-1.5 w-1.5 rounded-full ${bookmaker.running ? 'bg-emerald-500' : 'bg-red-500'}`}
-                          />
                           <span>{bookmaker.cloneName}</span>
                         </div>
                       </div>
