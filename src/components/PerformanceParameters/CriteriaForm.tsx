@@ -1,6 +1,7 @@
 import type { FormikErrors, FormikTouched } from 'formik';
 import { useTranslation } from 'react-i18next';
 
+import { cn } from '@/lib/utils';
 import type { AuthFormValues } from '@/types';
 
 import { Input } from '../ui/Input';
@@ -120,10 +121,13 @@ const CriteriaForm = ({
           <Input
             isLoading={isLoading}
             skeletonClassName="h-[32px] w-[62px]"
-            disabled={!isNewConfiguration}
+            disabled={isLoading}
             type="time"
             name="time.start"
-            className="!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]"
+            className={cn(
+              '!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]',
+              errors?.time && '!border-destructive',
+            )}
             value={values.time.start}
             onChange={handleChange}
           />
@@ -133,15 +137,25 @@ const CriteriaForm = ({
           <Input
             isLoading={isLoading}
             skeletonClassName="h-[32px] w-[62px]"
-            disabled={!isNewConfiguration}
+            disabled={isLoading}
             type="time"
             name="time.end"
-            className="!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]"
+            className={cn(
+              '!bg-input h-[32px] w-[62px] px-2 py-1.5 placeholder:-tracking-[.04em]',
+              errors?.time && '!border-destructive',
+            )}
             value={values.time.end}
             onChange={handleChange}
           />
         </div>
       </div>
+      {errors?.time && (
+        <span className="text-destructive block text-right text-xs">
+          {typeof errors.time === 'string'
+            ? errors.time
+            : (errors.time as { end?: string }).end}
+        </span>
+      )}
       <div className="border-border-dashed mt-1 w-full border-b border-dashed" />
     </div>
   );

@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { DebounceInput } from 'react-debounce-input';
 import { useTranslation } from 'react-i18next';
 import {
   ComposedChart,
@@ -15,8 +14,6 @@ import {
 } from 'recharts';
 
 import { CustomTooltip, CustomLegend } from '@/components/ui/Chart';
-import { Input } from '@/components/ui/Input';
-import { cn } from '@/lib/utils';
 import type { ChartData, DailyStats } from '@/types';
 
 interface ProfitChartProps {
@@ -25,8 +22,6 @@ interface ProfitChartProps {
   cumulativeRealGain: number;
   isDate: boolean;
   setIsDate: (isDate: boolean) => void;
-  setBankroll?: (bankroll: string) => void;
-  bankroll?: string;
 }
 
 const ProfitChart = ({
@@ -35,10 +30,9 @@ const ProfitChart = ({
   isDate,
   setIsDate,
   cumulativeRealGain,
-  setBankroll,
-  bankroll,
 }: ProfitChartProps) => {
   const { t } = useTranslation('dashboard');
+  console.log({ isPublic }); // Use isPublic to avoid unused warning
   return (
     <section className="h-[400px] w-full px-7 py-6">
       <div className="flex items-start gap-6">
@@ -57,20 +51,6 @@ const ProfitChart = ({
                 })}
           </p>
         </div>
-        {isPublic && (
-          <DebounceInput
-            minLength={0}
-            debounceTimeout={300}
-            placeholder={t('chart.baseBankroll')}
-            value={bankroll}
-            onChange={(e) => setBankroll?.(e.target.value)}
-            element={Input}
-            className={cn(
-              'z-50 w-50',
-              !bankroll && 'shadow-[0_0_0_9999px_rgba(0,0,0,0.7)]',
-            )}
-          />
-        )}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -113,19 +93,17 @@ const ProfitChart = ({
             tickLine={false}
           />
 
-          {isDate && (
-            <YAxis
-              yAxisId="bars"
-              orientation="right"
-              domain={[0, 'dataMax']}
-              hide
-            />
-          )}
+          <YAxis
+            yAxisId="bars"
+            orientation="right"
+            domain={[0, 'dataMax']}
+            hide
+          />
+
+          <Tooltip content={<CustomTooltip data={data} />} />
 
           {isDate ? (
             <>
-              <Tooltip content={<CustomTooltip data={data} />} />
-
               <Line
                 type="linear"
                 yAxisId="profit"
@@ -164,6 +142,7 @@ const ProfitChart = ({
             <>
               <Line
                 type="linear"
+                yAxisId="profit"
                 dataKey="realGain"
                 stroke="#3B4EE0"
                 strokeWidth={2}
@@ -178,6 +157,7 @@ const ProfitChart = ({
 
               <Line
                 type="linear"
+                yAxisId="profit"
                 dataKey="theoreticalGain"
                 stroke="#ffffff50"
                 strokeWidth={2}

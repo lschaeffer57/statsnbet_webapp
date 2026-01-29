@@ -15,5 +15,9 @@
     "current": "Abonnement en cours",
     "startDate": "Date de début",
     "endDate": "Date de fin"
-  }
+  },
+  "deleteConfigConfirm": "Êtes-vous sûr de vouloir supprimer cette configuration ?",
+  "configSavedSuccessfully": "Configuration sauvegardée avec succès",
+  "configSetAsDefault": "Configuration définie par défaut",
+  "configDeletedSuccessfully": "Configuration supprimée avec succès"
 }

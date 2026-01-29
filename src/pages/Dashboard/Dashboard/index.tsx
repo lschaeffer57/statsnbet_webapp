@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { betsApi } from '@/api/betsApi';
-import { bookmakersApi } from '@/api/bookmakersApi';
 import { userApi } from '@/api/userApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
 import { DEFAULT_FILTERS } from '@/constants';
 import { getChartData, getDailyStats } from '@/lib/getChartData';
@@ -49,10 +49,6 @@ export const Dashboard = () => {
   const collection =
     userData?.find((u) => u.telegram?.id)?.telegram?.id?.toString() ?? '';
 
-  const { data: bookmakers } = useQuery(
-    bookmakersApi.getBookmakersQueryOptions(),
-  );
-
   const {
     data,
     isLoading: isBetsLoading,
@@ -62,20 +58,7 @@ export const Dashboard = () => {
   } = useQuery({
     ...betsApi.getFilteredDashboardQueryOptions(undefined, {
       ...filters,
-      bookmaker: filters.bookmaker
-        ? Array.from(
-            new Set(
-              filters.bookmaker
-                .split(',')
-                .map((cloneName) =>
-                  bookmakers
-                    ?.find((b) => b.cloneName.toLowerCase() === cloneName)
-                    ?.original.toLowerCase(),
-                )
-                .filter(Boolean),
-            ),
-          ).join(',')
-        : '',
+      bookmaker: filters.bookmaker,
       collection,
       search: search,
     }),
@@ -83,6 +66,9 @@ export const Dashboard = () => {
   });
 
   const isLoading = isUserDataLoading || isBetsLoading || isRefetching;
+
+  const showEmptyState =
+    !isLoading && (!!error || !data?.bets || data.bets.length === 0);
 
   useEffect(() => {
     if (filters.configuration && userData) {
@@ -178,7 +164,6 @@ export const Dashboard = () => {
         filters={filters}
         setFilters={setFilters}
         userData={userData}
-        bookmakers={bookmakers}
       />
       <ActiveFilters filters={filters} setFilters={setFilters} />
 
@@ -186,24 +171,38 @@ export const Dashboard = () => {
         <div className="px-7">
           <ChartPlaceholder />
         </div>
+      ) : showEmptyState ? (
+        <div className="px-7 py-10">
+          <Card className="bg-muted/20 flex flex-col items-center justify-center gap-4 border-dashed p-10 text-center">
+            <h3 className="text-foreground text-xl font-medium">
+              No bets placed yet
+            </h3>
+            <p className="text-muted-foreground">
+              Configure your bot and place your first bet to see your results
+              here.
+            </p>
+          </Card>
+        </div>
       ) : (
-        <ProfitChart
-          data={isDate ? dailyStats : chartData}
-          isDate={isDate}
-          setIsDate={setIsDate}
-          cumulativeRealGain={data?.metrics.total_profit ?? 0}
-        />
+        <>
+          <ProfitChart
+            data={isDate ? dailyStats : chartData}
+            isDate={isDate}
+            setIsDate={setIsDate}
+            cumulativeRealGain={data?.metrics.total_profit ?? 0}
+          />
+          <BetsTable
+            configuration={filters.configuration}
+            tableData={tableData}
+            search={search}
+            setSearch={setSearch}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </>
       )}
-      <BetsTable
-        configuration={filters.configuration}
-        tableData={tableData}
-        search={search}
-        setSearch={setSearch}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
       {(error || userDataError) && (
-        <p className="px-7 text-sm text-red-500">
+        <p className="hidden px-7 text-sm text-red-500">
           Error: {error?.message || userDataError?.message}
         </p>
       )}

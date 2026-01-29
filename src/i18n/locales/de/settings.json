@@ -19,5 +19,9 @@
     "current": "Aktuelles Abonnement",
     "startDate": "Startdatum",
     "endDate": "Enddatum"
-  }
+  },
+  "deleteConfigConfirm": "Sind Sie sicher, dass Sie diese Konfiguration löschen möchten?",
+  "configSavedSuccessfully": "Konfiguration erfolgreich gespeichert",
+  "configSetAsDefault": "Konfiguration als Standard festgelegt",
+  "configDeletedSuccessfully": "Konfiguration erfolgreich gelöscht"
 }

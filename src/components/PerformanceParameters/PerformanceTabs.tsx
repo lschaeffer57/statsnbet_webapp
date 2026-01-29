@@ -117,10 +117,23 @@ const PerformanceTabs = ({
     bankroll: z.string().refine(validatePositiveNumber, {
       message: t('signup.performanceParameters.validation.positiveNumber'),
     }),
-    time: z.object({
-      start: z.string(),
-      end: z.string(),
-    }),
+    time: z
+      .object({
+        start: z.string(),
+        end: z.string(),
+      })
+      .refine(
+        (data) => {
+          if (!data.start || !data.end) return true;
+          return data.end > data.start;
+        },
+        {
+          message: t(
+            'signup.performanceParameters.validation.invalidTimeRange',
+          ),
+          path: ['end'],
+        },
+      ),
   });
 
   const validateForm = useFormValidation(validationSchema);
@@ -179,21 +192,16 @@ const PerformanceTabs = ({
                   isNewConfiguration={isNewConfiguration}
                 />
               </TabsContent>
-              {isNewConfiguration && (
-                <Button
-                  type="button"
-                  onClick={() => handleSubmit()}
-                  className="mt-9 h-8 w-full"
-                  disabled={
-                    isSubmitting ||
-                    isLoading ||
-                    isPending ||
-                    !isNewConfiguration
-                  }
-                >
-                  {t('signup.performanceParameters.criteria.saveButton')}
-                </Button>
-              )}
+              <Button
+                type="button"
+                onClick={() => handleSubmit()}
+                className="mt-9 h-8 w-full font-semibold"
+                disabled={isSubmitting || isLoading || isPending}
+              >
+                {isNewConfiguration
+                  ? t('signup.performanceParameters.criteria.saveButton')
+                  : t('signup.performanceParameters.criteria.saveEditedButton')}
+              </Button>
             </div>
           );
         }}

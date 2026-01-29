@@ -104,13 +104,62 @@ export const useSettingsMutation = (clerkId: string) => {
     },
   });
 
+  const updateConfig = useMutation({
+    mutationFn: ({
+      clerkId,
+      configNumber,
+      performanceParameters,
+    }: {
+      clerkId: string;
+      configNumber: number;
+      performanceParameters: AuthFormValues;
+    }) => userApi.updateConfig(clerkId, configNumber, performanceParameters),
+    onSuccess: () => {
+      setError('');
+      queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
+    },
+    onError: (error) => {
+      console.error(error);
+      setError(error.message);
+    },
+  });
+
+  const deleteConfig = useMutation({
+    mutationFn: ({
+      clerkId,
+      configNumber,
+    }: {
+      clerkId: string;
+      configNumber: number;
+    }) => userApi.deleteConfig(clerkId, configNumber),
+    onSuccess: () => {
+      setError('');
+      queryClient.invalidateQueries({ queryKey: [userApi.baseKey, clerkId] });
+    },
+    onError: (error) => {
+      console.error(error);
+      setError(error.message);
+    },
+  });
+
+  const isPending =
+    addConfig.isPending ||
+    switchConfig.isPending ||
+    deleteTelegram.isPending ||
+    connectTelegram.isPending ||
+    updateConfig.isPending ||
+    deleteConfig.isPending;
+
   return {
     addConfig,
+    updateConfig,
+    deleteConfig,
     connectTelegram,
     deleteTelegram,
     switchConfig,
     error,
     setError,
     isInvalidating: isLoading,
+    isPending,
   };
 };

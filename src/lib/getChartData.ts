@@ -1,4 +1,4 @@
-import { format, parse } from 'date-fns';
+import { format, parse, subDays } from 'date-fns';
 
 import type { ChartData, DailyStats, FilteredBet } from '@/types';
 
@@ -7,17 +7,31 @@ export const getChartData = (data: FilteredBet[] | undefined): ChartData[] => {
   let cumulativeRealGain = 0;
   let cumulativeTheoreticalGain = 0;
 
-  return data.reverse().map((bet, index) => {
-    cumulativeRealGain += bet.pnl;
-    cumulativeTheoreticalGain += bet.theorical_gain ?? 0;
+  const reversedData = [...data].reverse();
 
-    return {
+  const chartData: ChartData[] = [
+    {
+      date: reversedData.length > 0 ? reversedData[0].date : '',
+      betNumber: 0,
+      realGain: 0,
+      theoreticalGain: 0,
+    },
+  ];
+
+  reversedData.forEach((bet, index) => {
+    cumulativeRealGain += bet.pnl;
+    // Theoretical gain = stake * EV / 100
+    cumulativeTheoreticalGain += bet.stake * (bet.ev / 100);
+
+    chartData.push({
       date: bet.date,
       betNumber: index + 1,
-      realGain: cumulativeRealGain,
-      theoreticalGain: cumulativeTheoreticalGain,
-    };
+      realGain: Number(cumulativeRealGain.toFixed(2)),
+      theoreticalGain: Number(cumulativeTheoreticalGain.toFixed(2)),
+    });
   });
+
+  return chartData;
 };
 
 export const getDailyStats = (
@@ -48,13 +62,29 @@ export const getDailyStats = (
   );
 
   let cumulativeProfit = 0;
-  return sorted.map((day) => {
+  const firstDate = sorted.length > 0 ? new Date(sorted[0].date) : new Date();
+  const initialDate = format(subDays(firstDate, 1), 'yyyy-MM-dd');
+
+  const stats: DailyStats[] = [
+    {
+      date: initialDate,
+      lossTotal: 0,
+      gainTotal: 0,
+      betCount: 0,
+      profit: 0,
+      dailyProfit: 0,
+    },
+  ];
+
+  sorted.forEach((day) => {
     const dailyProfit = day.gainTotal + day.lossTotal;
     cumulativeProfit += dailyProfit;
-    return {
+    stats.push({
       ...day,
       profit: Number(cumulativeProfit.toFixed(2)),
       dailyProfit: Number(dailyProfit.toFixed(2)),
-    };
+    });
   });
+
+  return stats;
 };

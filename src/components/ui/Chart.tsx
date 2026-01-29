@@ -25,34 +25,68 @@ const CustomTooltip = ({
   data,
 }: CustomTooltipProps) => {
   const { t } = useTranslation('dashboard');
-  if (active && payload && payload.length && label) {
-    const entry = data.find((item) => item.date === label);
+  if (active && payload && payload.length && label !== undefined) {
+    const entry = data.find((item) => {
+      if ('betNumber' in item) {
+        return item.betNumber.toString() === label.toString();
+      }
+      return item.date === label;
+    });
 
-    if (entry && 'gainTotal' in entry) {
+    if (entry) {
+      if ('gainTotal' in entry) {
+        return (
+          <Card className="text-foreground flex-row gap-[13px] rounded-[10px] px-2.5 py-1 backdrop-blur-md">
+            <div className="space-y-0.5">
+              <p className="text-foreground font-mediun text-sm">
+                {entry.gainTotal.toFixed(0)}€
+              </p>
+              <p className="text-foreground/50 text-xs">
+                {t('chart.tooltip.totalGain')}
+              </p>
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-foreground font-mediun text-sm">
+                {entry.lossTotal.toFixed(0)}€
+              </p>
+              <p className="text-foreground/50 text-xs">
+                {t('chart.tooltip.totalLoss')}
+              </p>
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-foreground font-mediun text-sm">
+                {entry.betCount}
+              </p>
+              <p className="text-foreground/50 text-xs">
+                {t('chart.tooltip.betCount')}
+              </p>
+            </div>
+          </Card>
+        );
+      }
+
       return (
         <Card className="text-foreground flex-row gap-[13px] rounded-[10px] px-2.5 py-1 backdrop-blur-md">
           <div className="space-y-0.5">
             <p className="text-foreground font-mediun text-sm">
-              {entry.gainTotal.toFixed(0)}€
+              {entry.realGain.toFixed(2)}€
             </p>
             <p className="text-foreground/50 text-xs">
-              {t('chart.tooltip.totalGain')}
+              {t('chart.legend.totalProfit')}
             </p>
           </div>
           <div className="space-y-0.5">
             <p className="text-foreground font-mediun text-sm">
-              {entry.lossTotal.toFixed(0)}€
+              {entry.theoreticalGain.toFixed(2)}€
             </p>
             <p className="text-foreground/50 text-xs">
-              {t('chart.tooltip.totalLoss')}
+              {t('chart.legend.theoreticalGain')}
             </p>
           </div>
           <div className="space-y-0.5">
-            <p className="text-foreground font-mediun text-sm">
-              {entry.betCount}
-            </p>
+            <p className="text-foreground font-mediun text-sm">{entry.date}</p>
             <p className="text-foreground/50 text-xs">
-              {t('chart.tooltip.betCount')}
+              {t('table.headers.date')}
             </p>
           </div>
         </Card>

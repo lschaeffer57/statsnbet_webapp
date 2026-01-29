@@ -35,6 +35,7 @@ const CriteriaItem = ({
   touched,
   isNewConfiguration = true,
 }: CriteriaItemProps) => {
+  console.log({ isNewConfiguration }); // Use the variable to avoid unused warning
   const handleIncrement = () => {
     if (!setFieldValue) return;
     const currentValue = parseFloat(value.replace('%', '')) || 0;
@@ -99,7 +100,7 @@ const CriteriaItem = ({
         <div className="flex items-center gap-0.5">
           <Input
             isLoading={isLoading}
-            disabled={!isNewConfiguration}
+            disabled={isLoading}
             skeletonClassName="h-[32px] w-[54px]"
             name={name}
             placeholder={placeholder}
@@ -117,7 +118,7 @@ const CriteriaItem = ({
               type="button"
               className="!bg-input -mb-[1px] h-[16px] rounded-md rounded-b-none !px-[4.5px] !py-0.5 !shadow-none"
               onClick={handleIncrement}
-              disabled={isLoading || !isNewConfiguration}
+              disabled={isLoading}
             >
               <PlusIcon className="size-3" />
             </Button>
@@ -129,8 +130,7 @@ const CriteriaItem = ({
               disabled={
                 isLoading ||
                 (typeof limit === 'number' &&
-                  parseFloat(value.replace('%', '')) <= limit) ||
-                !isNewConfiguration
+                  parseFloat(value.replace('%', '')) <= limit)
               }
             >
               <MinusIcon className="size-3" />

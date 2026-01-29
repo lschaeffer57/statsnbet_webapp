@@ -21,8 +21,53 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table';
+import { cn } from '@/lib/utils';
 import SkeletonRow from '@/pages/Dashboard/components/SkeletonRow';
 import type { FilteredBetsWithPagination } from '@/types';
+
+// Helper for status badge
+const StatusBadge = ({
+  status,
+  label,
+  pnl,
+}: {
+  status: string;
+  label: string;
+  pnl: number;
+}) => {
+  const normStatus = status?.toLowerCase().trim();
+  let styles = 'bg-muted text-muted-foreground'; // Default Grey/Neutral
+
+  const isWin = normStatus === 'win' || normStatus === 'won' || pnl > 0;
+  const isLose = normStatus === 'lose' || normStatus === 'lost' || pnl < 0;
+
+  if (isWin) {
+    styles = 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+  } else if (isLose) {
+    styles = 'bg-red-500/10 text-red-500 border border-red-500/20';
+  } else if (normStatus === 'pending' || normStatus === 'in progress') {
+    styles = 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
+  } else if (normStatus === 'refunded' || normStatus === 'void') {
+    styles = 'bg-gray-500/10 text-gray-400 border border-gray-500/20';
+  }
+
+  let displayLabel = label;
+  if (normStatus === 'pending' || normStatus === 'in progress') {
+    if (pnl > 0) displayLabel = 'Win';
+    else if (pnl < 0) displayLabel = 'Lose';
+  }
+
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+        styles,
+      )}
+    >
+      {displayLabel}
+    </span>
+  );
+};
 
 interface BetsTableProps {
   configuration: string | undefined;
@@ -56,6 +101,7 @@ const BetsTable = ({
   const totalPages = pagination?.page_count ?? 1;
 
   const generatePageNumbers = () => {
+    // ... existing logic ...
     const pages = [];
     const maxVisible = 5;
 
@@ -86,7 +132,6 @@ const BetsTable = ({
         pages.push(totalPages);
       }
     }
-
     return pages;
   };
 
@@ -104,6 +149,7 @@ const BetsTable = ({
       <Table>
         <TableHeader className="!border-b-0">
           <TableRow className="bg-input !border-b-0">
+            {/* ... headers remain the same ... */}
             <TableHead className="text-foreground/50 rounded-l-2xl px-4 py-[7px]">
               {t('table.headers.match')}
             </TableHead>
@@ -122,9 +168,6 @@ const BetsTable = ({
             <TableHead className="text-foreground/50 px-4 py-[7px]">
               {t('table.headers.date')}
             </TableHead>
-            {/* <TableHead className="text-foreground/50 px-4 py-[7px]">
-              {t('table.headers.fairOdd')}
-            </TableHead> */}
             <TableHead className="text-foreground/50 px-4 py-[7px]">
               {t('table.headers.ev')}
             </TableHead>
@@ -166,19 +209,26 @@ const BetsTable = ({
                 <TableCell className="min-w-[90px] border-r px-4 py-2.5">
                   {item.stake ?? '--'}
                 </TableCell>
+                {/* MODIFIED: Use StatusBadge */}
                 <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                  {item.status === 'pending'
-                    ? t('table.result.inProgress')
-                    : item.status}
+                  <StatusBadge
+                    status={item.status}
+                    pnl={item.pnl}
+                    label={
+                      item.status === 'pending'
+                        ? t('table.result.inProgress')
+                        : item.status
+                    }
+                  />
                 </TableCell>
                 <TableCell className="min-w-[110px] border-r px-4 py-2.5">
                   {item.date
-                    ? format(parse(item.date, 'dd/MM/yyyy', new Date()), 'dd/MM/yyyy')
+                    ? format(
+                        parse(item.date, 'dd/MM/yyyy', new Date()),
+                        'dd/MM/yyyy',
+                      )
                     : '--'}
                 </TableCell>
-                {/* <TableCell className="min-w-[90px] border-r px-4 py-2.5">
-                {item.fair_odds?.toFixed(2) ?? '--'}
-              </TableCell> */}
                 <TableCell className="min-w-[90px] border-r px-4 py-2.5">
                   {item.ev?.toFixed(1) ?? '--'}%
                 </TableCell>
@@ -193,7 +243,7 @@ const BetsTable = ({
                     {configuration === '' ? '--' : configuration}
                   </TableCell>
                 )}
-                <TableCell className="min-w-[120px] px-4 py-2.5">
+                <TableCell className="min-w-[120px] px-4 py-2.5 capitalize">
                   {item.bookmaker}
                 </TableCell>
               </TableRow>
@@ -201,6 +251,7 @@ const BetsTable = ({
           )}
         </TableBody>
       </Table>
+      {/* ... Pagination remains same ... */}
       {totalPages > 1 && (
         <Pagination>
           <PaginationContent>

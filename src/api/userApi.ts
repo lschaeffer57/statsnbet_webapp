@@ -63,6 +63,28 @@ export const userApi = {
       body: JSON.stringify({ clerkId, configNumber }),
     });
   },
+  updateConfig: (
+    clerkId: string,
+    configNumber: number,
+    performanceParameters: AuthFormValues,
+  ) => {
+    return jsonApiInstance('update-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clerkId,
+        configNumber,
+        performanceParameters,
+      }),
+    });
+  },
+  deleteConfig: (clerkId: string, configNumber: number) => {
+    return jsonApiInstance('delete-config', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clerkId, configNumber }),
+    });
+  },
   inviteUser: ({
     email,
     userRole,

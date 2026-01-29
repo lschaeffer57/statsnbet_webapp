@@ -11,10 +11,13 @@ import {
   SelectValue,
   SelectTrigger,
   SelectItem,
+  SelectGroup,
+  SelectLabel,
 } from '@/components/ui/Select';
 import { DEFAULT_FILTERS } from '@/constants';
+import { BOOKMAKER_GROUPS } from '@/constants/bookmakerGroups';
 import { cn } from '@/lib/utils';
-import type { BookmakerI, DashboardFiltersI, UserDocument } from '@/types';
+import type { DashboardFiltersI, UserDocument } from '@/types';
 
 interface DashboardFiltersProps {
   filters: DashboardFiltersI;
@@ -22,7 +25,6 @@ interface DashboardFiltersProps {
   className?: string;
   isPublic?: boolean;
   userData?: UserDocument[];
-  bookmakers: BookmakerI[] | undefined;
 }
 
 const DashboardFilters = ({
@@ -31,7 +33,6 @@ const DashboardFilters = ({
   className,
   isPublic = false,
   userData,
-  bookmakers,
 }: DashboardFiltersProps) => {
   const { t } = useTranslation('dashboard');
 
@@ -178,18 +179,27 @@ const DashboardFilters = ({
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {bookmakers?.map((item) => (
-            <SelectItem
-              key={item.cloneName}
-              value={item.cloneName.toLowerCase()}
-              isSelected={filters.bookmaker
-                .split(',')
-                .includes(item.cloneName.toLowerCase())}
-              className="capitalize"
-            >
-              {item.cloneName}
-            </SelectItem>
-          ))}
+          {(Object.entries(BOOKMAKER_GROUPS) as [string, string[]][]).map(
+            ([groupName, clones]) => (
+              <SelectGroup key={groupName}>
+                <SelectLabel className="text-muted-foreground py-1 pl-2 text-xs font-semibold tracking-wider uppercase">
+                  {groupName}
+                </SelectLabel>
+                {clones.map((clone: string) => (
+                  <SelectItem
+                    key={clone}
+                    value={clone.toLowerCase()}
+                    isSelected={filters.bookmaker
+                      .split(',')
+                      .includes(clone.toLowerCase())}
+                    className="pl-4 capitalize"
+                  >
+                    {clone}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ),
+          )}
         </SelectContent>
       </Select>
 

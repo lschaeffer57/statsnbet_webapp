@@ -1,5 +1,4 @@
-import { format } from 'date-fns';
-import { PlayIcon, Plus } from 'lucide-react';
+import { PlayIcon, Plus, Trash2, Star } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,6 +30,9 @@ interface PerformanceParametersProps {
   isLoading?: boolean;
   isPending?: boolean;
   userData?: UserDocument[] | undefined;
+  onDelete?: () => void;
+  onToggleFavorite?: () => void; // Add this
+  isFavorite?: boolean; // Add this
 }
 
 export const PerformanceParameters = memo(
@@ -46,6 +48,9 @@ export const PerformanceParameters = memo(
     isLoading,
     isPending,
     userData,
+    onDelete,
+    onToggleFavorite,
+    isFavorite,
   }: PerformanceParametersProps) => {
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const { t } = useTranslation('auth');
@@ -59,7 +64,7 @@ export const PerformanceParameters = memo(
 
     const isNewConfiguration = useMemo(() => {
       if (!configuration) return true;
-      return configuration === (maxConfigurationNumber + 1).toString();
+      return parseInt(configuration) > maxConfigurationNumber;
     }, [configuration, maxConfigurationNumber]);
 
     return (
@@ -71,7 +76,7 @@ export const PerformanceParameters = memo(
           {t('signup.performanceParameters.openSettings')}
         </span>
         <div className="flex w-full justify-end">
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button
               size="icon"
               variant="secondary"
@@ -82,12 +87,14 @@ export const PerformanceParameters = memo(
             >
               <PlayIcon className="size-3" />
             </Button>
+
             {showConfiguration && (
               <Select value={configuration} onValueChange={setConfiguration}>
                 <SelectTrigger
                   size="sm"
                   disabled={isPending}
                   isLoading={isLoading || !configuration}
+                  className="w-[180px]"
                 >
                   <SelectValue
                     placeholder={t(
@@ -101,11 +108,15 @@ export const PerformanceParameters = memo(
                       key={user.config_number}
                       value={user.config_number.toString()}
                     >
-                      {t('signup.performanceParameters.configuration')}{' '}
-                      {user.config_number}{' '}
-                      <span className="text-xs">
-                        ({format(user.updated_at, 'dd/MM')})
-                      </span>
+                      <div className="flex w-full items-center justify-between gap-2">
+                        <span>
+                          {t('signup.performanceParameters.configuration')}{' '}
+                          {user.config_number}
+                        </span>
+                        {user.active_config && (
+                          <Star className="size-3 fill-yellow-400 text-yellow-400" />
+                        )}
+                      </div>
                     </SelectItem>
                   ))}
                   <SelectItem value={(maxConfigurationNumber + 1).toString()}>
@@ -115,12 +126,55 @@ export const PerformanceParameters = memo(
                 </SelectContent>
               </Select>
             )}
+
+            {/* FAVORITE BUTTON */}
+            {!isNewConfiguration && onToggleFavorite && (
+              <Button
+                variant={isFavorite ? 'secondary' : 'outline'}
+                size="icon"
+                type="button"
+                className={cn(
+                  'size-8 rounded-[10px] transition-all',
+                  isFavorite
+                    ? 'shadow-glass border-yellow-500/50 bg-yellow-500/10 hover:bg-yellow-500/20'
+                    : 'border-card-border hover:bg-card text-muted-foreground hover:text-foreground',
+                )}
+                onClick={onToggleFavorite}
+                disabled={isPending}
+                title="Set as Default"
+              >
+                <Star
+                  className={cn(
+                    'size-4 transition-colors',
+                    isFavorite
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-muted-foreground',
+                  )}
+                />
+              </Button>
+            )}
+
+            {/* DELETE BUTTON */}
+            {!isNewConfiguration && onDelete && (
+              <Button
+                variant="outline"
+                size="icon"
+                type="button"
+                className="border-card-border shadow-glass size-8 rounded-[10px] border-red-500/50 bg-red-500/10 text-red-500 transition-all hover:border-red-500/70 hover:bg-red-500/20"
+                disabled={isPending}
+                onClick={onDelete}
+                title="Delete configuration"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            )}
+
             <Button
               variant="outline"
               size="sm"
               type="button"
               onClick={onReset}
-              disabled={isPending || !isNewConfiguration}
+              disabled={isPending}
             >
               {t('signup.performanceParameters.reset')}
             </Button>

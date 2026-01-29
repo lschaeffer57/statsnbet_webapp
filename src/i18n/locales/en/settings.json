@@ -15,5 +15,9 @@
     "current": "Current subscription",
     "startDate": "Start date",
     "endDate": "End date"
-  }
+  },
+  "deleteConfigConfirm": "Are you sure you want to delete this configuration?",
+  "configSavedSuccessfully": "Configuration saved successfully",
+  "configSetAsDefault": "Configuration set as default",
+  "configDeletedSuccessfully": "Configuration deleted successfully"
 }

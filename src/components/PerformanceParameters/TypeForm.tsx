@@ -1,7 +1,9 @@
 import { type FormikTouched, type FormikErrors } from 'formik';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChevronDownIcon } from '@/assets/icons';
+import { BOOKMAKER_GROUPS } from '@/constants/bookmakerGroups';
 import type { BookmakerI, AuthFormValues } from '@/types';
 
 import { Button } from '../ui/Button';
@@ -11,6 +13,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from '../ui/DropdownMenu';
 import { Label } from '../ui/Label';
 
@@ -31,11 +35,43 @@ const TypeForm = ({
   touched,
   setFieldValue,
   isLoading,
-  isNewConfiguration = true,
 }: TypeFormProps) => {
   const { t } = useTranslation('auth');
+
+  const groupedBookmakers = useMemo(() => {
+    if (!bookmakers) return {};
+
+    const groups: Record<string, BookmakerI[]> = {};
+    const assignedIds = new Set<string>();
+
+    Object.entries(BOOKMAKER_GROUPS).forEach(([groupName, aliases]) => {
+      const found = bookmakers.filter((b) =>
+        aliases.some(
+          (alias) => alias.toLowerCase() === b.cloneName.toLowerCase(),
+        ),
+      );
+
+      if (found.length > 0) {
+        groups[groupName] = found.sort((a, b) =>
+          a.cloneName.localeCompare(b.cloneName),
+        );
+        found.forEach((f) => assignedIds.add(f.id));
+      }
+    });
+
+    const others = bookmakers.filter((b) => !assignedIds.has(b.id));
+    if (others.length > 0) {
+      groups['OTHERS'] = others.sort((a, b) =>
+        a.cloneName.localeCompare(b.cloneName),
+      );
+    }
+
+    return groups;
+  }, [bookmakers]);
+
   return (
     <div className="space-y-6">
+      {/* Bet Type */}
       <div className="space-y-0.5">
         <div className="flex items-center justify-between">
           <span className="text-foreground/50 text-sm font-normal">
@@ -45,38 +81,26 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                disabled={!isNewConfiguration}
                 checked={values.betType.live}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('betType', {
-                        ...values.betType,
-                        live: true,
-                      })
-                    : setFieldValue('betType', {
-                        ...values.betType,
-                        live: false,
-                      });
-                }}
+                onCheckedChange={(checked) =>
+                  setFieldValue('betType', {
+                    ...values.betType,
+                    live: !!checked,
+                  })
+                }
               />
               {t('signup.performanceParameters.type.types.live')}
             </Label>
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                disabled={!isNewConfiguration}
                 checked={values.betType.prematch}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('betType', {
-                        ...values.betType,
-                        prematch: true,
-                      })
-                    : setFieldValue('betType', {
-                        ...values.betType,
-                        prematch: false,
-                      });
-                }}
+                onCheckedChange={(checked) =>
+                  setFieldValue('betType', {
+                    ...values.betType,
+                    prematch: !!checked,
+                  })
+                }
               />
               {t('signup.performanceParameters.type.types.prematch')}
             </Label>
@@ -91,60 +115,30 @@ const TypeForm = ({
         )}
       </div>
 
+      {/* Sport */}
       <div className="space-y-0.5">
         <div className="flex items-center justify-between">
           <span className="text-foreground/50 text-sm font-normal">
             {t('signup.performanceParameters.type.sport.title')}
           </span>
           <div className="flex items-center gap-5">
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.sport.includes('Football')}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('sport', [...values.sport, 'Football'])
-                    : setFieldValue(
-                        'sport',
-                        values.sport.filter((item) => item !== 'Football'),
-                      );
-                }}
-              />
-              {t('signup.performanceParameters.type.sport.football')}
-            </Label>
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.sport.includes('Tennis')}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('sport', [...values.sport, 'Tennis'])
-                    : setFieldValue(
-                        'sport',
-                        values.sport.filter((item) => item !== 'Tennis'),
-                      );
-                }}
-              />
-              {t('signup.performanceParameters.type.sport.tennis')}
-            </Label>
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.sport.includes('Basketball')}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('sport', [...values.sport, 'Basketball'])
-                    : setFieldValue(
-                        'sport',
-                        values.sport.filter((item) => item !== 'Basketball'),
-                      );
-                }}
-              />
-              {t('signup.performanceParameters.type.sport.basketball')}
-            </Label>
+            {['Football', 'Tennis', 'Basketball'].map((sport) => (
+              <Label key={sport}>
+                <Checkbox
+                  isLoading={isLoading}
+                  checked={values.sport.includes(sport)}
+                  onCheckedChange={(checked) => {
+                    const newSports = checked
+                      ? [...values.sport, sport]
+                      : values.sport.filter((item) => item !== sport);
+                    setFieldValue('sport', newSports);
+                  }}
+                />
+                {t(
+                  `signup.performanceParameters.type.sport.${sport.toLowerCase()}`,
+                )}
+              </Label>
+            ))}
           </div>
         </div>
         {errors?.sport && touched?.sport && (
@@ -152,6 +146,7 @@ const TypeForm = ({
         )}
       </div>
 
+      {/* Bet Amount */}
       <div className="space-y-0.5">
         <div className="flex items-center justify-between">
           <span className="text-foreground/50 text-sm font-normal">
@@ -161,128 +156,60 @@ const TypeForm = ({
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                disabled={!isNewConfiguration}
                 checked={values.betIn === 'euro'}
-                onCheckedChange={(checked) => {
-                  return checked && setFieldValue('betIn', 'euro');
-                }}
+                onCheckedChange={(checked) =>
+                  checked && setFieldValue('betIn', 'euro')
+                }
               />
               {t('signup.performanceParameters.type.betIn.euro')}
             </Label>
             <Label>
               <Checkbox
                 isLoading={isLoading}
-                disabled={!isNewConfiguration}
                 checked={values.betIn === 'pct'}
-                onCheckedChange={(checked) => {
-                  return checked && setFieldValue('betIn', 'pct');
-                }}
+                onCheckedChange={(checked) =>
+                  checked && setFieldValue('betIn', 'pct')
+                }
               />
               {t('signup.performanceParameters.type.betIn.percentage')}
             </Label>
           </div>
         </div>
-        {errors?.betIn && touched?.betIn && (
-          <span className="text-destructive text-xs">{errors.betIn}</span>
-        )}
       </div>
 
+      {/* Market */}
       <div className="space-y-0.5">
         <div className="flex items-center justify-between">
           <span className="text-foreground/50 text-sm font-normal">
             {t('signup.performanceParameters.type.market.title')}
           </span>
           <div className="flex max-w-2/3 flex-wrap items-center justify-end gap-5">
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.market.moneyline}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('market', {
+            {['moneyline', 'over_under', 'handicap', 'player_performance'].map(
+              (market) => (
+                <Label key={market}>
+                  <Checkbox
+                    isLoading={isLoading}
+                    checked={
+                      values.market[market as keyof typeof values.market]
+                    }
+                    onCheckedChange={(checked) =>
+                      setFieldValue('market', {
                         ...values.market,
-                        moneyline: true,
+                        [market]: !!checked,
                       })
-                    : setFieldValue('market', {
-                        ...values.market,
-                        moneyline: false,
-                      });
-                }}
-              />
-              {t('signup.performanceParameters.type.market.moneyline')}
-            </Label>
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.market.over_under}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('market', {
-                        ...values.market,
-                        over_under: true,
-                      })
-                    : setFieldValue('market', {
-                        ...values.market,
-                        over_under: false,
-                      });
-                }}
-              />
-              {t('signup.performanceParameters.type.market.overunder')}
-            </Label>
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.market.handicap}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('market', {
-                        ...values.market,
-                        handicap: true,
-                      })
-                    : setFieldValue('market', {
-                        ...values.market,
-                        handicap: false,
-                      });
-                }}
-              />
-              {t('signup.performanceParameters.type.market.handicap')}
-            </Label>
-            <Label>
-              <Checkbox
-                isLoading={isLoading}
-                disabled={!isNewConfiguration}
-                checked={values.market.player_performance}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('market', {
-                        ...values.market,
-                        player_performance: true,
-                      })
-                    : setFieldValue('market', {
-                        ...values.market,
-                        player_performance: false,
-                      });
-                }}
-              />
-              {t('signup.performanceParameters.type.market.performance')}
-            </Label>
+                    }
+                  />
+                  {t(
+                    `signup.performanceParameters.type.market.${market.replace('_', '')}`,
+                  )}
+                </Label>
+              ),
+            )}
           </div>
         </div>
-        {errors?.market && touched?.market && (
-          <span className="text-destructive text-xs">
-            {typeof errors.market === 'string'
-              ? errors.market
-              : errors.market.moneyline ||
-                errors.market.over_under ||
-                errors.market.handicap ||
-                errors.market.player_performance}
-          </span>
-        )}
       </div>
 
+      {/* Bookmaker Section */}
       <div className="space-y-0.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -290,7 +217,6 @@ const TypeForm = ({
               variant="secondary"
               className="from-muted w-full !bg-gradient-to-b to-transparent py-1.5 pr-2.5 pl-2 opacity-100"
               size="sm"
-              disabled={!isNewConfiguration}
             >
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -302,56 +228,68 @@ const TypeForm = ({
                       )}
                     </span>
                   </span>
-                  <span className="text-foreground">
-                    {values.bookmaker
-                      .map(
-                        (name) => name.charAt(0).toUpperCase() + name.slice(1),
-                      )
-                      .join(', ')}
+                  <span className="text-foreground max-w-[300px] truncate">
+                    {values.bookmaker.length > 0
+                      ? values.bookmaker
+                          .map(
+                            (name) =>
+                              name.charAt(0).toUpperCase() + name.slice(1),
+                          )
+                          .join(', ')
+                      : 'Select bookmakers'}
                   </span>
                 </div>
                 <ChevronDownIcon className="size-[14px]" />
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[400px]">
-            {bookmakers?.map((bookmaker) => (
-              <DropdownMenuCheckboxItem
-                className="w-full"
-                disabled={
-                  (values.bookmaker.length >= 3 &&
-                    !values.bookmaker.includes(
-                      bookmaker.cloneName.toLowerCase(),
-                    )) ||
-                  !bookmaker.running
-                }
-                key={bookmaker.cloneName}
-                checked={values.bookmaker.includes(
-                  bookmaker.cloneName.toLowerCase(),
-                )}
-                onSelect={(e) => e.preventDefault()}
-                onCheckedChange={(checked) => {
-                  return checked
-                    ? setFieldValue('bookmaker', [
-                        ...values.bookmaker,
+          {/* Increased Height and Width */}
+          <DropdownMenuContent
+            className="max-h-[500px] w-[500px] overflow-y-auto"
+            align="start"
+          >
+            {Object.entries(groupedBookmakers).map(([groupName, items]) => (
+              <div key={groupName}>
+                <DropdownMenuLabel className="text-muted-foreground bg-card/95 border-border/50 sticky top-0 z-10 border-b py-2 text-xs font-bold tracking-widest uppercase">
+                  {groupName}
+                </DropdownMenuLabel>
+                <div className="grid grid-cols-2 gap-x-2 p-1">
+                  {items.map((bookmaker) => (
+                    <DropdownMenuCheckboxItem
+                      key={bookmaker.cloneName}
+                      className="w-full pl-8"
+                      disabled={
+                        (values.bookmaker.length >= 3 &&
+                          !values.bookmaker.includes(
+                            bookmaker.cloneName.toLowerCase(),
+                          )) ||
+                        !bookmaker.running
+                      }
+                      checked={values.bookmaker.includes(
                         bookmaker.cloneName.toLowerCase(),
-                      ])
-                    : setFieldValue(
-                        'bookmaker',
-                        values.bookmaker.filter(
-                          (item) => item !== bookmaker.cloneName.toLowerCase(),
-                        ),
-                      );
-                }}
-              >
-                <div className="flex w-full items-center justify-between">
-                  <span>{bookmaker.cloneName}</span>
-                  <span className="text-foreground/50">
-                    (+{bookmaker.users}{' '}
-                    {t('signup.performanceParameters.type.bookmaker.users')})
-                  </span>
+                      )}
+                      onSelect={(e) => e.preventDefault()}
+                      onCheckedChange={(checked) => {
+                        const name = bookmaker.cloneName.toLowerCase();
+                        const newBookmakers = checked
+                          ? [...values.bookmaker, name]
+                          : values.bookmaker.filter((item) => item !== name);
+                        setFieldValue('bookmaker', newBookmakers);
+                      }}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-1.5 w-1.5 rounded-full ${bookmaker.running ? 'bg-emerald-500' : 'bg-red-500'}`}
+                          />
+                          <span>{bookmaker.cloneName}</span>
+                        </div>
+                      </div>
+                    </DropdownMenuCheckboxItem>
+                  ))}
                 </div>
-              </DropdownMenuCheckboxItem>
+                <DropdownMenuSeparator className="my-2" />
+              </div>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
