@@ -8,6 +8,7 @@ export interface DashboardFiltersI {
   liquidity: FilterRange;
   payout_rate: FilterRange;
   ev: FilterRange;
+  odds: FilterRange;
   sport: string;
   market: string;
   bookmaker: string;
@@ -144,6 +145,7 @@ export interface AuthFormValues {
     player_performance: boolean;
   };
   bookmaker: string[];
+  bookmakerRatings?: Record<string, number>;
 }
 
 export interface CreateUserRequest {
@@ -170,6 +172,7 @@ export interface UserInfo {
   bot_activated: boolean;
   telegram?: TelegramUser;
   bankroll_current: number | null;
+  bankroll_reference: number;
   subscription: {
     active: boolean;
     begin: Date;
@@ -218,6 +221,7 @@ export interface UserDocument {
     begin: Date;
     end: Date;
   };
+  ratings?: Record<string, number>;
 }
 
 export type Locale = 'fr' | 'en' | 'de';

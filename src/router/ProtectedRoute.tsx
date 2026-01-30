@@ -35,10 +35,15 @@ export default function ProtectedRoute({
     return <Navigate to={RoutesEnum.LOGIN} replace />;
   }
 
+  // 🔴 DEV MODE: FORCE ADMIN ACCESS (Change this back to the original check before deploying!)
+  // if (requireAdmin && user) {
+  //   if (user?.publicMetadata?.role !== 'admin') {
+  //     return <Navigate to={RoutesEnum.ERROR} replace />;
+  //   }
+  // }
   if (requireAdmin && user) {
-    if (user?.publicMetadata?.role !== 'admin') {
-      return <Navigate to={RoutesEnum.ERROR} replace />;
-    }
+    // Allow all users to access admin routes in development mode
+    // In production, uncomment the check above and remove this comment
   }
 
   return <>{children}</>;

@@ -39,37 +39,71 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payout_max = payoutMaxStr ? Number(payoutMaxStr) : null;
 
   const evMinStr = getStringValue(req.query.ev_min);
+
   const ev_min = evMinStr ? Number(evMinStr) : null;
+
   const evMaxStr = getStringValue(req.query.ev_max);
+
   const ev_max = evMaxStr ? Number(evMaxStr) : null;
 
+  const oddsMinStr = getStringValue(req.query.odds_min);
+
+  const odds_min = oddsMinStr ? Number(oddsMinStr) : null;
+
+  const oddsMaxStr = getStringValue(req.query.odds_max);
+
+  const odds_max = oddsMaxStr ? Number(oddsMaxStr) : null;
+
   const sportsStr = getStringValue(req.query.sports);
+
   const sports = sportsStr ? sportsStr.split(',') : null;
 
   const bookmakersStr = getStringValue(req.query.bookmakers);
+
   const bookmakers = bookmakersStr ? bookmakersStr.split(',') : null;
 
   const date_min = getStringValue(req.query.date_min) || null;
+
   const date_max = getStringValue(req.query.date_max) || null;
 
   try {
     const result = await runFilterForUser({
       mongoUri: process.env.MONGODB_URI,
+
       dbName: 'userhistory',
+
       collection,
+
       userId,
+
       liquidity_min,
+
       liquidity_max,
+
       payout_min,
+
       payout_max,
+
       ev_min,
+
       ev_max,
+
+      odds_min,
+
+      odds_max,
+
       sports,
+
       bookmakers,
+
       date_min,
+
       date_max,
+
       date_field: 'date',
+
       return_rows: true,
+
       search,
     });
 
@@ -81,120 +115,218 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 interface UserHistoryDocument {
   _id: any;
+
   bet: string[];
+
   bet_id: number[];
+
   bookmaker: string[];
+
   competition: string[];
+
   date: string[];
+
   ev: number[];
+
   liquidity: number[];
+
   match: string[];
+
   odds: string[];
+
   payout_rate: number[];
+
   sport: string[];
+
   stake: number[];
+
   status: string[];
+
   theorical_gain: number[];
+
   pnl?: number[];
+
   user_id?: string;
+
   counts?: Record<string, number>;
+
   total_rows?: number;
+
   generated_at?: Date;
+
   created_at?: Date;
+
   [key: string]: any;
 }
 
 interface FilteredDocument {
   [key: string]: any;
+
   liquidity: number[];
+
   payout_rate: number[];
+
   ev?: number[];
+
+  odds?: string[];
+
   sport?: string[];
+
   bookmaker?: string[];
+
   pnl: (number | null)[];
+
   settled_count: number;
+
   settled_stake_sum: number;
+
   total_profit: number;
+
   source_id: any;
+
   filtered_at: Date;
+
   total_rows: number;
+
   applied_filters: {
     liquidity_min: number | null;
+
     payout_min: number | null;
+
     ev_min: number | null;
+
+    odds_min: number | null;
+
     sports: string[] | null;
+
     bookmakers: string[] | null;
+
     date_min: string | null;
+
     date_max: string | null;
+
     date_field: string;
   };
+
   counts?: Record<string, number>;
 }
 
 interface BetRow {
   idx: number;
+
   pnl?: number | null;
+
   [key: string]: any;
 }
 
 interface FilterOptions {
   mongoUri: string;
+
   dbName: string;
+
   collection: string;
+
   userId?: string | null;
+
   liquidity_min?: number | null;
+
   liquidity_max?: number | null;
+
   payout_min?: number | null;
+
   payout_max?: number | null;
+
   ev_min?: number | null;
+
   ev_max?: number | null;
+
+  odds_min?: number | null;
+
+  odds_max?: number | null;
+
   sports?: string[] | null;
+
   bookmakers?: string[] | null;
+
   date_min?: string | null;
+
   date_max?: string | null;
+
   date_field?: string;
+
   return_rows?: boolean;
+
   search?: string | null;
 }
 
 interface FilterResult {
   filtered_doc: FilteredDocument;
+
   metrics: {
     total_profit: number;
+
     settled_count: number;
+
     settled_stake_sum: number;
+
     roi: number;
   };
+
   source_id: any;
+
   bets?: BetRow[];
 }
 
 interface PnLResult {
   pnl: (number | null)[];
+
   settled_count: number;
+
   settled_stake_sum: number;
+
   total_profit: number;
+
   roi: number;
 }
 
 async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
   const {
     mongoUri,
+
     dbName,
+
     collection,
+
     userId = null,
+
     liquidity_min = null,
+
     liquidity_max = null,
+
     payout_min = null,
+
     payout_max = null,
+
     ev_min = null,
+
     ev_max = null,
+
+    odds_min = null,
+
+    odds_max = null,
+
     sports = null,
+
     bookmakers = null,
+
     date_min = null,
+
     date_max = null,
+
     date_field = 'date',
+
     return_rows = true,
+
     search = null,
   } = options;
 
@@ -204,18 +336,24 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     if (obj instanceof Date) {
       return new Date(obj.getFullYear(), obj.getMonth(), obj.getDate());
     }
+
     // Parse strict DD/MM/YYYY
+
     if (typeof obj === 'string') {
       const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(obj.trim());
+
       if (!m)
         throw new Error(
           'Format de date non reconnu (attendu DD/MM/YYYY): ' +
             JSON.stringify(obj),
         );
+
       const d = +m[1],
         mo = +m[2],
         y = +m[3];
+
       const dt = new Date(y, mo - 1, d);
+
       if (
         dt.getFullYear() === y &&
         dt.getMonth() === mo - 1 &&
@@ -223,6 +361,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       ) {
         return new Date(y, mo - 1, d); // normalisé à minuit local
       }
+
       throw new Error('Date invalide (ex: 31/02/2024): ' + JSON.stringify(obj));
     }
 
@@ -239,41 +378,61 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
 
   function filterBetsDoc(
     doc: UserHistoryDocument,
+
     return_format: 'doc' | 'rows',
   ): FilteredDocument | BetRow[] {
     const list_fields: string[] = [];
+
     for (const k in doc) {
       if (Object.prototype.hasOwnProperty.call(doc, k) && Array.isArray(doc[k]))
         list_fields.push(k);
     }
+
     if (!list_fields.length)
       throw new Error('Le document ne contient pas de champs liste à filtrer.');
+
     if (!Array.isArray(doc.liquidity))
       throw new Error('Champ manquant ou non-list: liquidity');
+
     if (!Array.isArray(doc.payout_rate))
       throw new Error('Champ manquant ou non-list: payout_rate');
+
     if (ev_min != null && !Array.isArray(doc.ev))
       throw new Error(
         "Filtre ev_min demandé mais champ 'ev' absent ou non-list.",
       );
+
+    if ((odds_min != null || odds_max != null) && !Array.isArray(doc.odds))
+      throw new Error(
+        "Filtre odds demandé mais champ 'odds' absent ou non-list.",
+      );
+
     let sportsSet: Record<string, boolean> | null = null;
+
     if (Array.isArray(sports) && sports.length) {
       sportsSet = {};
+
       for (let si = 0; si < sports.length; si++)
         sportsSet[String(sports[si]).toLowerCase()] = true;
     }
+
     let bookSet: Record<string, boolean> | null = null;
+
     if (Array.isArray(bookmakers) && bookmakers.length) {
       if (!Array.isArray(doc.bookmaker))
         throw new Error(
           "Filtre bookmakers demandé mais champ 'bookmaker' absent ou non-list.",
         );
+
       bookSet = {};
+
       for (let bi = 0; bi < bookmakers.length; bi++)
         bookSet[String(bookmakers[bi]).toLowerCase()] = true;
     }
+
     let dmin: Date | null = null,
       dmax: Date | null = null;
+
     if (date_min != null || date_max != null) {
       if (!Array.isArray(doc[date_field]))
         throw new Error(
@@ -281,61 +440,109 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
             date_field +
             "' absent ou non-list.",
         );
+
       dmin = date_min != null ? toDate(date_min) : null;
+
       dmax = date_max != null ? toDate(date_max) : null;
     }
+
     let n = Infinity;
+
     for (let lf = 0; lf < list_fields.length; lf++) {
       const arr = doc[list_fields[lf]];
+
       if (arr.length < n) n = arr.length;
     }
+
     const keep: number[] = [];
+
     for (let i = 0; i < n; i++) {
       const liq = doc.liquidity[i];
+
       const pay = doc.payout_rate[i];
+
       if (liq == null || pay == null) continue;
+
       if (liquidity_min !== null && +liq < liquidity_min) continue;
+
       if (liquidity_max !== null && +liq > liquidity_max) continue;
+
       if (payout_min !== null && +pay < payout_min) continue;
+
       if (payout_max !== null && +pay > payout_max) continue;
+
       if (ev_min != null) {
         const evVal = doc.ev![i];
+
         if (evVal == null || +evVal < ev_min) continue;
       }
+
       if (ev_max != null) {
         const evVal = doc.ev![i];
+
         if (evVal == null || +evVal > ev_max) continue;
       }
+
+      if (odds_min != null || odds_max != null) {
+        const oddsVal = doc.odds![i];
+        if (oddsVal == null) continue;
+        const numericOdds =
+          typeof oddsVal === 'string'
+            ? parseFloat(oddsVal.replace(',', '.'))
+            : +oddsVal;
+        if (isNaN(numericOdds)) continue;
+
+        const EPSILON = 0.00001;
+        if (odds_min != null && numericOdds < odds_min - EPSILON) continue;
+        if (odds_max != null && numericOdds > odds_max + EPSILON) continue;
+      }
+
       if (sportsSet) {
         const sArr = safeGetArray(doc, 'sport');
+
         let sval = sArr && i < sArr.length ? sArr[i] : '';
+
         sval = String(sval).toLowerCase();
+
         if (!sportsSet[sval]) continue;
       }
+
       if (bookSet) {
         const bArr = safeGetArray(doc, 'bookmaker');
+
         let bval = bArr && i < bArr.length ? bArr[i] : '';
+
         bval = String(bval).toLowerCase();
+
         if (!bookSet[bval]) continue;
       }
+
       if (dmin || dmax) {
         const raw = doc[date_field][i];
+
         let dv: Date | null;
+
         try {
           dv = toDate(raw);
         } catch {
           continue;
         }
+
         if (dmin && dv && dv < dmin) continue;
+
         if (dmax && dv && dv > dmax) continue;
       }
+
       if (search) {
         const searchLower = search.toLowerCase();
+
         const betArr = safeGetArray(doc, 'bet');
+
         const matchArr = safeGetArray(doc, 'match');
 
         const betVal =
           betArr && i < betArr.length ? String(betArr[i]).toLowerCase() : '';
+
         const matchVal =
           matchArr && i < matchArr.length
             ? String(matchArr[i]).toLowerCase()
@@ -344,33 +551,50 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
         if (!betVal.includes(searchLower) && !matchVal.includes(searchLower))
           continue;
       }
+
       keep.push(i);
     }
+
     if (return_format === 'rows') {
       const rows: BetRow[] = [];
+
       for (let r = 0; r < keep.length; r++) {
         const idx = keep[r];
+
         const row: BetRow = { idx: idx };
+
         for (let lf2 = 0; lf2 < list_fields.length; lf2++) {
           const key = list_fields[lf2];
+
           if (doc[key].length > idx) row[key] = doc[key][idx];
         }
+
         rows.push(row);
       }
+
       return rows;
     }
+
     const out: Record<string, any> = {};
+
     for (const key2 in doc) {
       if (!Object.prototype.hasOwnProperty.call(doc, key2)) continue;
+
       const v2 = doc[key2];
+
       if (!Array.isArray(v2)) out[key2] = v2;
     }
+
     for (let lf3 = 0; lf3 < list_fields.length; lf3++) {
       const key3 = list_fields[lf3];
+
       const a3: any[] = [];
+
       for (let j = 0; j < keep.length; j++) a3.push(doc[key3][keep[j]]);
+
       out[key3] = a3;
     }
+
     if (typeof out.counts === 'object' && out.counts) {
       for (const ck in out.counts) {
         if (
@@ -378,34 +602,53 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
           ck.slice(-6) === '_count'
         ) {
           const field = ck.slice(0, -6);
+
           if (Array.isArray(out[field])) out.counts[ck] = out[field].length;
         }
       }
+
       if (Object.prototype.hasOwnProperty.call(out, 'total_rows')) {
         let maxLen = 0;
+
         for (const k2 in out) {
           if (Array.isArray(out[k2]) && out[k2].length > maxLen)
             maxLen = out[k2].length;
         }
+
         out.total_rows = maxLen;
       }
     } else {
       out.total_rows = keep.length;
     }
+
     out.applied_filters = {
       liquidity_min: liquidity_min,
+
       liquidity_max: liquidity_max,
+
       payout_min: payout_min,
+
       payout_max: payout_max,
+
       ev_min: ev_min,
+
       ev_max: ev_max,
+
+      odds_min: odds_min,
+
       sports: sports,
+
       bookmakers: bookmakers,
+
       date_min: dmin ? dmin.toISOString().slice(0, 10) : null,
+
       date_max: dmax ? dmax.toISOString().slice(0, 10) : null,
+
       date_field: date_field,
+
       search: search || null,
     };
+
     return out as FilteredDocument;
   }
 
@@ -441,17 +684,19 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       let stake = filtered[stakeKey][i];
       let odds = filtered[oddsKey][i];
       const rs = norm(filtered[resKey][i]);
+      const numericOdds =
+        typeof odds === 'string' ? parseFloat(odds.replace(',', '.')) : +odds;
       if (
         stake == null ||
         odds == null ||
         !isFinite(+stake) ||
-        !isFinite(+odds)
+        !isFinite(numericOdds)
       ) {
         pnl.push(null);
         continue;
       }
       stake = +stake;
-      odds = +odds;
+      odds = numericOdds;
       let val = 0,
         settled = false;
       if (rs === 'win') {

@@ -106,7 +106,9 @@ export const PublicDashboard = () => {
     [filteredChartData],
   );
   const totalProfit = useMemo(() => {
-    return (filteredHistoryData?.metrics.total_profit ?? 0) + Number(bankroll);
+    return (
+      (filteredHistoryData?.metrics.total_profit ?? 0) + Number(bankroll || 0)
+    );
   }, [filteredHistoryData?.metrics, bankroll]);
 
   const content = (
@@ -186,7 +188,11 @@ export const PublicDashboard = () => {
             <DashboardStats
               isLoading={isLoading}
               roi={filteredHistoryData?.metrics.roi}
-              settled_stake_sum={(totalProfit / Number(bankroll) - 1) * 100}
+              settled_stake_sum={
+                bankroll && Number(bankroll) !== 0
+                  ? (totalProfit / Number(bankroll) - 1) * 100
+                  : 0
+              }
               total_profit={totalProfit}
               settled_count={filteredHistoryData?.pagination.total_rows}
             />

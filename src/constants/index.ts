@@ -3,6 +3,7 @@ export const FILTER_LABELS = {
   liquidity: 'filters.liquidity',
   payout_rate: 'filters.payout',
   ev: 'filters.ev',
+  odds: 'filters.odds',
   sport: 'filters.sport',
   market: 'filters.market',
   bookmaker: 'filters.bookmaker',
@@ -17,8 +18,8 @@ export const DEFAULT_PERFORMANCE_PARAMETERS = {
   minLiquidity: '500',
   bankroll: '',
   time: {
-    start: '00:00',
-    end: '00:00',
+    start: '09:00',
+    end: '23:00',
   },
   betType: { live: true, prematch: true },
   sport: ['Football', 'Tennis', 'Basketball'],
@@ -43,6 +44,10 @@ export const DEFAULT_FILTERS = {
     less: '',
   },
   ev: {
+    more: '',
+    less: '',
+  },
+  odds: {
     more: '',
     less: '',
   },

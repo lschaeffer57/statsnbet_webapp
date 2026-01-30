@@ -11,6 +11,17 @@ import type {
   FilteredBet,
 } from '@/types';
 
+// Helper to clean params and prevent 500 errors on the backend
+const appendIfValid = (
+  params: URLSearchParams,
+  key: string,
+  value: string | number | boolean | null | undefined,
+) => {
+  if (value !== undefined && value !== null && value !== '') {
+    params.set(key, value.toString());
+  }
+};
+
 export const betsApi = {
   baseKey: 'bets',
   getBetsQueryOptions: (
@@ -192,44 +203,59 @@ export const betsApi = {
       queryFn: async ({ signal }) => {
         const searchParams = new URLSearchParams();
 
-        searchParams.set('bankroll', bankroll);
-        if (userId) searchParams.set('userId', userId);
-        if (filters?.search) searchParams.set('search', filters.search);
+        appendIfValid(searchParams, 'bankroll', bankroll);
+        appendIfValid(searchParams, 'userId', userId);
+        appendIfValid(searchParams, 'search', filters?.search);
+
+        // Odds Filter (New)
+        if (filters?.odds?.more)
+          appendIfValid(searchParams, 'odds_min', filters.odds.more);
+        if (filters?.odds?.less)
+          appendIfValid(searchParams, 'odds_max', filters.odds.less);
 
         if (filters?.liquidity?.more)
-          searchParams.set('liquidity_min', filters.liquidity.more);
+          appendIfValid(searchParams, 'liquidity_min', filters.liquidity.more);
         if (filters?.liquidity?.less)
-          searchParams.set('liquidity_max', filters.liquidity.less);
+          appendIfValid(searchParams, 'liquidity_max', filters.liquidity.less);
 
         if (filters?.payout_rate?.more)
-          searchParams.set('payout_min', filters.payout_rate.more);
+          appendIfValid(searchParams, 'payout_min', filters.payout_rate.more);
         if (filters?.payout_rate?.less)
-          searchParams.set('payout_max', filters.payout_rate.less);
+          appendIfValid(searchParams, 'payout_max', filters.payout_rate.less);
 
-        if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
-        if (filters?.ev?.less) searchParams.set('ev_max', filters.ev.less);
+        if (filters?.ev?.more)
+          appendIfValid(searchParams, 'ev_min', filters.ev.more);
+        if (filters?.ev?.less)
+          appendIfValid(searchParams, 'ev_max', filters.ev.less);
 
-        if (filters?.sport) searchParams.set('sports', filters.sport);
-        if (filters?.market) searchParams.set('markets', filters.market);
+        if (filters?.sport)
+          appendIfValid(searchParams, 'sports', filters.sport);
+        if (filters?.market)
+          appendIfValid(searchParams, 'markets', filters.market);
         if (filters?.bookmaker)
-          searchParams.set('bookmakers', filters.bookmaker);
+          appendIfValid(searchParams, 'bookmakers', filters.bookmaker);
 
         if (filters?.period?.end)
-          searchParams.set(
+          appendIfValid(
+            searchParams,
             'date_max',
             format(filters.period.end, 'yyyy-MM-dd'),
           );
+        if (filters?.period?.start)
+          appendIfValid(
+            searchParams,
+            'date_min',
+            format(filters.period.start, 'yyyy-MM-dd'),
+          );
 
         if (filters?.get_all)
-          searchParams.set('get_all', filters.get_all.toString());
-
+          appendIfValid(searchParams, 'get_all', filters.get_all);
         if (filters?.is_percent)
-          searchParams.set('is_percent', filters.is_percent.toString());
-
+          appendIfValid(searchParams, 'is_percent', filters.is_percent);
         if (filters?.page_size)
-          searchParams.set('page_size', filters.page_size.toString());
+          appendIfValid(searchParams, 'page_size', filters.page_size);
         if (filters?.page_number)
-          searchParams.set('page_number', filters.page_number.toString());
+          appendIfValid(searchParams, 'page_number', filters.page_number);
 
         return jsonApiInstance<{
           page_rows: FilteredBet[];
@@ -266,36 +292,47 @@ export const betsApi = {
       queryFn: async ({ signal }) => {
         const searchParams = new URLSearchParams();
 
-        if (userId) searchParams.set('userId', userId);
-        if (filters?.search) searchParams.set('search', filters.search);
-        if (filters?.collection)
-          searchParams.set('collection', filters.collection);
+        appendIfValid(searchParams, 'userId', userId);
+        appendIfValid(searchParams, 'search', filters?.search);
+        appendIfValid(searchParams, 'collection', filters?.collection);
+
+        // Odds Filter (New)
+        if (filters?.odds?.more)
+          appendIfValid(searchParams, 'odds_min', filters.odds.more);
+        if (filters?.odds?.less)
+          appendIfValid(searchParams, 'odds_max', filters.odds.less);
 
         if (filters?.liquidity?.more)
-          searchParams.set('liquidity_min', filters.liquidity.more);
+          appendIfValid(searchParams, 'liquidity_min', filters.liquidity.more);
         if (filters?.liquidity?.less)
-          searchParams.set('liquidity_max', filters.liquidity.less);
+          appendIfValid(searchParams, 'liquidity_max', filters.liquidity.less);
 
         if (filters?.payout_rate?.more)
-          searchParams.set('payout_min', filters.payout_rate.more);
+          appendIfValid(searchParams, 'payout_min', filters.payout_rate.more);
         if (filters?.payout_rate?.less)
-          searchParams.set('payout_max', filters.payout_rate.less);
+          appendIfValid(searchParams, 'payout_max', filters.payout_rate.less);
 
-        if (filters?.ev?.more) searchParams.set('ev_min', filters.ev.more);
-        if (filters?.ev?.less) searchParams.set('ev_max', filters.ev.less);
+        if (filters?.ev?.more)
+          appendIfValid(searchParams, 'ev_min', filters.ev.more);
+        if (filters?.ev?.less)
+          appendIfValid(searchParams, 'ev_max', filters.ev.less);
 
-        if (filters?.sport) searchParams.set('sports', filters.sport);
-        if (filters?.market) searchParams.set('markets', filters.market);
+        if (filters?.sport)
+          appendIfValid(searchParams, 'sports', filters.sport);
+        if (filters?.market)
+          appendIfValid(searchParams, 'markets', filters.market);
         if (filters?.bookmaker)
-          searchParams.set('bookmakers', filters.bookmaker);
+          appendIfValid(searchParams, 'bookmakers', filters.bookmaker);
 
         if (filters?.period?.start)
-          searchParams.set(
+          appendIfValid(
+            searchParams,
             'date_min',
             format(filters.period.start, 'yyyy-MM-dd'),
           );
         if (filters?.period?.end)
-          searchParams.set(
+          appendIfValid(
+            searchParams,
             'date_max',
             format(filters.period.end, 'yyyy-MM-dd'),
           );

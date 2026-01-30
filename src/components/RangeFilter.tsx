@@ -13,7 +13,10 @@ import { Input } from '@/components/ui/Input';
 import type { DashboardFiltersI } from '@/types';
 
 interface RangeFilterProps {
-  filterKey: keyof Pick<DashboardFiltersI, 'liquidity' | 'payout_rate' | 'ev'>;
+  filterKey: keyof Pick<
+    DashboardFiltersI,
+    'liquidity' | 'payout_rate' | 'ev' | 'odds'
+  >;
   filters: DashboardFiltersI;
   setFilters: Dispatch<SetStateAction<DashboardFiltersI>>;
   translationKey: string;

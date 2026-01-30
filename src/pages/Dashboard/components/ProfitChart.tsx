@@ -18,6 +18,7 @@ import type { ChartData, DailyStats } from '@/types';
 
 interface ProfitChartProps {
   isPublic?: boolean;
+  isMinimal?: boolean;
   data: ChartData[] | DailyStats[];
   cumulativeRealGain: number;
   isDate: boolean;
@@ -26,12 +27,43 @@ interface ProfitChartProps {
 
 const ProfitChart = ({
   isPublic = false,
+  isMinimal = false,
   data,
   isDate,
   setIsDate,
   cumulativeRealGain,
 }: ProfitChartProps) => {
   const { t } = useTranslation('dashboard');
+
+  if (isMinimal) {
+    return (
+      <div className="h-full w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            data={data}
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          >
+            <defs>
+              <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3B4EE0" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#3B4EE0" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <Line
+              type="monotone"
+              dataKey={isDate ? 'profit' : 'realGain'}
+              stroke="#3B4EE0"
+              strokeWidth={3}
+              dot={false}
+              activeDot={false}
+              animationDuration={0}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
   console.log({ isPublic }); // Use isPublic to avoid unused warning
   return (
     <section className="h-[400px] w-full px-7 py-6">

@@ -43,6 +43,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const evMaxStr = getStringValue(req.query.ev_max);
   const ev_max = evMaxStr ? Number(evMaxStr) : null;
 
+  const oddsMinStr = getStringValue(req.query.odds_min);
+  const odds_min = oddsMinStr ? Number(oddsMinStr) : null;
+  const oddsMaxStr = getStringValue(req.query.odds_max);
+  const odds_max = oddsMaxStr ? Number(oddsMaxStr) : null;
+
   const sportsStr = getStringValue(req.query.sports);
   const sports = sportsStr ? sportsStr.split(',') : null;
 
@@ -76,6 +81,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payout_max,
       ev_min,
       ev_max,
+      odds_min,
+      odds_max,
       sports,
       bookmakers,
       bankroll,
@@ -124,6 +131,7 @@ interface FilteredDocument {
   liquidity: number[];
   payout_rate: number[];
   ev?: number[];
+  odds?: string[];
   sport?: string[];
   bookmaker?: string[];
   pnl: (number | null)[];
@@ -139,6 +147,7 @@ interface FilteredDocument {
     liquidity_min: number | null;
     payout_min: number | null;
     ev_min: number | null;
+    odds_min: number | null;
     sports: string[] | null;
     bookmakers: string[] | null;
     date_min: string | null;
@@ -165,6 +174,8 @@ interface FilterOptions {
   payout_max?: number | null;
   ev_min?: number | null;
   ev_max?: number | null;
+  odds_min?: number | null;
+  odds_max?: number | null;
   sports?: string[] | null;
   bookmakers?: string[] | null;
   date_max?: string | null;
@@ -213,6 +224,8 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
     payout_max = null,
     ev_min = null,
     ev_max = null,
+    odds_min = null,
+    odds_max = null,
     sports = null,
     bookmakers = null,
     date_max = null,
@@ -283,6 +296,10 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       throw new Error(
         "Filtre ev_min demandé mais champ 'ev' absent ou non-list.",
       );
+    if ((odds_min != null || odds_max != null) && !Array.isArray(doc.odds))
+      throw new Error(
+        "Filtre odds demandé mais champ 'odds' absent ou non-list.",
+      );
 
     let sportsSet: Record<string, boolean> | null = null;
     if (Array.isArray(sports) && sports.length) {
@@ -335,6 +352,21 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       if (ev_max != null) {
         const evVal = doc.ev![i];
         if (evVal == null || +evVal > ev_max) continue;
+      }
+
+      if (odds_min != null || odds_max != null) {
+        const oddsVal = doc.odds![i];
+        if (oddsVal == null) continue;
+        const numericOdds =
+          typeof oddsVal === 'string'
+            ? parseFloat(oddsVal.replace(',', '.'))
+            : +oddsVal;
+        if (isNaN(numericOdds)) continue;
+
+        // Use a small epsilon for float comparison safety
+        const EPSILON = 0.00001;
+        if (odds_min != null && numericOdds < odds_min - EPSILON) continue;
+        if (odds_max != null && numericOdds > odds_max + EPSILON) continue;
       }
 
       if (sportsSet) {
@@ -431,6 +463,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       payout_max: payout_max,
       ev_min: ev_min,
       ev_max: ev_max,
+      odds_min: odds_min,
       sports: sports,
       bookmakers: bookmakers,
       date_min: dmin ? dmin.toISOString().slice(0, 10) : null,
@@ -556,11 +589,13 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       const stakeValue = filtered[stakeKey][i];
       let odds = filtered[oddsKey][i];
       const rs = norm(filtered[resKey][i]);
+      const numericOdds =
+        typeof odds === 'string' ? parseFloat(odds.replace(',', '.')) : +odds;
       if (
         stakeValue == null ||
         odds == null ||
         !isFinite(+stakeValue) ||
-        !isFinite(+odds)
+        !isFinite(numericOdds)
       ) {
         pnl.push(null);
         continue;
@@ -568,7 +603,7 @@ async function runFilterForUser(options: FilterOptions): Promise<FilterResult> {
       const stake = isPercentage
         ? (+bankroll_value * +stakeValue) / 100
         : +stakeValue;
-      odds = +odds;
+      odds = numericOdds;
       let val = 0,
         settled = false;
       if (rs === 'win') {

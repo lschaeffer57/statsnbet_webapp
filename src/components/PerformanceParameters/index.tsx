@@ -72,9 +72,6 @@ export const PerformanceParameters = memo(
         <h2 className="text-foreground text-base font-medium">
           {t('signup.performanceParameters.title')}
         </h2>
-        <span className="text-muted-foreground text-sm font-normal">
-          {t('signup.performanceParameters.openSettings')}
-        </span>
         <div className="flex w-full justify-end">
           <div className="flex items-center gap-2">
             <Button
@@ -190,6 +187,8 @@ export const PerformanceParameters = memo(
           performanceParameters={performanceParameters}
           isPending={isPending}
           isNewConfiguration={isNewConfiguration}
+          userData={userData}
+          configuration={configuration}
         />
 
         {isVideoModalOpen && (

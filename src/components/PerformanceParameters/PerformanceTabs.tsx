@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { bookmakersApi } from '@/api/bookmakersApi';
 import { DEFAULT_PERFORMANCE_PARAMETERS } from '@/constants';
 import { useFormValidation } from '@/lib/formValidation';
-import type { AuthFormValues } from '@/types';
+import type { AuthFormValues, UserDocument } from '@/types';
 
 import { Button } from '../ui/Button';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '../ui/Tabs';
@@ -22,6 +22,8 @@ const PerformanceTabs = ({
   resetTrigger,
   isPending,
   isNewConfiguration = true,
+  userData,
+  configuration,
 }: {
   setPerformanceParameters: (data: AuthFormValues) => void;
   performanceParameters: AuthFormValues;
@@ -29,6 +31,8 @@ const PerformanceTabs = ({
   isPending?: boolean;
   resetTrigger: number;
   isNewConfiguration?: boolean;
+  userData?: UserDocument[];
+  configuration?: string;
 }) => {
   const formikRef = useRef<FormikProps<AuthFormValues>>(null);
 
@@ -125,7 +129,8 @@ const PerformanceTabs = ({
       .refine(
         (data) => {
           if (!data.start || !data.end) return true;
-          return data.end > data.start;
+          // Simple string comparison works for HH:mm format (e.g. "09:00" < "23:00")
+          return data.start < data.end;
         },
         {
           message: t(
@@ -190,6 +195,8 @@ const PerformanceTabs = ({
                   setFieldValue={setFieldValue}
                   isLoading={isLoading}
                   isNewConfiguration={isNewConfiguration}
+                  userData={userData}
+                  configuration={configuration}
                 />
               </TabsContent>
               <Button

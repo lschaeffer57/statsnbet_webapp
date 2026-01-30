@@ -18,6 +18,21 @@ import EditClerkProfile from './components/EditClerkProfile';
 import { useSettingsMutation } from './hooks/useSettingsMutation';
 import { transformUserDataToParameters } from './utils';
 
+// Helper function at the top of the file
+const formatDate = (dateString: string | Date | undefined) => {
+  if (!dateString) return '--/--/----';
+  try {
+    const date = new Date(dateString);
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '--/--/----';
+
+    // Format: DD/MM/YYYY
+    return new Intl.DateTimeFormat('en-GB').format(date);
+  } catch {
+    return '--/--/----';
+  }
+};
+
 export const SettingsPage = () => {
   const { t } = useTranslation('settings');
   const { user } = useUser();
@@ -119,6 +134,12 @@ export const SettingsPage = () => {
   const handleSaveConfig = (data: AuthFormValues) => {
     if (!user || !configuration) return;
 
+    // Sanitize Bankroll: Ensure it's a number string
+    const sanitizedData = {
+      ...data,
+      bankroll: data.bankroll ? data.bankroll.toString() : '0',
+    };
+
     const configNum = parseInt(configuration);
     const isNew = configNum > maxConfigNumber;
 
@@ -127,13 +148,14 @@ export const SettingsPage = () => {
         {
           clerkId: user.id,
           configNumber: configNum,
-          performanceParameters: data,
+          performanceParameters: sanitizedData,
           userInfo: {
             email: user.emailAddresses[0].emailAddress || '',
             username: user.username || '',
             bot_activated: !!telegram,
             telegram,
             bankroll_current: null,
+            bankroll_reference: parseInt(sanitizedData.bankroll),
             subscription: {
               active: true,
               begin: new Date(),
@@ -154,7 +176,7 @@ export const SettingsPage = () => {
         {
           clerkId: user.id,
           configNumber: configNum,
-          performanceParameters: data,
+          performanceParameters: sanitizedData,
         },
         {
           onSuccess: () => {
@@ -235,7 +257,7 @@ export const SettingsPage = () => {
                 {t('subscription.startDate')}
               </p>
               <p className="text-foreground text-sm leading-5 font-medium -tracking-[.04em]">
-                29/01/2026
+                {formatDate(userData?.[0]?.subscription?.begin)}
               </p>
             </div>
             <div className="flex items-center justify-between">
@@ -243,7 +265,7 @@ export const SettingsPage = () => {
                 {t('subscription.endDate')}
               </p>
               <p className="text-foreground text-sm leading-5 font-medium -tracking-[.04em]">
-                01/01/2030
+                {formatDate(userData?.[0]?.subscription?.end)}
               </p>
             </div>
             <div className="border-border-dashed w-full border-b border-dashed" />

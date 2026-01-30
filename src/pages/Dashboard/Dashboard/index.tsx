@@ -1,12 +1,15 @@
 import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { Eye, Share2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router'; // IMPORTANT IMPORT
 
 import { betsApi } from '@/api/betsApi';
 import { userApi } from '@/api/userApi';
 import { DashboardIcon, RefreshIcon } from '@/assets/icons';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { ShareStatsModal } from '@/components/ShareStatsModal';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ChartPlaceholder } from '@/components/ui/Skeleton';
@@ -26,29 +29,30 @@ export const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDate, setIsDate] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   const { user } = useUser();
+  const [searchParams] = useSearchParams();
+
+  // GOD MODE LOGIC
+  const paramUserId = searchParams.get('userId');
+  const targetUserId = paramUserId || user?.id;
+  const isGodMode = !!paramUserId;
 
   const [filters, setFilters] = useState<DashboardFiltersI>(DEFAULT_FILTERS);
 
-  // const { data, isLoading, error } = useQuery({
-  //   ...betsApi.getUserBetsQueryOptions(userId, {
-  //     ...filters,
-  //     search: search,
-  //   }),
-  // });
-
-  const {
-    data: userData,
-    error: userDataError,
-    isLoading: isUserDataLoading,
-  } = useQuery({
-    ...userApi.getUser(user?.id || ''),
-    enabled: !!user?.id,
+  // 1. Fetch Target User Data (Configs)
+  const { data: userData, isLoading: isUserDataLoading } = useQuery({
+    ...userApi.getUser(targetUserId || ''),
+    enabled: !!targetUserId,
   });
 
+  // 2. Derive Collection (Telegram ID)
+  // Ensure we safely handle missing telegram/ids
   const collection =
     userData?.find((u) => u.telegram?.id)?.telegram?.id?.toString() ?? '';
 
+  // 3. Fetch Bets
   const {
     data,
     isLoading: isBetsLoading,
@@ -56,57 +60,27 @@ export const Dashboard = () => {
     refetch,
     isRefetching,
   } = useQuery({
-    ...betsApi.getFilteredDashboardQueryOptions(undefined, {
+    // We pass targetUserId. API must handle userId param priority over Auth token if it supports admin overrides.
+    ...betsApi.getFilteredDashboardQueryOptions(targetUserId, {
       ...filters,
       bookmaker: filters.bookmaker,
       collection,
       search: search,
     }),
+    // CRITICAL FIX: Only fetch if we actually have a collection ID to avoid 500s
     enabled: !!collection,
   });
 
   const isLoading = isUserDataLoading || isBetsLoading || isRefetching;
-
   const showEmptyState =
     !isLoading && (!!error || !data?.bets || data.bets.length === 0);
 
-  useEffect(() => {
-    if (filters.configuration && userData) {
-      const user = userData.find(
-        (user) => user.config_number === parseInt(filters.configuration),
-      );
-
-      if (!user) return;
-
-      setFilters((prev) => ({
-        ...prev,
-        liquidity: {
-          ...prev.liquidity,
-          more: user.min_liquidity.toString(),
-        },
-        ev: {
-          ...prev.ev,
-          more: user.ev_min_pct.toString(),
-        },
-        sport: user.sports.join(',') ?? '',
-        market:
-          Object.entries(user.markets)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .filter(([_, value]) => value)
-            .map(([key]) => key)
-            .join(',') ?? '',
-        bookmaker: user.bookmakers.join(',') ?? '',
-      }));
-    }
-  }, [filters.configuration, userData]);
-
+  // Memo Logic...
   const tableData = useMemo(() => {
     if (!data) return { data: undefined, isLoading };
-
     const startIndex = (currentPage - 1) * 10;
     const endIndex = currentPage * 10;
     const paginatedData = data?.bets.slice(startIndex, endIndex);
-
     return {
       data: {
         data: paginatedData,
@@ -123,22 +97,50 @@ export const Dashboard = () => {
 
   const chartData = useMemo(() => getChartData(data?.bets), [data]);
   const dailyStats = useMemo(() => getDailyStats(data?.bets), [data]);
+
+  // Safe math for bankroll
   const bankrollReference = useMemo(() => {
-    return userData?.find((u) => u.bankroll_reference && u.active_config)
-      ?.bankroll_reference;
+    return (
+      userData?.find((u) => u.bankroll_reference && u.active_config)
+        ?.bankroll_reference || 0
+    );
   }, [userData]);
-  const totalProfit = useMemo(() => {
-    return (data?.metrics.total_profit ?? 0) + Number(bankrollReference);
-  }, [data?.metrics, bankrollReference]);
+
+  const totalProfit =
+    (data?.metrics.total_profit ?? 0) + Number(bankrollReference || 0);
 
   return (
     <div className="relative z-20">
-      <header className="flex items-center justify-between border-b px-8 pb-8">
+      {/* GOD MODE BANNER */}
+      {isGodMode && (
+        <div className="flex items-center justify-center gap-2 border-b border-amber-500/20 bg-amber-500/10 py-2 text-xs font-medium text-amber-500">
+          <Eye className="size-3" />
+          <span>Viewing Client: {userData?.[0]?.username || targetUserId}</span>
+          <Button
+            variant="link"
+            className="h-auto p-0 text-xs text-amber-500 underline"
+            onClick={() => (window.location.href = '/')}
+          >
+            Exit
+          </Button>
+        </div>
+      )}
+
+      <header className="flex items-center justify-between border-b px-8 pt-6 pb-8">
         <div className="flex items-center gap-1.5">
           <DashboardIcon className="size-5" />
           <h1 className="text-xl leading-[23px] font-medium">{t('title')}</h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsShareOpen(true)}
+            className="hidden md:flex"
+          >
+            <Share2 className="mr-2 size-4" />
+            Share
+          </Button>
           <Button
             iconLeft={<RefreshIcon className="size-[14px]" />}
             variant="secondary"
@@ -150,11 +152,17 @@ export const Dashboard = () => {
           <LanguageSwitcher />
         </div>
       </header>
+
+      {/* Stats Section */}
       <section className="mt-[23px] px-7">
         <DashboardStats
           isLoading={isLoading || isUserDataLoading}
           roi={data?.metrics.roi}
-          settled_stake_sum={(totalProfit / (bankrollReference ?? 0) - 1) * 100}
+          settled_stake_sum={
+            bankrollReference && Number(bankrollReference) !== 0
+              ? (totalProfit / Number(bankrollReference) - 1) * 100
+              : 0
+          }
           total_profit={totalProfit}
           settled_count={data?.metrics.settled_count}
         />
@@ -175,11 +183,12 @@ export const Dashboard = () => {
         <div className="px-7 py-10">
           <Card className="bg-muted/20 flex flex-col items-center justify-center gap-4 border-dashed p-10 text-center">
             <h3 className="text-foreground text-xl font-medium">
-              No bets placed yet
+              No bets found
             </h3>
             <p className="text-muted-foreground">
-              Configure your bot and place your first bet to see your results
-              here.
+              {isGodMode
+                ? "This user hasn't placed any bets or has no connected Telegram."
+                : 'Configure your bot to see results.'}
             </p>
           </Card>
         </div>
@@ -201,11 +210,20 @@ export const Dashboard = () => {
           />
         </>
       )}
-      {(error || userDataError) && (
-        <p className="hidden px-7 text-sm text-red-500">
-          Error: {error?.message || userDataError?.message}
-        </p>
-      )}
+      <ShareStatsModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        metrics={{
+          roi: data?.metrics.roi ?? 0,
+          totalProfit: totalProfit,
+          betCount: data?.metrics.settled_count ?? 0,
+        }}
+        chartData={chartData}
+        username={
+          userData?.[0]?.username || user?.username || user?.firstName || 'User'
+        }
+        imageUrl={user?.imageUrl}
+      />
     </div>
   );
 };

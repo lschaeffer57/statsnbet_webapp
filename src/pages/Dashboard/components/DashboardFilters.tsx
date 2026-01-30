@@ -103,6 +103,13 @@ const DashboardFilters = ({
         translationKey="filters.ev"
       />
 
+      <RangeFilter
+        filterKey="odds"
+        filters={filters}
+        setFilters={setFilters}
+        translationKey="filters.odds"
+      />
+
       <Select
         value={filters.sport}
         onValueChange={(value) => handleFilter(value, 'sport')}

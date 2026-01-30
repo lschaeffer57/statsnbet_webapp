@@ -66,29 +66,14 @@ const TelegramConnect = ({
     }
   };
 
+  const isConnected = !!telegramData?.auth_date;
+
   if (isLoading) {
     return <Skeleton className="h-[162px]" />;
   }
 
   return telegramData ? (
-    <Card
-      className="shadow-glass-lg flex cursor-pointer flex-row items-start justify-between gap-4"
-      onClick={() => {
-        const widget = widgetRef.current;
-        if (!widget) return;
-
-        const button = widget.querySelector('iframe');
-        if (button) {
-          button.contentWindow?.focus();
-          button.click?.();
-        } else {
-          const innerButton = widget.querySelector('script, div, a, button');
-          if (innerButton) {
-            (innerButton as HTMLElement).click?.();
-          }
-        }
-      }}
-    >
+    <Card className="shadow-glass-lg flex flex-row items-start justify-between gap-4">
       <div className="flex flex-row items-center gap-4">
         {imageError ? (
           <div className="size-11 rounded-full">
@@ -122,11 +107,16 @@ const TelegramConnect = ({
       </div>
       <Button
         variant="secondary"
-        className="from-muted !bg-gradient-to-b to-transparent opacity-100"
+        className={`from-muted !bg-gradient-to-b to-transparent opacity-100 ${
+          isConnected
+            ? 'cursor-default border-emerald-500/20 bg-emerald-500/10 text-emerald-500'
+            : ''
+        }`}
         size="sm"
-        onClick={onDelete}
+        onClick={isConnected ? undefined : onDelete}
+        disabled={isConnected}
       >
-        {t('telegram.reconnect')}
+        {isConnected ? 'Connected' : t('telegram.reconnect')}
       </Button>
     </Card>
   ) : (

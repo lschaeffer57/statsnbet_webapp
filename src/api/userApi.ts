@@ -105,4 +105,11 @@ export const userApi = {
       body: JSON.stringify({ email, userRole, subscriptionDuration }),
     });
   },
+  rateBookmaker: (userId: string, bookmakerName: string, rating: number) => {
+    return jsonApiInstance('rate-bookmaker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, bookmakerName, rating }),
+    });
+  },
 };

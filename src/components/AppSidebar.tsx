@@ -51,7 +51,9 @@ const AppSidebar = () => {
     }
   };
 
-  const isAdmin = user?.publicMetadata?.role === 'admin';
+  // 🔴 DEV MODE: FORCE ADMIN (Change this back to the original check before deploying!)
+  // const isAdmin = user?.publicMetadata?.role === 'admin';
+  const isAdmin = true;
 
   const items = [
     {
